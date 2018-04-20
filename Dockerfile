@@ -12,7 +12,9 @@ ADD . /code/
 ENV SSH_PASSWD "root:Docker!"
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends openssh-server \
-	&& echo "$SSH_PASSWD" | chpasswd 
+	&& echo "$SSH_PASSWD" | chpasswd \
+	echo "==> Install behave and related stuff..."   && \
+	pip3 install behave
 
 COPY sshd_config /etc/ssh/
 	
