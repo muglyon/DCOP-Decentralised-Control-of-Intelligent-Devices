@@ -17,4 +17,4 @@ RUN apt-get update \
 COPY sshd_config /etc/ssh/
 	
 EXPOSE 8000 2222
-CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
+# Old : CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
