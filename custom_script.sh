@@ -1,3 +1,4 @@
 #!/bin/bash
-clear
 echo "Good morning, world."
+ls
+behave
