@@ -1,3 +1,2 @@
 django >=1.9, <2
 applicationinsights
-behave
