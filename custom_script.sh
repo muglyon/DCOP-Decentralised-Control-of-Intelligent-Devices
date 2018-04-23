@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Good morning, world."
+echo $PATH
+ls $HOME/.local/bin
 cd app/
-ls 
 behave 
