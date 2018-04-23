@@ -1,14 +1,17 @@
 FROM ubuntu:16.04
 MAINTAINER Azure App Service Container Images <appsvc-images@microsoft.com>
 
-RUN apt-get update && apt-get install -y python-pip python-dev && apt-get clean
+# Python Environment
+RUN apt-get update \
+	&& apt-get install -y python3-pip python3-dev
 
 RUN mkdir /code
 WORKDIR /code
 ADD requirements.txt /code/
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 ADD . /code/
-# ssh
+
+# Ssh
 ENV SSH_PASSWD "root:Docker!"
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends openssh-server \
@@ -18,5 +21,6 @@ COPY sshd_config /etc/ssh/
 	
 EXPOSE 8000 2222
 
+# Running bdd script
 RUN chmod 755 custom_script.sh
 ENTRYPOINT ["./custom_script.sh"]

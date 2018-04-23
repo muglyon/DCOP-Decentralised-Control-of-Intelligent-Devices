@@ -1,3 +1,6 @@
-django >=1.9, <2
-applicationinsights
+numpy
+paho-mqtt
+python-etcd
 behave
+pyhamcrest
+coverage
