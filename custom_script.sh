@@ -1,6 +1,5 @@
 #!/bin/bash
 echo $PATH
-ls $HOME/.local/bin
-which behave
+ls /usr/local/bin
 cd app/
 behave 
