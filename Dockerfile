@@ -17,4 +17,6 @@ RUN apt-get update \
 COPY sshd_config /etc/ssh/
 	
 EXPOSE 8000 2222
-# Old : CMD ["python", "/code/manage.py", "runserver", "0.0.0.0:8000"]
+
+WORKDIR /app
+ENTRYPOINT ["CMD", "custom_script.sh"]
