@@ -18,4 +18,4 @@ COPY sshd_config /etc/ssh/
 	
 EXPOSE 8000 2222
 
-RUN custom_script.sh
+RUN ./custom_script.sh
