@@ -13,4 +13,3 @@ def setp_impl(context):
     context.current_dpop_tested.room.setDevices([])
     context.current_dpop_tested.c3 = MagicMock(return_value=0)
     context.current_dpop_tested.c5 = MagicMock(return_value=0)
-	assert_that(1, equal_to(2))
