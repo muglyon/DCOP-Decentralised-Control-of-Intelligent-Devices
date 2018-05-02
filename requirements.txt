@@ -1,6 +1,5 @@
 behave
 coverage
-nmap
 numpy
 paho-mqtt
 pyhamcrest
