@@ -5,7 +5,7 @@
 from model.hospital import Hospital
 from model.room import Room
 from dpop import Dpop
-
+ 
 import paho.mqtt.client as mqtt
 import sys
 
