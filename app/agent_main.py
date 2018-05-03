@@ -9,7 +9,7 @@ from dpop import Dpop
 import paho.mqtt.client as mqtt
 import sys
 
-MQTT_SERVER = "10.33.120.194" 
+MQTT_SERVER = "10.33.120.194" #AVNET server address
 
 ###
 # Callback mqtt connection
