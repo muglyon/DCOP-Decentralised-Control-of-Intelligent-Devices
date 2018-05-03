@@ -1,0 +1,304 @@
+## LOG AGENT 1 - 25/04/18 ##
+
+Subscribe to DCOP/1/#
+ ROOM 1 : 
+Tau : 229
+ > Device 11 end it's program in 90
+ > Device 12 end it's program in 185
+ > Device 13 end it's program in 184
+ > Device 14 end it's program in 92
+ > Device 15 end it's program in 23
+ > Device 16 end it's program in 164
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 16, "4": 16}'
+FINAL v : 20
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 231
+ > Device 11 end it's program in 88
+ > Device 12 end it's program in 183
+ > Device 13 end it's program in 182
+ > Device 14 end it's program in 90
+ > Device 15 end it's program in 21
+ > Device 16 end it's program in 162
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 16, "4": 16}'
+FINAL v : 20
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 235
+ > Device 11 end it's program in 84
+ > Device 12 end it's program in 179
+ > Device 13 end it's program in 178
+ > Device 14 end it's program in 86
+ > Device 15 end it's program in 17
+ > Device 16 end it's program in 158
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 16, "4": 16}'
+FINAL v : 15
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 241
+ > Device 11 end it's program in 78
+ > Device 12 end it's program in 173
+ > Device 13 end it's program in 172
+ > Device 14 end it's program in 80
+ > Device 15 end it's program in 11
+ > Device 16 end it's program in 152
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 16}'
+FINAL v : 0
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 249
+ > Device 11 end it's program in 70
+ > Device 12 end it's program in 165
+ > Device 13 end it's program in 164
+ > Device 14 end it's program in 72
+ > Device 15 end it's program in 3
+ > Device 16 end it's program in 144
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 16}'
+FINAL v : 0
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 0
+ > Device 11 end it's program in 60
+ > Device 12 end it's program in 155
+ > Device 13 end it's program in 154
+ > Device 14 end it's program in 62
+ > Device 15 end it's program in 241
+ > Device 16 end it's program in 134
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 5}'
+FINAL v : 241
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 12
+ > Device 11 end it's program in 48
+ > Device 12 end it's program in 143
+ > Device 13 end it's program in 142
+ > Device 14 end it's program in 50
+ > Device 15 end it's program in 229
+ > Device 16 end it's program in 122
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 3}'
+FINAL v : 241
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 26
+ > Device 11 end it's program in 34
+ > Device 12 end it's program in 129
+ > Device 13 end it's program in 128
+ > Device 14 end it's program in 36
+ > Device 15 end it's program in 215
+ > Device 16 end it's program in 108
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 0}'
+FINAL v : 241
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 42
+ > Device 11 end it's program in 18
+ > Device 12 end it's program in 113
+ > Device 13 end it's program in 112
+ > Device 14 end it's program in 20
+ > Device 15 end it's program in 199
+ > Device 16 end it's program in 92
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 16, "4": 16}'
+FINAL v : 15
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 0
+ > Device 11 end it's program in 241
+ > Device 12 end it's program in 95
+ > Device 13 end it's program in 94
+ > Device 14 end it's program in 2
+ > Device 15 end it's program in 181
+ > Device 16 end it's program in 74
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 16, "4": 16}'
+FINAL v : 0
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 0
+ > Device 11 end it's program in 221
+ > Device 12 end it's program in 75
+ > Device 13 end it's program in 74
+ > Device 14 end it's program in 241
+ > Device 15 end it's program in 161
+ > Device 16 end it's program in 54
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 16}'
+FINAL v : 241
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+ ROOM 1 : 
+Tau : 22
+ > Device 11 end it's program in 199
+ > Device 12 end it's program in 53
+ > Device 13 end it's program in 52
+ > Device 14 end it's program in 219
+ > Device 15 end it's program in 139
+ > Device 16 end it's program in 32
+---------- DFS GENERATION ----------
+wait for ROOT
+DCOP/1 b'ON'
+DCOP/1 b'ROOT_2'
+DCOP/1 b'CHILD 4'
+DCOP/1 b'PSEUDO 2'
+1
+--> 2
+---------- UTIL PROPAGATION ----------
+SHAPE OF COMBINED MATRIX : (17, 17, 17)
+---------- VALUE PROPAGATION ----------
+DCOP/1 b'VALUES {"5": 16, "2": 0, "4": 5}'
+FINAL v : 241
+C1 :  0
+C2 :  0
+C4 :  0
+C5 :  0
+Process finished with exit code -1
