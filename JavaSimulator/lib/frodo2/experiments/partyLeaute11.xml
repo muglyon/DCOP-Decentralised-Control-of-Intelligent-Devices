@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/frodo2/algorithms/XCSPschemaJaCoP.xsd">
+  <presentation name="partyProblem_1520866188660" format="XCSP 2.1_FRODO" maxConstraintArity="2">
+    <stats name="margin of error">0.0</stats>
+    <stats name="equilibrium type">pure Nash</stats>
+    <stats name="number of players">2</stats>
+    <stats name="party graph average density">1.0</stats>
+    <stats name="number of disconnected components of the party graph">1</stats>
+    <stats name="party graph max degree">1</stats>
+  </presentation>
+  <agents nbAgents="2">
+    <agent name="a0" />
+    <agent name="a1" />
+  </agents>
+  <domains nbDomains="1">
+    <domain name="Strategies" nbValues="2">0 1</domain>
+  </domains>
+  <variables nbVariables="4">
+    <variable name="p0s0" domain="Strategies" agent="a0" />
+    <variable name="p0s1" domain="Strategies" agent="a0" />
+    <variable name="p1s1" domain="Strategies" agent="a1" />
+    <variable name="p1s0" domain="Strategies" agent="a1" />
+  </variables>
+  <relations nbRelations="2">
+    <relation name="p0_rel" arity="2" semantics="conflicts" nbTuples="2">0 1|
+1 1</relation>
+    <relation name="p1_rel" arity="2" semantics="conflicts" nbTuples="2">0 0|
+1 1</relation>
+  </relations>
+  <predicates nbPredicates="1">
+    <predicate name="EQ">
+      <parameters>int X int Y</parameters>
+      <expression>
+        <functional>eq(X, Y)</functional>
+      </expression>
+    </predicate>
+  </predicates>
+  <constraints nbConstraints="4">
+    <constraint name="p0s1_EQ_p1s1" arity="2" scope="p0s1 p1s1" reference="EQ">
+      <parameters>p0s1 p1s1</parameters>
+    </constraint>
+    <constraint name="p0_const" arity="2" scope="p0s1 p0s0" reference="p0_rel" />
+    <constraint name="p1s0_EQ_p0s0" arity="2" scope="p1s0 p0s0" reference="EQ">
+      <parameters>p1s0 p0s0</parameters>
+    </constraint>
+    <constraint name="p1_const" arity="2" scope="p1s0 p1s1" reference="p1_rel" />
+  </constraints>
+</instance>

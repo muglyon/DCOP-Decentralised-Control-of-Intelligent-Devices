@@ -1,0 +1,716 @@
+CHANGES IN VERSION 2.16 SINCE VERSION 2.15.2
+
+Major changes: 
+	- P2-DPOP & MPC-DisWCSP4 now support maximization problems and problems with negative costs/utilities (request by Sankarshan Damle). 
+	- Max-Sum now supports synchronous, round-based execution (in addition to asynchronous execution). 
+	Preliminary experimental results show that the asynchronous version outperforms the synchronous version on all performance metrics. 
+	
+Minor changes: 
+	- Fixed a NumberFormatException in P-DPOP and P3/2-DPOP (reported by Sankarshan Damle), which now only support AddableBigInteger utilities. 
+	- The CATS parser now reports an error when more dummy goods are encountered than announced (issue reported by Sankarshan Damle). 
+	- The JaCoPxcspParser now truncates decimal values to integers instead of throwing a NumberFormatException (issue reported by Sankarshan Damle). 
+	- Fixed a bug in Max-Sum following which messages were skipped instead of delayed if received before the factor graph message. 
+	- Fixed a bug in the factor graph DOT representation: names of function nodes and variable nodes could clash. 
+	- Fixed serialization bugs in MPC-Dis[W]CSP4, which did not work with TCP pipes. 
+	- Fixed a bug following which P3/2-DPOP would not assign any value to any variable on infeasible problems. 
+	- Fixed a bug following which using AddableBigInteger for utilities/costs resulted in 
+	algorithms reporting very large instead of infinite utilities/costs on infeasible problems. 
+	- Added warnings about truncations when attempting to parse decimal values from XCSP into integers. 
+	- Added asserts to check for integer overflows in AddableInteger. 
+
+
+CHANGES IN VERSION 2.15.2 SINCE VERSION 2.15.1
+
+Major changes: 
+	- n/a  
+	
+Minor changes: 
+	- Fixed a bug in the CATS parser triggered by negative bid values from bidders with multiple bids (reported by Sankarshan Damle). 
+
+
+CHANGES IN VERSION 2.15.1 SINCE VERSION 2.15
+
+Major changes: 
+	- Improved the CATS parser to support SATS (http://spectrumauctions.org) outputs (request by Sankarshan Damle). 
+	
+Minor changes: 
+	- Fixed bugs in MGM & MGM2 following which, when measuring convergence, more data points than necessary were collected. 
+	- Minor code cleanups. 
+
+
+CHANGES IN VERSION 2.15 SINCE VERSION 2.14
+
+Major changes: 
+	- MaxSum now optionally introduces perturbations to the problem to improve solution quality. 
+	- The distributed submode now support a non-omniscient controller, in which case the configuration files are fed directly to the daemons 
+	(support request #10 by Andrea). 
+	- The XCSPparser's main function can now split an overall problem into each agent's respective subproblem (support request #10 by Andrea). 
+	
+Minor changes: 
+	- FRODO's website is now hosted at https://frodo-ai.tech. FRODO's SourceForge project site is still used to distribute binaries, 
+	and to host the public SVN repository, the ticketing system, and the mailing list. 
+	- The CSV files produced by the benchmarking scripts now use semicolons rather than tabs as separators. 
+	- It is now possible to control whether the y axis in benchmarking result graphs should use natural or log scale. 
+	- Further improvements to the way benchmarking result graphs are plotted. 
+	- Various minor improvements to the Controller and Daemon consoles in the advanced mode. 
+	- The name of the agent is now saved in its XCSP subproblem as an attribute "self" of the <agents> tag. 
+	- StatsReporter modules now truly only report statistics when reportStats = true in the agent configuration file. 
+	- Fixed a bug in resetting the stats gatherers between consecutive experiments in advanced mode. 
+	- Fixed a bug in the way Max-Sum displays the solution. 
+	- Added performance regression tests for meeting scheduling problems. 
+
+
+CHANGES IN VERSION 2.14 SINCE VERSION 2.13.3
+
+Major changes: 
+	- Major performance improvement in the way DPOP's UTIL messages are implemented in JaCoP (performance issue reported by Chirag Vartak). 
+	UTIL lookups are now cheaper (constant instead of linear in the number of allowed tuples), resulting in multiple-times speedups. 
+	- Fixed a bug in the random graph coloring problem generator, following which the unary constraints (when tightness > 0) 
+	used an inconsistent color numbering convention (bug reported by Duc Thien Nguyen). 
+	
+Minor changes: 
+	- DUCT now reports the cost/utility of the solution it returns. 
+	- In distributed submode, daemons now report which agents they own (request by Roger Tang). 
+	- Improvements to the error messages that could be thrown in advanced mode (support request by Roger Tang). 
+	- The XCSP parser now checks for unique constraint names when asserts are enabled (reported by Dipankar Niranjan). 
+	- User manual: fixed a few mistakes about Multi-Agent Systems (following a request for support by Partha Protim Mondal).
+	- User manual: added information about the distributed submode (request by Roger Tang). 
+
+
+CHANGES IN VERSION 2.13.3 SINCE VERSION 2.13.2
+
+Major changes: 
+	- Upgraded to JaCoP version 4.4.0; the new JAR file must be manually downloaded from the JaCoP website and put in FRODO's lib folder. 
+	
+Minor changes: 
+	- Fixed a too strict assert checking for integer overflows in the JaCoP XCSP parser (bug reported by Dimitrios Athanasiadis). 
+
+
+CHANGES IN VERSION 2.13.2 SINCE VERSION 2.13.1
+
+Major changes: none
+	
+Minor changes: 
+	- FRODO can now print out all messages exchanged; see Section 4.7 in the user manual (request by Dimitrios Athanasiadis). 
+
+
+CHANGES IN VERSION 2.13.1 SINCE VERSION 2.13
+
+Major changes: 
+	- Upgraded to JaCoP version 4.3.0; the new JAR file must be manually downloaded from the JaCoP website and put in FRODO's lib folder. 
+	- Fixed a bug in AFB, following which the algorithm was not backtracking as early as it should (reported by Yang Xiaolei). 
+	This results in up to 25% median performance improvements on graph coloring problems (19 nodes, density 0.4, 3 colors), 
+	and up to 50 % median performance improvements on tight MaxDisCSPs (10 variables, p1 = 0.4, p2 = 0.9). 
+	
+Minor changes: 
+	- Now supports scatter plots in natural scale in addition to log/log scale. 
+	- Fixed a resource leak in the TCP communication layer (sockets were not being closed after use). 
+
+
+CHANGES IN VERSION 2.13 SINCE VERSION 2.12.1
+
+Major changes: 
+	- Added support for the DUCT algorithm (Ottens, Dimitrakakis and Faltings, AAAI'12) (request by Yang Xiaolei). 
+	- FRODO is now compiled for Java 8, since Java 7 has reached end of life. 
+	- The HTML documentation for the FRODO API is now available at http://thomas.leaute.name/frodo/api/ (based on input from Xie Yi). 
+	
+Minor changes: 
+	- Improved the text of an assert error message in the JaCoP XCSP parser (based on input from Dimitrios Athanasiadis). 
+	- Minor improvement to the Hypercube constructor documentation (based on input from Xie Yi). 
+
+
+CHANGES IN VERSION 2.12.1 SINCE VERSION 2.12
+
+Major changes: 
+	- Added XCSP support for the Element global constraint. 
+	- Upgraded JDOM to version 2.0.6, JaCoP to version 4.2.0, and OR-Objects to version 3.0.3. 
+	The new JAR files must be manually downloaded from the corresponding websites and put in FRODO's lib folder.
+	
+Minor changes: 
+	- Improved the robustness of the JaCoP XCSP parser to whitespaces, newlines, and minus signs. 
+	- The XCSP schema no longer supports positive constants starting with a + sign; positive constants must now be signless. 
+
+
+CHANGES IN VERSION 2.12 SINCE VERSION 2.11.3
+
+Major changes: 
+	- Significant performance improvements to the interface with JaCoP: 
+		- 1.5x speedups for AFB and 2x speedups for DPOP on medium-sized graph coloring problems; 
+		- 4.5x speedups for AFB and 5x speedups for DPOP on medium-sized, high-tightness, random Max-DisCSPs; 
+		- much higher speedups can be expected on problem domains with complex, local subproblems. 
+	- The FRODO GUI now lists JaCoP-based agents again (bug 51, reported by Dimitrios Athanasiadis, from University of Strathclyde). 
+	
+Minor changes: 
+	- Improved the robustness of the JaCoP-based XCSP parser to tabs and line breaks in predicates. 
+	- Improved several error messages to make them more explicit. 
+
+
+CHANGES IN VERSION 2.11.3 SINCE VERSION 2.11.2
+
+Major changes: 
+	- Upgraded to JaCoP version 4.1.0; the new JAR file must be manually downloaded from the JaCoP website and put in FRODO's lib folder. 
+	- FRODO now reports the number and total size of messages sent and received by each agent (request by Shijie Li from TU Delft). 
+	- Fixed a bug following which too many heuristic score messages were exchanged by the DFSgenerationParallel module (reported by Yang Xiaolei).
+	
+Minor changes: 
+	- Fixed a bug in the XCSP parser when a constraint scope had trailing spaces (reported by Dimitrios Athanasiadis, University of Strathclyde). 
+	- Added an assert in the parser to catch references to non-defined variables (reported by Dimitrios Athanasiadis, University of Strathclyde). 
+	- Deleted a few duplicate Solution classes and replaced them with the new class SolutionWithConvergence
+
+
+CHANGES IN VERSION 2.11.2 SINCE VERSION 2.11.1
+
+Major changes: 
+	- Upgraded to JaCoP version 4.0.0; the new JAR file must be manually downloaded from the JaCoP website and put in FRODO's lib folder. 
+	- Added support for the Cumulative global constraint (request by Shijie Li from TU Delft). 
+	
+Minor changes: 
+	- The Python experiment framework now displays the Java errors when launched from Enthought Canopy (bug 50 by costa). 
+	- The Python experiment framework now exits more gracefully when the results files are not found or are empty. 
+		
+
+CHANGES IN VERSION 2.11.1 SINCE VERSION 2.11
+
+Major changes: 
+	- Added XCSP support for the diff2 global constraint.
+	- Fixed an discrepancy between the computation steps performed before serializing a JaCoP-based solution space 
+	  and the steps performed by the method that simulates serialization when the agents are running in the same JVM. 
+	  This used to result in FRODO reporting optimistic runtime measurements for (MB-)DPOP and MaxSum when using JaCoP. 
+
+Minor changes: 
+	- Reduced the memory footprint of JaCoPutilSpace.resolve() (support request 6 by Denise). This affects DPOPagentJaCoP. 
+	- Fixed a bug that made it harder to specify which MaxSum agent controls which function node (bug 49 by Dimitrios Athanasiadis).
+	- The XCSPparser now prints a warning on undefined relations corresponding to existing predicates or functions (support request 3 by Reza).
+	- The XCSPparser now prints a warning on relations of unsupported semantics (discussion with Teo). 
+	- In the Python experiments framework, different Java parameters can now be passed for each algorithm. 
+	- Python experiments can now display graphs with different performance metrics simultaneously. 
+	- Added performance regression tests for graph coloring and MaxDisCSP. 
+	- Added the agent configuration file CountAgentJaCoP.xml in algorithms.dpop.count. 
+	
+
+CHANGES IN VERSION 2.11 SINCE VERSION 2.10.5
+
+Major changes: 
+	- Upgraded to JDOM version 2.0.5; the file jdom-2.0.5.jar must be manually downloaded from the JDOM website and saved in FRODO's lib folder. 
+	- Renamed FRODO's package from ch.epfl.lia.frodo to just frodo2. 
+	- Added support for a standardized way of running experiments using Python scripts. 
+	- Added new performance metrics reporting the size of the largest message. 
+	- Important performance improvements to the interface with JaCoP through the introduction of sparse solution iterators. 
+	- AFB now supports intensional constraints using JaCoP and sparse solution iterators. 
+
+Minor changes: 
+	- Added tightness as an input to the graph coloring problem generator. This means agents can now have a priori availability schedules. 
+	- Extended the XCSP format to include statistics about the problem instance. 
+	- Multiple performance improvements to E[DPOP]. 
+	- Fixed a rare NullPointedException in O-DPOP. 
+	- Other minor bug fixes. 
+	- The URL of the SVN code repository has changed; new instructions can be found at http://sourceforge.net/p/frodo2/code/HEAD/tree/trunk/
+	
+
+CHANGES IN VERSION 2.10.5 SINCE VERSION 2.10.4
+
+Major changes: 
+	- Upgraded to JDOM version 2.0.1; the new JAR file must be manually downloaded from the JDOM website and put in FRODO's lib folder. 
+	- Upgraded to JaCoP version 3.2; the new JAR file must be manually downloaded from the JaCoP website and put in FRODO's lib folder. 
+	- When simulated time is enabled, the timeout is now specified in simulated time rather than wall clock time. 
+
+Minor changes: 
+	- Fixed multiple bugs with multi-space separators in the XCSP parsers (bug 3528897 reported by Samuele Granata). 
+	- Addressed a rare bug in distributed mode (bug 3515517 reported by Alessandro Bellemo).
+	- Max-Sum now always rescales messages, but ignores infinite entries (improvement suggested by Ruben Stranders). 
+	- Max-Sum: when they have exhausted their numbers of iterations, variable nodes now keep updating and reporting their optimal values. 
+	- Max-Sum: fixed a bug following which function nodes were counting twice each iteration. 
+	- Extended E[DPOP] to support other utilities than AddableReal. 
+	- Performance improvements to the JUnit tests by removing busy waits. 
+	- Minor refactoring in the Solution Spaces layer. 
+	- Other minor bugfixes. 
+	
+
+CHANGES IN VERSION 2.10.4 SINCE VERSION 2.10.3
+
+Major changes: 
+	- Upgraded to JDOM version 1.1.3; the new JAR file must be manually downloaded from the JDOM website and put in FRODO's lib folder. 
+	- The problem's constraints are now parsed by the variable ordering modules instead of the actual algorithms. 
+	- Performance improvements to the interface with JaCoP (including support request 3472314 by Karol Stosiek). 
+
+Minor changes: 
+	- It is now possible to use solvers in distributed mode (feature request 3466481 by Karol Stosiek). 
+	- Fixed a ClassCastException in JaCoPutilSpace that resulted from using IntervalDomains instead of IntDomains (bug 3464441 reported by Alessandro Bellemo). 
+	- Fixed a ClassCastException in MGM and MGM-2 when measuring message sizes (bug 3489966 reported by Alessandro Bellemo). 
+	- The XCSPparser now checks the correctness of the XCSP relation attribute "nbValues" when asserts are enabled (see bug report 3480548 by Alessandro Bellemo). 
+	- Max-Sum now uses a new, separate module to generate its factor graph. 
+	- Fixed a bug following which SynchBB was sending more information than necessary. 
+	- Dropped the support for the SimpleSubsolver. 
+	- Various other bug fixes and minor changes. 
+	
+
+CHANGES IN VERSION 2.10.3 SINCE VERSION 2.10.2
+
+Minor changes: 
+	- Fixed multiple bugs in the parsing of XCSP predicates (including bugs 3459564 and 3458962 reported by Karol Stosiek). 
+	- Fixed multiple message externalization issues (including bug 3458272 reported by Karol Stosiek). 
+	- Fixed a bug in the advanced, distributed mode (bug 3458247 reported by Karol Stosiek). 
+	- Added support for Max-Sum's "private variables, private constraints" convention (request by Sokratis Vavilis). 
+	- MaxSum is now by default initialized with random messages (request by Sokratis Vavilis).
+	- In advanced, distributed mode, the daemon port number is now customizable (request 3459316 by Karol Stosiek). 
+	- The advanced mode now automatically overrides the "measureTime" attribute in the agent configuration file (see discussion of bug 3458247). 
+	- Added the two methods timeOut() and outOfMem() to all solvers. 
+	- Made some clarifications to the User Manual. 
+	
+	
+CHANGES IN VERSION 2.10.2 SINCE VERSION 2.10.1
+
+Major changes:
+	- Added support for intensional, soft constraints (request by Samuele Granata). 
+	- Upgraded JaCoP to version 3.1.2; it is necessary to download this new version and place it in FRODO's lib folder. 
+	- Added 3 new benchmark problem generators (which are now documented in the User Manual): 
+		- combinatorial auctions and resource allocation problems (request 3024777); 
+		- distributed kidney exchange problems; 
+		- Nash equilibria in party games. 
+
+Minor changes: 
+	- Most pseudo-tree-based algorithms now use a new DFSgenerationParallel module that takes care of electing the root (Leaute's 2011 PhD Thesis, request 3024773). 
+	
+	
+CHANGES IN VERSION 2.10.1 SINCE VERSION 2.10
+
+Minor changes: 
+	- Fixed a ClassCastException in ADOPT (bug 3427688 reported by Fredrik Heintz). 
+	- Updated the User Manual with descriptions of how to use the XCSP format to express StochDCOP instances (request by Julian Qiu). 
+	- Changes to the output of the DFSgeneration module. 
+	- Upgraded to the freshly released version 1.1.2 of JDOM. 
+	
+	
+CHANGES IN VERSION 2.10 SINCE VERSION 2.9
+
+Major changes:
+	- Added an implementation of Max-Sum (Farinelli et al., AAMAS'08), based on a contribution by Sokratis Vavilis and Prof. George Vouros. 
+	- Added an implementation of MB-DPOP (Petcu and Faltings, IJCAI'07) (request by NGUYEN Duc Thien). 
+	- Added a convenient algorithm that counts the number of optimal solutions (in the algorithms.dpop.count package). 
+	- Added new variants to E[DPOP] (Leaute & Faltings, AAAI'11). 
+	- Added three new problem generators for graph coloring, Max-DisCSP, and meeting scheduling (request 3024777). 
+
+Minor changes: 
+	- When simulated time is enabled, agents are now notified if they are all idle using a message of type AgentInterface.ALL_AGENTS_IDLE. 
+	- Multiple improvements to the solution spaces layer. 
+	- Multiple bug fixes and improvements to E[DPOP]. 
+	- Minor other bug fixes. 
+	
+	
+CHANGES IN VERSION 2.9 SINCE VERSION 2.8
+
+Major changes:
+	- Now supports the AFB algorithm by Gershman, Meisels and Zivan (ECAI'06) (request 3187977, internal contribution by Alexandra Olteanu). 
+	- Now supports the MGM2 algorithm by Maheswaran, Pearce and Tambe (ISCA PDCS'04). 
+	- Now supports the MPC-DisCSP4 algorithm by Silaghi (FLAIRS'05). 
+	- Slightly changed the XCSP file format to make it compatible with the XDisCSP format used by DisCHOCO 2. 
+	  This means it is now possible to use DisCHOCO 2 as a benchmark generator for FRODO (request 3024777). The changes are the following: 
+	  	- "owner" attributes have been renamed "agent"; 
+	  	- the list of agents is now explicitly declared in a new <agents> element. 
+	- Added support for JaCoP to P*-DPOP. 
+	- P*-DPOP's "mergeBack" parameter is now set to false by default, which increases privacy but decreases performance. 
+	- Introduced a new "MPC mode" to the XCSPparser, in which variables are public, and constraints may be private (or public). 
+	- Important performance improvements to MPC-DisWCSP4 when using JaCoP. 
+
+Minor changes: 
+	- Fixed a rare termination failure in SynchBB (bug 3299801). 
+	- Fixed multiple bugs in the counting of NCCCs. 
+	- Various improvements and bugfixes to DSA and MGM. 
+	- Improvements and bugfixes to the interface with JaCoP. 
+	- Fixed the overriding of statistics messages. 
+	- Fixed a NullPointerException in the VRP benchmark generator when no radius was specified. 
+	- The ProblemRescaler now sets its shift to 0 by default. 
+	- Code refactoring as a first step towards enabling algorithms to reason about clusters of variables. 
+	- Now prints out a warning when asserts are enabled, since they can slow down the algorithms. 
+	- The parameter "publicAgents" is not an attribute of the parser instead of the agent. 
+	- Changed the required behavior of UtilitySolutionSpace.Iterator.nextUtility(U, boolean). 
+	- Other minor changes. 
+
+
+CHANGES IN VERSION 2.8 SINCE VERSION 2.7.3
+
+Major changes:
+	-  Coupling with JaCoP (request 3024780, contributed internally by Arnaud Jutzeler), hereby extending FRODO's XCSP constraint catalogue to include: 
+		- extensional hard constraints
+		- intensional hard constraints, based on functional predicates
+		- Weighted Sum constraints
+		- All Different constraints
+	- Support for the new P3/2-DPOP algorithm, introduced in the following upcoming paper at IJCAI'11: 
+		Thomas Leaute and Boi Faltings, "Coordinating Logistics Operations with Privacy Guarantees," in the Proceedings of IJCAI'11
+	- Support for the MGM algorithm by Maheswaran et al. (PDCS'04) (request 3216365). 
+	- Support for the privacy-preserving MPC-DisWCSP4 algorithm by Silaghi and Mitra (IAT'04, FLAIRS'05). 
+
+Minor changes: 
+	- The CentralMailer now catches all exceptions (not just OutOfMemoryErrors) in order to terminate earlier, instead of waiting for the timeout (bug 3235096, reported by Fredrik Heintz). 
+	- Added a tie-breaking rule in LinearOrdering to remove non-determinism in SynchBB (bug 3237992, reported by Fredrik Heintz). 
+	- Fixed a memory leak when serializing messages, by making them all Externalizable (bug 3286302, reported by Fredrik Heintz). 
+	- Fixed a bug in DSA, following which it was performing twice too many constraint checks (bug 3213571). 
+	- Fixed a rare bug in SynchBB (bug 3249058). 
+	- The DisMDVRP problem generator now supports split demands (request 3081033) and uncertain customer locations. 
+	- All solvers can now use TCP pipes. 
+	- Improvements to ADOPT. 
+	- Fixed privacy leaks and improved performance in P2-DPOP. 
+
+
+CHANGES IN VERSION 2.7.3 SINCE VERSION 2.7.2
+
+Major changes:
+	- It is now possible to interact with FRODO through the API without using XCSP files (request 3182512). 
+	- Implemented an automatic problem reformulation for ADOPT, ASO-DPOP and SynchBB when required (request 3174898 submitted by Sokratis Vavilis). 
+	- Completely re-implemented the NCCC metric. Constraint checks are now automatically counted by the spaces themselves. 
+	- FRODO now includes a preliminary, limited support for MAS problems involving multiple types of agents (Section 4.2.3 in the User Manual). 
+
+Minor changes: 
+	- Clarified the documentation of XCSPparser.parse() and the use of the XCSP schema (suggestion by Kathryn Macarthur).
+	- Removed an unnecessary stack trace printout upon interruption (bug 3163006 reported by Sokratis Vavilis). 
+	- Implemented getInboxSize() in simulated time mode (request 3174889 submitted by Sokratis Vavilis). 
+	- Removed useless OK button in the execution progress window (bug 3170425 reported by Sokratis Vavilis). 
+	- Fixed OutOfMemory errors now being caught by the MsgSizeMonitor. 
+	- Added previously unreleased tests for the Hypercube class. 
+	- Performance improvements to DPOP when using the minNCCCs option. 
+	- P2-DPOP now also supports the minNCCCs option. 
+	- Various changes to E[DPOP]. 
+	- Code cleanup in O-DPOP. 
+	- Various improvements to the DisMDVRP code. 
+	- Various bug fixes (including bugs 3160033, 3160034, 3165346 and 3165377). 
+
+
+CHANGES IN VERSION 2.7.2 SINCE VERSION 2.7.1
+
+Major changes:
+	- Fixed an unexpected termination upon start up in advanced mode (bug 3155901, reported by Sokratis Vavilis). 
+	- Fixed a bug in the GUI, which would let algorithms continue running after a timeout (bug 3158088, reported by Sokratis Vavilis). 
+	- Numerous changes in P2-DPOP, including dramatic speedups on infeasible problems (bugs 3129875, 3129879, and requests 3129877, 3134213). 
+	- Fixed an important performance issue when measuring simulated time and not measuring message sizes (bug 3158227). 
+	- Added missing algorithms in the GUI's drop-down menu (bug 3135071). 
+	- Added a "Render" button to the GUI to display the constraint graph. 
+
+Minor changes: 
+	- All classes used to generate variable orderings have been moved to the new dedicated package frodo.algorithms.varOrdering. 
+	- A new class DFSview is now used to represent the view that one variable has of the DFS (request 3129874). 
+	- Fixed a bug in XCSPparser.switchMaxMin() (bug 3129866). 
+	- Fixed a bug in P-DPOP (bug 3130027). 
+	- Fixed a bug following which the GUI was not allowing the user to not specify a timeout (bug 3158100). 
+	- Fixed a minor bug in ASO-DPOP. 
+	- P-DPOP now uses 128-bit random numbers for obfuscation
+	- Changes in the way algorithms record convergence statistics. 
+	- Added support for real-valued variables. 
+	- Minor updates to the user manual. 
+	- Various minor improvements. 
+
+
+CHANGES IN VERSION 2.7.1 SINCE VERSION 2.7
+
+Major changes:
+	- Now provides a simple GUI, based on Graphviz (request 3055361, contributed by Andreas Schaedeli). 
+	- Multiple improvements in message sizes by a more efficient serialization of variable values and utility values. 
+	- The DisMDVRP benchmarks are now a full part of FRODO, after the release of the OR-Objects library under the GPL (request 3095995). 
+	- Fixed a bug in the JVM not exiting immediately after FRODO times out (bug 3097191 reported by Andreas Schaedeli). 
+
+Minor changes: 
+	- Fixed a bug in ADOPT's NCCC count, which was underestimated (bug 3094656). 
+	- Fixed a bug in XCSPparser.switchMaxMin() (bug 3096299, reported by Andreas Schaedeli).
+	- Various improvements and bugfixes to P2-DPOP (bug 3110182). 
+	- SolutionSpaces are now allowed to contain more than 2^32 solutions, up to 2^64. 
+	- Code improvements to O-DPOP and ASO-DPOP. 
+
+
+CHANGES IN VERSION 2.7 SINCE VERSION 2.6.3
+
+Major changes:
+	- Support for P2-DPOP (Leaute PASSAT'09), a version of DPOP that uses ElGamal homomorphic encryption to provide strong privacy guarantees (internal contribution by Eric Zbinden, request 3024764). 
+	- Performance improvements (in terms of runtime and memory) in various algorithms through the use of blind projections in solution spaces (request 3085862). 
+	- Important bug fix in the DisMDVRP plugin, which was ignoring the constraint on the maximum number of vehicles (bug 3081029). 
+	- Performance improvements in the DisMDVRP plugin, by avoiding useless constraint checks (bug 3081420).  
+
+Minor changes: 
+	- Added support for real-valued variable domains (request 3083001). 
+	- Minor improvements to P-DPOP. 
+	- Other minor bug fixes. 
+
+
+CHANGES IN VERSION 2.6.3 SINCE VERSION 2.6.2
+
+Major changes:
+	- Dramatic performance improvements on the DisMDVRP benchmarks after changing the DCOP model to not create variables for customers that can only be served by a single depot (request 3028053). 
+	- Important reductions in SynchBB's message sizes (requests 3027783, 3027878).
+	- Minor additional performance improvements in message sizes across all DCOP algorithms (request 3028389). 
+	- Complete refactoring of the DFS heuristics; the DFSgeneration module now supports tie-breaking heuristics (request 3024768). 
+
+Minor changes: 
+	- Multiple bugfixes in the DisMDVRP plugin (bugs 3036428, 3042033, 3052930). 
+	- Fixed various bugs in ADOPT (bug 3042376) and ASO-DPOP (bugs 3040093, 3040606). 
+	- Fixed a bug following which the AgentFactory sometimes did not report that it timed out (bug 3033106), or even failed to time out (bug 3033079). 
+	- Fixed the solvers reporting a runtime of 0 when simulated time was disabled (bug 3040748). 
+	- Modified the format of the agent configuration files such that the class used for utility values is now specified as a parameter of the parser. 
+	- Performance improvements in avoiding to parse unused constraints (request 3053509). 
+	- Solutions output by the solvers now make the difference between the utility of the chosen assignment and the utility reported by the algorithm (bug 3032203). 
+	- P-DPOP now uses a random DFSgeneration heuristic for privacy (request 3029989). 
+	- Numerous code refactorings (including request 3031563). 
+	- Other minor bug fixes. 
+
+
+CHANGES IN VERSION 2.6.2 SINCE VERSION 2.6.1
+
+Major changes:
+	- Releasing a new DCOP benchmark: the Distributed, Multiple-Depot Vehicle Routing Problem (DisMDVRP, proposed as a separate plugin). 
+	- The VariableElection module can now be parameterized by a tie-breaking heuristic.
+
+Minor changes: 
+	- O-DPOP and ASO-DPOP now have new versions that are able to exploit the fact that all variables have binary domains (when this applies). 
+	- Improved the description of the XCSP file format in the XML Schema file and in the FRODO User Manual (suggestion by Achraf Tangui).
+	- Performance improvements to Addable.equals() (request by Xavier Olive). 
+	- Implemented Queue.resetMsgSizeMonitor() (request by Xavier Olive). 
+	- Dramatically reduced the memory footprint of unit tests.
+	- Minor bug fixes. 
+
+
+CHANGES IN VERSION 2.6.1 SINCE VERSION 2.6
+
+Major changes: 
+	- Fixed an approximation error in the simulated time metric due to the coarse granularity of System.getCurrentTimeMillis(). Now using System.nanoTime() instead. 
+	- Fixed a bug in DSA, which would get stuck in non-existent local minima due to not properly counting the number of conflicts. 
+	
+Minor changes: 
+	- Performance improvements to various algorithms through the introduction of a "delayed addition" functionality. 
+	- Fixed a bug with the -timeout option, which did not disable the timeout when the provided time was non-positive. 
+	- Added an option to display the problem constraint graph in DOT format to the agent configuration files. 
+	- Enriched the Solution class with some more statistics about the problem. 
+	- Added a main() method to XCSPparser that just displays the input problem constraint graph in DOT format. 
+	- Code refactoring and improvements to O-DPOP and ASO-DPOP; O-DPOP now has a variant in which variable domains are communicated up front. 
+	- Fixed bugs in DPOPsolver. 
+	- Fixed an incorrect "Out of memory" error report with the simulated time metric, which was not actually always due to running out of Java heap space. 
+	- Fixed a rare deadlock in the simulated time metric that could lead to thread leaks. 
+
+
+CHANGES IN VERSION 2.6 SINCE VERSION 2.5
+
+Major changes: 
+	- Releasing P-DPOP (Faltings IAT'08), a version of DPOP that protects privacy (internally contributed by Eric Zbinden). 
+	- Dramatic performance improvements in the measurement of messages sizes. 
+	- Now uses the Simulated Time metric by default.
+	- Reduced the memory footprint of DPOP by not explicitly computing the join of the received UTIL messages. 
+	
+Minor changes: 
+	- Code refactoring and improvement in the communications layer in preparation for MPI support (contributed by Xavier Olive). 
+	- XCSPparser now checks that the attribute "nbTuples" has a correct value (improvement suggested by Jonas Helfer). 
+	- XCSPparser no longer silently ignores constraints referencing non-existing relations (improvement suggested by Xavier Olive). 
+	- Performance improvements to E[DPOP]. 
+	- Fixed several bugs related to combining warm restarts with the Simulated Time metric.
+	- Changed the way the parser class is specified in the agent configuration file.
+	- The API now makes it possible to record the run times of an algorithm's modules individually. 
+	- Implemented the Least Connected heuristic for VariableElection and DFSgeneration. 
+	- Code refactoring in the solution spaces layer in preparation for P2-DPOP. 
+	- Code refactoring and improvement in O-DPOP and ASO-DPOP. 
+	- Minor bug fixes. 
+	- Various other code improvements. 
+
+
+CHANGES IN VERSION 2.5 SINCE VERSION 2.4.1
+
+Major changes: 
+	- Implemented the SynchBB algorithm by Hirayama & Yokoo (CP'97), adapted for DCOPs as suggested by Meisels. 
+	- Preliminary implementation of S-DPOP, the version of DPOP with warm restarts by Petcu (AAAI'05). 
+		- The warm restart functionality is currently only available through the API (see the S-DPOP JUnit tests for how to use it). 
+		- S-DPOP does not yet try to choose a new DFS as similar to the previous one as possible to improve message reuse. 
+	- Complete re-implementation of the simulated time metric for better performance and less variability. 
+	- Performance improvements in ADOPT. 
+	- Bugfixes and performance improvements in O-DPOP and ASO-DPOP. 
+	- Dropped the support for NCCCs in O-DPOP and ASO-DPOP: for these two algorithms, the metric is ill-defined. 
+	
+Minor changes: 
+	- Fixed a bug that would only manifest itself on problems involving unconstrained variables (reported by Xavier Olive). 
+	- ADOPT now reports the total minimum cost, instead of on a per-component basis. 
+	- Improved the rendering of DFS backedges in DOT format. 
+	- Modified the format of the XML description for the VariableElection and DFSgeneration modules. 
+	- Modules can now listen to outgoing messages, instead of only incoming ones. 
+	- It is now possible to specify in the agent configuration file that each agent knows the identities of all other agents (needed by SynchBB).
+	- Dropped two unused features of the Queue: the database and the default output pipe. 
+	- Various bugfixes and improvements. 
+
+Known issues: 
+	- O-DPOP and ASO-DPOP currently only work on maximization problems with non-negative utilities (bug reported by Sankalp Khanna). 
+
+
+CHANGES IN VERSION 2.4.1 SINCE VERSION 2.4
+
+Major changes: 
+	- Fixed a bug following which FRODO would always display wall clock time even when using the simulated time metric. 
+	- Fixed a bug in measuring message sizes: the metric was biased in favor of DPOP. 
+	- Fixed a bug in the simulated time metric when simultaneously measuring message sizes. 
+	- Fixed a bug in the simulated time and NCCC metrics when sending multiple times the same message. 
+	
+Minor changes: 
+	- Fixed a rare bug in ASO-DPOP. 
+	- Reduced message sizes. 
+	- Removed the attribute "useCentralMailer" from agent configuration files; it was redundant with "measureTime". 
+	- Minor performance improvements in DFSgeneration. 
+	- Important code refactoring in E[DPOP]. 
+
+
+CHANGES IN VERSION 2.4 SINCE VERSION 2.3
+
+Major changes: 
+	- Releasing the local search algorithm DSA, by Zhang et al. (AAAI'02) (requested by Prof. Youssef Hamadi). 
+	- Fixed a severe memory leak in DPOP.  
+	- The simulated time metric no longer measures the time spent in measuring the sizes of messages. 
+	
+Minor changes: 
+	- Fixed a ConcurrentModificationException that could be thrown when the recipient of a message attempts to modify its payload (bug report and fix by Xavier Olive). 
+	- Improved the readability of the DFS DOT representation. 
+	- DPOP now displays the total optimal utility instead of the optimal utility for each constraint graph component.
+	- Local-E[DPOP] has been renamed E[DPOP], and Global-E[DPOP] and Centralized-E[DPOP] have been deleted. 
+	- Fixed memory leaks in the unit tests. 
+	- Improved code reuse. 
+
+
+CHANGES IN VERSION 2.3 SINCE VERSION 2.2.3
+
+Major changes: 
+	- Releasing ASO-DPOP, by Ottens & Faltings (MASPLAN'08). 
+	- Completely re-implemented the way FRODO counts messages and message sizes. This metric is now accessible through the "measureMsgs" attribute in the agent configuration file. 
+	- Fixed the counting of NCCCs, according to Gershman et al. (DCR'08). 
+	
+Minor changes: 
+	- Added a section on performance metrics to the User Manual. 
+	- DPOP now has a new parameter specifying whether to optimize runtime or NCCC count. 
+	- Solution spaces now have names (feature requested by Xavier Olive). 
+	- Hypercubes now have a new field "infeasibleUtil" that is returned by getUtility() when the input assignments are infeasible due to a variable taking a value outside of its domain.
+	- Various minor bug fixes and performance improvements. 
+
+
+CHANGES IN VERSION 2.2.3 SINCE VERSION 2.2.2
+
+Major changes: none
+	
+Minor changes: 
+	- Fixed a bug in the Daemon's -controller option in advanced, distributed mode (reported by Abhishek Singh).
+	- Minor changes to O-DPOP in preparation for the upcoming release of ASO-DPOP. 
+
+
+CHANGES IN VERSION 2.2.2 SINCE VERSION 2.2.1
+
+Major changes: none
+	
+Minor changes: 
+	- The advanced, distributed mode now properly reports the runtime and message statistics (bug reported by Abhishek Singh).
+	- DPOP can now swap data structures to disk to reduce RAM consumption. See the new "swap" option of the VALUEpropagation module. 
+
+
+CHANGES IN VERSION 2.2.1 SINCE VERSION 2.2
+
+Major changes: none
+	
+Minor changes: 
+	- The simple mode now has a -timeout option to set the timeout (feature requested by Abhishek Singh). 
+	- Fixed a bug in the advanced mode (reported by Abhishek Singh). 
+	- Fixed DPOP reporting an "optimal utility" instead of an "optimal cost" when minimizing (bug reported by Abhishek Singh).
+	- Fixed a minor typo in the user manual (reported by Abhishek Singh). 
+	
+
+CHANGES IN VERSION 2.2 SINCE VERSION 2.1.4
+
+Major changes: 
+	- Now provides implementations for various E[DPOP] algorithms by Leaute et al. (DCR'09). 
+	- Now provides an implementation for O-DPOP by Petcu et al. (AAAI'06). 
+	- Now provides implementations for the DP0, DP1 and DP2 preprocessing phases for ADOPT by Ali et al. (CP'04). 
+	- Now supports the simulated time metric by Sultanik et al. (CP-DCR'07), via the use of a central mailer and ThreadMXBean. 
+	- DPOP now supports the use of local solvers; the only such solver yet available is SimpleSubsolver. 
+	- The information about whether we should maximize utility or minimize cost is now given in the XCSP file. 
+	
+Minor changes: 
+	- Performance improvements to ADOPT. 
+	- Performance improvements and bug fixes in the Solution Spaces layer. 
+	- Performance improvements to the Communication layer. 
+	- Fixed a rare non-termination bug. 
+	- Added a timeout to the simple mode. 
+	- Changes in the handling of NCCCs. NCCCs are currently only supported for O-DPOP and ADOPT. 
+	- Trashed DPOP's DomainSharing module. 
+	- Now provides an XML schema file for the XCSP format (frodo2/algorithms/XCSPschema.xsd). 
+	- The simple mode now properly displays the number of messages and total information sent. 
+	- Changes in the required constructor signature for StatsReporters. 
+	- Removed busy waits in the unit tests. 
+	
+
+CHANGES IN VERSION 2.1.4 SINCE VERSION 2.1.3
+
+Major changes: 
+	- Releasing Param-DPOP, a version of DPOP with parametric variables. 
+
+Minor changes: 
+	- Important speedups in DPOP, resulting from the introduction of solution iterators in the solution spaces layer.  
+	- Removed the dependency on Jaxen, which results in performance improvements in XML parsing. 
+	- Other various performance improvements. 
+
+
+CHANGES IN VERSION 2.1.3 SINCE VERSION 2.1.2
+
+Major changes: none. 
+
+Minor changes: 
+	- Fixed a bug in ADOPT, which could output a suboptimal solution for some problems involving infinite costs. 
+	- Fixed a bug in ADOPT, which could run into an infinite loop for some problems involving infinite costs. 
+	- Fixed a bug in the solution spaces layer, which could result in DPOP incorrectly reporting that a problem involving real-valued infinite utilities is infeasible. 
+
+
+CHANGES IN VERSION 2.1.2 SINCE VERSION 2.1.1
+
+Major changes: none. 
+
+Minor changes: 
+	- Fixed a bug in ADOPT that might not terminate on problems involving n-ary constraints (reported by Xavier Olive).
+
+
+CHANGES IN VERSION 2.1.1 SINCE VERSION 2.1
+
+Major changes: none. 
+
+Minor changes: 
+	- Fixed a bug in ADOPT resulting in "INF minus INF" exceptions when the problem included infinite costs (reported by Xavier Olive).
+
+
+CHANGES IN VERSION 2.1 SINCE VERSION 2.0.2
+
+Major changes: 
+	- Now supports ADOPT. 
+	- Added a way to specify the types of the messages each module listens for (see SingleQueueAgent.setMsgType() - requested by Xavier Olive). 
+	- Each module now waits for a start message before parsing the problem (instead of parsing it in the constructor - requested by Xavier Olive). 
+	- Each algorithm module now reports the number of (non-virtual) messages and the total amount of information (in bytes) it sent. 
+	- Introduced the new ProblemInterface class that is used to describe a problem; all algorithm modules now take such a ProblemInterface as a first input. 
+	
+Minor changes: 
+	- DPOP supports variable domains being initially private. 
+	- Fixed a bug in which agents with no variable would not terminate (reported by Xavier Olive). 
+	- DFSgeneration now returns a String representation of the DFS instead of printing it to System.out (requested by Xavier Olive). 
+	- Fixed a synchronization bug in Queue.end() that would sometimes generate ConcurrentModificationExceptions (reported by Xavier Olive). 
+	- Introduced the convenience class DPOPsolver. 
+	- Added a new clone() method for hypercubes that allows the renaming of variables (requested by Xavier Olive). 
+	- Various bug fixes and code improvements. 
+
+
+CHANGES IN VERSION 2.0.2 SINCE VERSION 2.0.1
+
+Major changes: none. 
+
+Minor changes: 
+	- DFSgeneration's Most Connected heuristic and statistics gatherer mode can now be used without the need of an XCSP representation of the problem.
+	- The class to be used for utility values is now specified as a parameter to the UTILpropagation module. 
+	- Small modifications to the XCSP parser in prevision of future new flavors of DPOP. 
+
+
+CHANGES IN VERSION 2.0.1 SINCE VERSION 2.0
+
+Major changes:
+	- All parsing of XCSP files is now done in a new dedicated XCSPparser class. 
+	- Implemented and tested previously missing algorithm module constructors that do not rely on XML inputs. 
+	- Added support for real utility values, infinite utility values, and for multiplication of utilities. 
+
+Minor changes:
+	- Fixed bugs related to FRODO not finding configuration files when run as a JAR (reported by Xavier Olive). 
+	- Fixed the spelling of "daemon" throughout the code (reported by Xavier Olive). 
+	- Moved around a few test methods and classes. 
+	- It is now easier to use the method Queue.sendMessageToMulti(). 
+	- Fixed a bug in some tests, which would create a large number of threads and never properly kill them. 
+	- Fixed typos and XCSP incompatibilities in the example problem 3colors.xml (reported by Xavier Olive). 
+	- Minor code improvements and bug fixes. 
+	

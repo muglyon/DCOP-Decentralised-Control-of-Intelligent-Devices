@@ -5,120 +5,188 @@ from model.device import Device
 from random import randint
 
 import random
+import operator
+
 
 class Room(object):
 
     MAX_NB_DEVICES = 6
 
-    ###
-    # FOR DEBUG : generate a random Room !
-    def __init__(self, id):
-        self.id = id
-        self.tau = randint(5, 241)
-        self.deviceList = []
+    def __init__(self, id_room):
+        self.id = id_room
         self.frontNeighbor = None
         self.rightNeighbor = None
         self.leftNeighbor = None
+        self.current_v = 0
+        self.previous_v = 0
+        self.priority = 1
+        self.tau = randint(5, 241)
+        self.device_list = []
 
-        for i in range(0, randint(0, self.MAX_NB_DEVICES)) :
-            idD = str(id) + str(i + 1)
-            criticState = random.random() < 0.05
-            self.deviceList.append(Device(int(idD), randint(5, 241), criticState))
+        for i in range(0, randint(0, self.MAX_NB_DEVICES)):
+            id_device = str(self.id) + str(i + 1)
+            critic_state = random.random() < 0.05
+            self.device_list.append(Device(int(id_device), randint(5, 241), critic_state))
 
-    def setLeftNeighbor(self, neighbor):
+    def set_left_neighbor(self, neighbor):
         self.leftNeighbor = neighbor
 
-    def setRightNeighbor(self, neighbor):
+    def set_right_neighbor(self, neighbor):
         self.rightNeighbor = neighbor
 
-    def setFrontNeighbor(self, neighbor):
+    def set_front_neighbor(self, neighbor):
         self.frontNeighbor = neighbor
 
-    def setDevices(self, devices):
-        self.deviceList = devices
-        
-    ###
-    # Get number of neighbors
-    def getDegree(self):
+    def set_devices(self, devices):
+        self.device_list = devices
+
+    def increment_time(self, minutes):
+        """
+        Set + <minutes> to all devices
+        (Also, simulate a nurse intervention)
+        :param minutes: number of minutes to add
+        :type minutes: integer
+        """
+        self.tau += minutes
+        self.previous_v -= minutes
+
+        for device in self.device_list:
+            if device.is_in_critic_state:
+                if random.random() < 0.5:
+                    self.device_list.pop(self.device_list.index(device))
+                else:
+                    device.is_in_critic_state = False
+                    device.set_end_of_prog(241)
+            else:
+                device.set_end_of_prog(device.end_of_prog - minutes)
+
+            if device.end_of_prog == 241:
+                self.tau = 0
+
+        # Randomly add a new device
+        if random.random() < 0.5:
+            id_device = str(self.id) + str(len(self.device_list) + 1)
+            critic_state = random.random() < 0.05
+            self.device_list.append(Device(int(id_device), randint(5, 241), critic_state))
+
+    def is_in_critical_state(self):
+        """
+        Check if the room is in critical state
+        :return: True if the room has at least one device in critical state, False otherwise
+        :rtype: boolean
+        """
+        for device in self.device_list:
+            if device.is_in_critic_state:
+                return True
+        return False
+
+    def is_tau_too_high(self):
+        """
+        Check if the last passage was too long ago
+        :return: True if the last passage was too long ago, False otherwise
+        :rtype: boolean
+        """
+        return (len(self.device_list) > 5 and self.tau > 180) or (len(self.device_list) >= 1 and self.tau > 210)
+
+    def get_min_end_of_prog(self):
+        """
+        Get the minimum time before a program ends
+        :return: the minimum time in minutes
+        :rtype: integer
+        """
+        minimum = 241
+        for device in self.device_list:
+            if device.end_of_prog < minimum:
+                minimum = device.end_of_prog
+        return minimum
+
+    def get_degree(self):
+        """
+        Get number of neighbors
+        :return: the degree of the room
+        :rtype: integer
+        """
         count = 0
-        if self.leftNeighbor != None :
+        if self.leftNeighbor is not None:
             count += 1
-        if self.rightNeighbor != None :
+        if self.rightNeighbor is not None:
             count += 1
-        if self.frontNeighbor != None :
+        if self.frontNeighbor is not None:
             count += 1
         return count
 
-    ###
-    # Get list of all neighbors Id of the agent
-    def getAllNeighborsId(self):
-        neighbors = []
-        if self.leftNeighbor != None : 
-            neighbors.append(int(self.leftNeighbor.id))
-        if self.rightNeighbor != None :
-            neighbors.append(int(self.rightNeighbor.id))
-        if self.frontNeighbor != None :
-            neighbors.append(int(self.frontNeighbor.id))
-        return neighbors
+    def get_neighbors_id_sorted(self):
+        """
+        Get all neighbors id of the agent sorted by degree (decreasing)
+        :return: neighbors id list sorted by degree
+        :rtype: list
+        """
+        return self.get_neighbors_id_sorted_except(-1)
 
-    ###
-    # Get list of all neighbors Id EXCEPT agentId
-    def getAllNeighborsIdExcept(self, agentId):
-        neighbors = []
-        if self.leftNeighbor != None and self.leftNeighbor.id != int(agentId):
-            neighbors.append(int(self.leftNeighbor.id))
-        if self.rightNeighbor != None and self.rightNeighbor.id != int(agentId):
-            neighbors.append(int(self.rightNeighbor.id))
-        if self.frontNeighbor != None and self.frontNeighbor.id != int(agentId):
-            neighbors.append(int(self.frontNeighbor.id))
-        return neighbors
+    def get_neighbors_id_sorted_except(self, agent_id):
+        """
+        Get all neighbors id EXCEPT <agent_id>
+        :param agent_id: id of the agent to ignore
+        :type agent_id: integer
+        :return: neighbors id list sorted by degree
+        :rtype: list
+        """
+        neighbors = {}      
 
-    ###
-    # Update state of the device.
-    # If it's a new one, the device is added to the Agent's list 
-    def updateDevice(self, device):
+        if self.leftNeighbor is not None and self.leftNeighbor.id != int(agent_id):
+            neighbors[str(self.leftNeighbor.id)] = self.leftNeighbor.get_degree()
 
-        deviceExist = False
+        if self.rightNeighbor is not None and self.rightNeighbor.id != int(agent_id):
+            neighbors[str(self.rightNeighbor.id)] = self.rightNeighbor.get_degree()
 
-        for d in self.deviceList :
-            if d.id == device.id :
-                d = device
-                deviceExist = True
+        if self.frontNeighbor is not None and self.frontNeighbor.id != int(agent_id):
+            neighbors[str(self.frontNeighbor.id)] = self.frontNeighbor.get_degree()
+
+        neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
+        return [int(x) for x, _ in neighbors]
+
+    def update_device(self, device):
+        """
+        Update state of the device
+        If it's a new one, the device is added to the list
+        :param device: device to update
+        :type device: Device
+        """
+        is_device_exist = False
+
+        for d in self.device_list:
+            if d.id == device.id:
+                device = d
+                is_device_exist = True
                 break
 
-        if not deviceExist :
-            self.deviceList.append(device)
+        if not is_device_exist:
+            self.device_list.append(device)
 
-    ###
-    # toString for neighbors
-    def toStringNeighbors(self):
+    def to_string_neighbors(self):
+        """
+        To String for Neighbors
+        :return: neighbors in string format
+        :rtype: string
+        """
         string = "ROOM " + str(self.id) + " : \n"
 
-        if self.leftNeighbor != None :
+        if self.leftNeighbor is not None:
             string += " | LeftNeighbor : " + str(self.leftNeighbor.id) + "\n"
 
-        if self.rightNeighbor != None :
+        if self.rightNeighbor is not None:
             string += " | RightNeighbor : " + str(self.rightNeighbor.id) + "\n"
 
-        if self.frontNeighbor != None :
+        if self.frontNeighbor is not None:
             string += " | FrontNeighbor : " + str(self.frontNeighbor.id) + "\n"
-        
         return string
 
-    ###
-    # toString
-    def toString(self):
+    def to_string(self):
         string = "ROOM " + str(self.id) + " : \n"
         string += "Tau : " + str(self.tau) + "\n"
+        string += "Priority : " + str(self.priority) + "\n"
 
-        for device in self.deviceList :
-            string += device.toString()
+        for device in self.device_list:
+            string += device.to_string()
 
         return string
-        
-        
-
-
-
-
-

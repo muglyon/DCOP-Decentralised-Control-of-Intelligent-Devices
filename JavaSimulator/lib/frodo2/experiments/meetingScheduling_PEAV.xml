@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/frodo2/algorithms/XCSPschemaJaCoP.xsd">
+  <presentation name="randomMeetingScheduling_1520867383313" format="XCSP 2.1_FRODO" maximize="false">
+    <stats name="formulation">PEAV</stats>
+    <stats name="number of agents">3</stats>
+    <stats name="number of meetings">1</stats>
+    <stats name="number of agents per meeting">2</stats>
+    <stats name="number of time slots">8</stats>
+    <stats name="constraint violation cost">infinity</stats>
+    <stats name="target probability of being unavailable at any given time slot">0.0</stats>
+    <stats name="average probability of being unavailable at any given time slot">0.0</stats>
+    <stats name="maximum random cost of being unavailable at any given time slot">null</stats>
+  </presentation>
+  <agents nbAgents="2">
+    <agent name="a0" />
+    <agent name="a2" />
+  </agents>
+  <domains nbDomains="1">
+    <domain name="slots" nbValues="8">1..8</domain>
+  </domains>
+  <variables nbVariables="2">
+    <variable name="m0a0" domain="slots" agent="a0" />
+    <variable name="m0a2" domain="slots" agent="a2" />
+  </variables>
+  <predicates nbPredicates="1">
+    <predicate name="EQ">
+      <parameters>int X int Y</parameters>
+      <expression>
+        <functional>eq(X, Y)</functional>
+      </expression>
+    </predicate>
+  </predicates>
+  <constraints nbConstraints="3">
+    <constraint name="m0a0_equals_m0a2" arity="2" scope="m0a0 m0a2" reference="EQ">
+      <parameters>m0a0 m0a2</parameters>
+    </constraint>
+    <constraint name="a0_availability" agent="a0" arity="1" scope="m0a0 " reference="global:allDifferent">
+      <parameters>[ m0a0 ]</parameters>
+    </constraint>
+    <constraint name="a2_availability" agent="a2" arity="1" scope="m0a2 " reference="global:allDifferent">
+      <parameters>[ m0a2 ]</parameters>
+    </constraint>
+  </constraints>
+</instance>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<instance xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="src/frodo2/algorithms/XCSPschemaJaCoP.xsd">
+  <presentation name="partyProblem_1520866188660" format="XCSP 2.1_FRODO" maxConstraintArity="2">
+    <stats name="margin of error">0.0</stats>
+    <stats name="equilibrium type">pure Nash</stats>
+    <stats name="number of players">2</stats>
+    <stats name="party graph average density">1.0</stats>
+    <stats name="number of disconnected components of the party graph">1</stats>
+    <stats name="party graph max degree">1</stats>
+  </presentation>
+  <agents nbAgents="2">
+    <agent name="a0" />
+    <agent name="a1" />
+  </agents>
+  <domains nbDomains="2">
+    <domain name="p0dom" nbValues="4">0..3</domain>
+    <domain name="p1dom" nbValues="4">0..3</domain>
+  </domains>
+  <variables nbVariables="2">
+    <variable name="p0" domain="p0dom" agent="a0" />
+    <variable name="p1" domain="p1dom" agent="a1" />
+  </variables>
+  <relations nbRelations="3">
+    <relation name="p0_and_p1_are_consistent_rel" arity="2" semantics="supports" nbTuples="4">0 0|
+1 2|
+2 1|
+3 3</relation>
+    <relation name="p0_rel" arity="1" semantics="conflicts" nbTuples="2">1|3</relation>
+    <relation name="p1_rel" arity="1" semantics="conflicts" nbTuples="2">0|3</relation>
+  </relations>
+  <constraints nbConstraints="3">
+    <constraint name="p0_and_p1_are_consistent" arity="2" scope="p0 p1" reference="p0_and_p1_are_consistent_rel" />
+    <constraint name="p0_const" arity="1" scope="p0" reference="p0_rel" />
+    <constraint name="p1_const" arity="1" scope="p1" reference="p1_rel" />
+  </constraints>
+</instance>
