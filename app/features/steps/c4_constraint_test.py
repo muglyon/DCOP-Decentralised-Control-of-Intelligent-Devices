@@ -29,7 +29,7 @@ def step_impl(context):
     context.current_dpop_tested.room.tau = 211
 
 
-@then('agent should call the nurse in less then 30 minutes')
+@then('agent should call health workers in less then 30 minutes')
 def step_impl(context):
     context.current_dpop_tested.start()
     context.current_dpop_tested.join(timeout=10)

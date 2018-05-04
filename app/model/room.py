@@ -43,7 +43,7 @@ class Room(object):
     def increment_time(self, minutes):
         """
         Set + <minutes> to all devices
-        (Also, simulate a nurse intervention)
+        (Also, simulate a health workers intervention)
         :param minutes: number of minutes to add
         :type minutes: integer
         """

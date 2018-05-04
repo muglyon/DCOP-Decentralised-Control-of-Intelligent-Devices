@@ -22,14 +22,14 @@ def step_impl(context):
                 or context.agent_4.rightNeighbor.id == context.agent_2.id)
 
 
-@then('agent should not call the nurse')
+@then('agent should not call health workers')
 def step_impl(context):
     context.current_dpop_tested.start()
     context.current_dpop_tested.join(timeout=10)
     assert_that(context.current_dpop_tested.room.current_v, equal_to(context.INFINITY))
 
 
-@then('agent should call the nurse right now')
+@then('agent should call health workers right now')
 def step_impl(context):
     context.current_dpop_tested.start()
     context.current_dpop_tested.join(timeout=10)

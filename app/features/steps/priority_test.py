@@ -5,7 +5,7 @@
 # import json
 #
 #
-# @given("two non neighbors AI agents (a1, a2) calling nurses and linked by another AI agent (a3)")
+# @given("two non neighbors AI agents (a1, a2) calling health workerss and linked by another AI agent (a3)")
 # def step_impl(context):
 #     # (cf : environment.py)
 #     # a1 = dpop_1
@@ -26,7 +26,7 @@
 #     print(context.dpop_4.room.to_string())
 #
 #
-# @then("nurses should intervene in room 1 before room 2")
+# @then("health workerss should intervene in room 1 before room 2")
 # def step_impl(context):
 #     context.dpop_1.start()
 #     context.dpop_4.start()
@@ -46,7 +46,7 @@
 #     assert_that(context.dpop_1.room.priority, equal_to(context.dpop_4.room.priority))
 #
 #
-# @then("both agent should call the nurse at the same time")
+# @then("both agent should call health workers at the same time")
 # def step_impl(context):
 #     context.dpop_1.start()
 #     context.dpop_4.start()
