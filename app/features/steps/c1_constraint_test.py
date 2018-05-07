@@ -4,6 +4,6 @@
 from behave import *
 
 
-@when('no devices are connected to this agent')
+@when('no IoT devices are connected to the AI in syringe pump')
 def setp_impl(context):
     context.current_dpop_tested.room.set_devices([])
