@@ -7,7 +7,8 @@
 
 from threading import Thread
 from datetime import datetime
-from threads.dfsGenerator import DfsGenerator
+from threads.AI_helpers.dfsGenerator import DfsGenerator
+from threads.AI_helpers.constraintManager import ConstraintManager
 
 import numpy
 import json
@@ -19,8 +20,6 @@ class Dpop(Thread):
     DIMENSION_SIZE = len(DIMENSION)
     INFINITY = 241
     TIMEOUT = 200
-    T_SYNCHRO = 30
-    URGT_TIME = 30
 
     def __init__(self, room, mqtt_client):
         Thread.__init__(self)
@@ -34,6 +33,7 @@ class Dpop(Thread):
         self.JOIN = None  # JOIN matrix
 
         self.dfs_generator = DfsGenerator(self.mqtt_client, self.room)
+        self.constraint_manager = ConstraintManager(self.room)
 
     def run(self):
         """
@@ -123,10 +123,7 @@ class Dpop(Thread):
             self.mqtt_client.publish("DCOP/SERVER/", "VALUES " + json.dumps(values))
 
         print("FINAL v : " + str(self.room.current_v))
-        print("C1 : ", self.c1(self.room.current_v))
-        print("C2 : ", self.c2(self.room.current_v))
-        print("C4 : ", self.c4(self.room.current_v))
-        print("C5 : ", self.c5(self.room.current_v))
+        print("const vals : ", self.constraint_manager.get_value_of_private_constraints_for_value(self.room.current_v))
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''
               METHODS UTILS                      
@@ -259,7 +256,7 @@ class Dpop(Thread):
 
         for i in range(0, self.DIMENSION_SIZE):
             for j in range(0, self.DIMENSION_SIZE):
-                R[i][j] += self.c3(self.DIMENSION[i], self.DIMENSION[j])
+                R[i][j] += self.constraint_manager.c3(self.DIMENSION[i], self.DIMENSION[j])
 
         self.matrix_dimensions.append(parent_id)
         return R
@@ -277,51 +274,9 @@ class Dpop(Thread):
             R = numpy.zeros(self.DIMENSION_SIZE, int)
         
         for index, value in numpy.ndenumerate(R):
-            R[index] += self.c1(self.DIMENSION[index[0]])
-            R[index] += self.c2(self.DIMENSION[index[0]])
-            R[index] += self.c4(self.DIMENSION[index[0]])
-            R[index] += self.c5(self.DIMENSION[index[0]])
+            R[index] += self.constraint_manager.get_value_of_private_constraints_for_value(self.DIMENSION[index[0]])
 
             if R[index] == self.INFINITY:
                 R[index] = self.INFINITY
 
         return R
-
-    '''''''''''''''''''''''''''''''''''''''''''''''''''
-              CONSTRAINTS                        
-    '''''''''''''''''''''''''''''''''''''''''''''''''''
-
-    def c1(self, vi):
-        if len(self.room.device_list) == 0 and vi < self.INFINITY:
-            return self.INFINITY
-        return 0
-
-    def c2(self, vi):
-        if self.room.is_in_critical_state() and vi > 0:
-            return self.INFINITY
-
-        x = self.room.get_min_end_of_prog()
-        if not self.room.is_in_critical_state() and x <= self.URGT_TIME and vi > x:
-            return 1
-            
-        return 0
-            
-    def c3(self, vi, vj):
-        val = abs(vi - vj)
-        if val <= self.T_SYNCHRO and val != 0:
-            return 1
-        return 0
-
-    def c4(self, vi):
-        if self.room.is_tau_too_high() and vi > self.URGT_TIME:
-            return self.INFINITY
-        return 0
-
-    def c5(self, vi):
-        if not self.room.is_in_critical_state() \
-                and self.room.get_min_end_of_prog() > self.URGT_TIME \
-                and self.room.tau < 180 \
-                and vi < self.INFINITY:
-            return 1
-    
-        return 0
