@@ -12,7 +12,7 @@ def step_impl(context):
 @when("an AI agent with priority 0 needs intervention in less then 30 minutes in two iterations in a row")
 def step_impl(context):
     context.server_thread.priorities["1"] = 0
-    context.server_thread.old_results["1"] = 3
+    context.server_thread.old_results_index["1"] = 3
 
 
 @then("server should increase priority of this room")
@@ -24,7 +24,7 @@ def step_impl(context):
 @when("an AI agent with priority 5 does not need intervention anymore")
 def step_impl(context):
     context.server_thread.priorities["1"] = 5
-    context.server_thread.old_results["1"] = 3
+    context.server_thread.old_results_index["1"] = 3
 
 
 @then("AI agent priority should be 0")

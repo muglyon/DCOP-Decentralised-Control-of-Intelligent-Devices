@@ -7,6 +7,7 @@
 
 from threading import Thread
 from datetime import datetime
+from threads.dfsGenerator import DfsGenerator
 
 import numpy
 import json
@@ -27,88 +28,20 @@ class Dpop(Thread):
         self.room = room
         self.mqtt_client = mqtt_client
         self.is_root = False
-        
-        self.open = None  # neighbors Id
-        self.children = []  # children Id
-        self.parent_id = 0  # parent Id
-        self.pseudo_children = []  # pseudo_children Id
-        self.pseudo_parent = []  # pseudo_parents Id
 
         self.matrix_dimensions = []  # order or the variables that create the JOIN Matrix
         self.UTIL = None  # UTIL matrix
         self.JOIN = None  # JOIN matrix
 
+        self.dfs_generator = DfsGenerator(self.mqtt_client, self.room)
+
     def run(self):
         """
         /!\ Do the DPOP Algorithm /!\
         """
-        self.generate_pseudo_tree()
+        self.dfs_generator.create_pseudo_tree()
         self.util_propagation()
         self.value_propagation()
-
-    def generate_pseudo_tree(self):
-        """
-        Do the DFS Arrangement
-        """
-
-        print("\n---------- DFS GENERATION ----------")
-
-        # Root Election
-        self.publish_msg_to_recipient("SERVER", 0)
-
-        print("wait for ROOT")
-        while len(self.mqtt_client.list_msgs_waiting) == 0:
-            # Wait for Root choice
-            pass
-
-        if int(self.mqtt_client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id:
-            self.is_root = True
-
-        if self.room.get_degree() > 0:
-            
-            if self.is_root:
-                
-                self.open = self.room.get_neighbors_id_sorted()
-                self.children.append(self.open.pop(0))
-                self.publish_msg_to_recipient("CHILD", self.children[0])
-
-            # MQTT wait for incoming message of type "messageType" from neighbor yi
-            while 1:
-                
-                if len(self.mqtt_client.child_msgs) == 0:
-                    continue
-
-                message = self.mqtt_client.child_msgs.pop(0).split(" ")
-                message_type = message[0]
-                yi = int(message[1])
-                
-                if self.open is None:
-                    # First time the agent is visited
-                    self.open = self.room.get_neighbors_id_sorted_except(yi)
-                    self.parent_id = yi
-    
-                elif "CHILD" in message_type and yi in self.open:
-                    self.pseudo_children.append(self.open.pop(self.open.index(yi)))
-                    self.publish_msg_to_recipient("PSEUDO", yi)
-                    continue
-
-                elif "PSEUDO" in message_type:
-                    if yi in self.children:
-                        self.children.pop(self.children.index(yi))
-                    self.pseudo_parent.append(yi)
-
-                # Forward the CHILD message to the next "open" neighbor
-                if len(self.open) > 0:
-                    yj = self.open[0]
-                    self.children.append(self.open.pop(0))
-                    self.publish_msg_to_recipient("CHILD", yj)
-                else:
-                    if not self.is_root:
-                        # Backtrack
-                        self.publish_msg_to_recipient("CHILD", self.parent_id)
-
-                    print(self.pseudo_tree_to_string())
-                    return  
 
     def util_propagation(self):
         """
@@ -120,10 +53,11 @@ class Dpop(Thread):
         count = 0
         start_time = datetime.now()
         
-        if len(self.children) > 0:
+        if len(self.dfs_generator.children) > 0:
            
             # MQTT wait for incoming message of type UTIL for each child of the agent
-            while count < len(self.children) and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+            while count < len(self.dfs_generator.children) \
+                    and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
                 
                 if len(self.mqtt_client.util_msgs) == 0:
                     continue
@@ -140,9 +74,9 @@ class Dpop(Thread):
         if not self.is_root:
 
             # Also join all relations with parent/pseudo_parent
-            self.JOIN = self.combine(self.get_utility_matrix_for(self.parent_id), self.JOIN)
+            self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_generator.parent_id), self.JOIN)
         
-            for pseudo_parent in self.pseudo_parent:
+            for pseudo_parent in self.dfs_generator.pseudo_parent:
                 self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
 
         # Add to `self` constraint values
@@ -166,7 +100,7 @@ class Dpop(Thread):
 
         if not self.is_root:
 
-            self.publish_msg_to_recipient("UTIL", self.parent_id)
+            self.publish_msg_to_recipient("UTIL", self.dfs_generator.parent_id)
 
             # MQTT wait for incoming message of type VALUE from parent
             while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
@@ -182,10 +116,10 @@ class Dpop(Thread):
         self.room.current_v = self.DIMENSION[index]
         values[str(self.room.id)] = index
 
-        for child in self.children:
+        for child in self.dfs_generator.children:
             self.mqtt_client.publish("DCOP/" + str(child), "VALUES " + json.dumps(values))
 
-        if len(self.children) == 0:
+        if len(self.dfs_generator.children) == 0:
             self.mqtt_client.publish("DCOP/SERVER/", "VALUES " + json.dumps(values))
 
         print("FINAL v : " + str(self.room.current_v))
@@ -239,8 +173,8 @@ class Dpop(Thread):
         best_index = 0
         tupl = tuple()
 
-        parents = self.pseudo_parent
-        parents.append(self.parent_id)
+        parents = self.dfs_generator.pseudo_parent
+        parents.append(self.dfs_generator.parent_id)
 
         # Check for parents values
         for parent_id in parents:
@@ -351,26 +285,7 @@ class Dpop(Thread):
             if R[index] == self.INFINITY:
                 R[index] = self.INFINITY
 
-        return R      
-
-    def pseudo_tree_to_string(self):
-        """
-        Convert PSEUDO-Tree in String Format
-        :return: pseudo-tree in string format
-        :rtype: string
-        """
-        string = str(self.room.id) + "\n"
-        
-        for childId in self.children:
-            string += "| " + str(childId) + "\n"
-        
-        for pseudoId in self.pseudo_parent:
-            string += "--> " + str(pseudoId) + "\n"
-
-        for pseudoId in self.pseudo_children:
-            string += "<-- " + str(pseudoId) + "\n"
-        
-        return string
+        return R
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''
               CONSTRAINTS                        
