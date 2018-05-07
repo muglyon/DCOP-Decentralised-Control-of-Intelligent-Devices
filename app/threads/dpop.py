@@ -7,8 +7,9 @@
 
 from threading import Thread
 from datetime import datetime
-from threads.AI_helpers.dfsGenerator import DfsGenerator
-from threads.AI_helpers.constraintManager import ConstraintManager
+from helpers.dfsGenerator import DfsGenerator
+from helpers.constraintManager import ConstraintManager
+from helpers.mqtt_manager import MqttManager
 
 import numpy
 import json
@@ -23,17 +24,16 @@ class Dpop(Thread):
 
     def __init__(self, room, mqtt_client):
         Thread.__init__(self)
-
         self.room = room
-        self.mqtt_client = mqtt_client
         self.is_root = False
 
         self.matrix_dimensions = []  # order or the variables that create the JOIN Matrix
         self.UTIL = None  # UTIL matrix
         self.JOIN = None  # JOIN matrix
 
-        self.dfs_generator = DfsGenerator(self.mqtt_client, self.room)
         self.constraint_manager = ConstraintManager(self.room)
+        self.mqtt_manager = MqttManager(mqtt_client, self.room)
+        self.dfs_generator = DfsGenerator(self.mqtt_manager, self.room)
 
     def run(self):
         """
@@ -59,11 +59,11 @@ class Dpop(Thread):
             while count < len(self.dfs_generator.children) \
                     and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
                 
-                if len(self.mqtt_client.util_msgs) == 0:
+                if len(self.mqtt_manager.mqtt_client.util_msgs) == 0:
                     continue
                 
                 # We add to the join UTIL message from children as they arrive
-                data_received = json.loads(self.mqtt_client.util_msgs.pop(0).split("UTIL ")[1])
+                data_received = json.loads(self.mqtt_manager.mqtt_client.util_msgs.pop(0).split("UTIL ")[1])
                 self.matrix_dimensions.extend(data_received["vars"])
                 matrix_data = numpy.asarray(data_received["data"]) 
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
@@ -100,15 +100,16 @@ class Dpop(Thread):
 
         if not self.is_root:
 
-            self.publish_msg_to_recipient("UTIL", self.dfs_generator.parent_id)
+            self.mqtt_manager.publish_util_msg_to(self.dfs_generator.parent_id,
+                                                  json.dumps({"vars": self.matrix_dimensions, "data": self.UTIL.tolist()}))
 
             # MQTT wait for incoming message of type VALUE from parent
             while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
 
-                if len(self.mqtt_client.value_msgs) == 0:
+                if len(self.mqtt_manager.mqtt_client.value_msgs) == 0:
                     continue
 
-                values = json.loads(self.mqtt_client.value_msgs.pop(0).split("VALUES ")[1])
+                values = json.loads(self.mqtt_manager.mqtt_client.value_msgs.pop(0).split("VALUES ")[1])
                 break
 
         # Find best v
@@ -117,10 +118,10 @@ class Dpop(Thread):
         values[str(self.room.id)] = index
 
         for child in self.dfs_generator.children:
-            self.mqtt_client.publish("DCOP/" + str(child), "VALUES " + json.dumps(values))
+            self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
 
         if len(self.dfs_generator.children) == 0:
-            self.mqtt_client.publish("DCOP/SERVER/", "VALUES " + json.dumps(values))
+            self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
 
         print("FINAL v : " + str(self.room.current_v))
         print("const vals : ", self.constraint_manager.get_value_of_private_constraints_for_value(self.room.current_v))
@@ -128,24 +129,6 @@ class Dpop(Thread):
     '''''''''''''''''''''''''''''''''''''''''''''''''''
               METHODS UTILS                      
     '''''''''''''''''''''''''''''''''''''''''''''''''''
-
-    def publish_msg_to_recipient(self, msg_type, recipient_id):
-        """
-        Publish a <msg_type> message in the <recipient_id> topic with mqtt
-        :param msg_type: 'CHILD', 'UTIL', etc...
-        :type msg_type: string
-        :param recipient_id: id of the recipient agent
-        :type recipient_id: integer
-        """
-        if msg_type is "SERVER":
-            self.mqtt_client.publish("DCOP/SERVER/ROOT", str(self.room.id) + ":" + str(self.room.get_degree()))
-        if msg_type is "CHILD":
-            self.mqtt_client.publish("DCOP/" + str(recipient_id), "CHILD " + str(self.room.id))
-        elif msg_type is "PSEUDO":
-            self.mqtt_client.publish("DCOP/" + str(recipient_id), "PSEUDO " + str(self.room.id))
-        elif msg_type is "UTIL":
-            self.mqtt_client.publish("DCOP/" + str(recipient_id), "UTIL "
-                                     + json.dumps({"vars": self.matrix_dimensions, "data": self.UTIL.tolist()}))
 
     def get_index_of_best_value_with(self, data):
         """
