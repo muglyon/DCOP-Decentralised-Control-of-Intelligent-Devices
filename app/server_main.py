@@ -24,7 +24,7 @@ def on_message(client, userdata, msg):
     CallBack Msg Arrive
     """
     print(msg.topic + " " + str(msg.payload))
-    if "ROOT" in msg.topic:
+    if "SERVER" in msg.topic:
         client.listMessages.append(str(msg.payload.decode('utf-8')))
 
 

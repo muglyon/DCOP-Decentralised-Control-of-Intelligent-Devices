@@ -19,7 +19,6 @@ class Room(object):
         self.leftNeighbor = None
         self.current_v = 0
         self.previous_v = 0
-        self.priority = 1
         self.tau = randint(5, 241)
         self.device_list = []
 
@@ -184,7 +183,6 @@ class Room(object):
     def to_string(self):
         string = "ROOM " + str(self.id) + " : \n"
         string += "Tau : " + str(self.tau) + "\n"
-        string += "Priority : " + str(self.priority) + "\n"
 
         for device in self.device_list:
             string += device.to_string()

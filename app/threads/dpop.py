@@ -186,7 +186,7 @@ class Dpop(Thread):
             self.mqtt_client.publish("DCOP/" + str(child), "VALUES " + json.dumps(values))
 
         if len(self.children) == 0:
-            self.mqtt_client.publish("DCOP/SERVEUR/", "VALUES " + json.dumps(values))
+            self.mqtt_client.publish("DCOP/SERVER/", "VALUES " + json.dumps(values))
 
         print("FINAL v : " + str(self.room.current_v))
         print("C1 : ", self.c1(self.room.current_v))
@@ -379,7 +379,7 @@ class Dpop(Thread):
     def c1(self, vi):
         if len(self.room.device_list) == 0 and vi < self.INFINITY:
             return self.INFINITY
-        return 0 #self.room.priority
+        return 0
 
     def c2(self, vi):
         if self.room.is_in_critical_state() and vi > 0:
@@ -387,26 +387,26 @@ class Dpop(Thread):
 
         x = self.room.get_min_end_of_prog()
         if not self.room.is_in_critical_state() and x <= self.URGT_TIME and vi > x:
-            return 1 #+ self.room.priority
+            return 1
             
-        return 0 #self.room.priority
+        return 0
             
     def c3(self, vi, vj):
         val = abs(vi - vj)
         if val <= self.T_SYNCHRO and val != 0:
-            return 1 #+ self.room.priority
-        return 0 #self.room.priority
+            return 1
+        return 0
 
     def c4(self, vi):
         if self.room.is_tau_too_high() and vi > self.URGT_TIME:
             return self.INFINITY
-        return 0 #self.room.priority
+        return 0
 
     def c5(self, vi):
         if not self.room.is_in_critical_state() \
                 and self.room.get_min_end_of_prog() > self.URGT_TIME \
                 and self.room.tau < 180 \
                 and vi < self.INFINITY:
-            return 1 #+ self.room.priority
+            return 1
     
-        return 0 #self.room.priority
+        return 0
