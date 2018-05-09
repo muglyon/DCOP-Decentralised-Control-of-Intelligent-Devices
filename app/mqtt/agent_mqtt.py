@@ -8,7 +8,7 @@ from threads.dpop import Dpop
 class AgentMQTT(CustomMQTTClass):
 
     def __init__(self, room):
-        CustomMQTTClass.__init__(self, "DCOP/" + str(room.id) + "/#")
+        CustomMQTTClass.__init__(self, str(room.id) + "/#")
 
         self.room = room
         self.counter = 0

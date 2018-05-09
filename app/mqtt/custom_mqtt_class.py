@@ -7,13 +7,17 @@ class CustomMQTTClass:
     MQTT_PORT = 1883
     KEEP_ALIVE_PERIOD = 60
 
-    def __init__(self, topic):
-        self.client = mqtt.Client()
+    def __init__(self, subtopic):
 
-        self.topic_to_subscribe = topic
+        self.client = mqtt.Client()
+        self.client.DCOP_TOPIC = "DCOP/"
+        self.client.SERVER_TOPIC = self.client.DCOP_TOPIC + "SERVER/"
+        self.client.ROOT_TOPIC = self.client.SERVER_TOPIC + "ROOT"
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
+
+        self.topic_to_subscribe = self.client.DCOP_TOPIC + subtopic
 
     def on_connect(self, client, obj, flags, rc):
         self.client.subscribe(self.topic_to_subscribe)

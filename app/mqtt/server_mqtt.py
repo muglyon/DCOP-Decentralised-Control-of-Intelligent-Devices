@@ -5,7 +5,7 @@ from threads.starter import Starter
 class ServerMQTT(CustomMQTTClass):
 
     def __init__(self, hospital):
-        CustomMQTTClass.__init__(self, "DCOP/#")
+        CustomMQTTClass.__init__(self, "#")
 
         self.hospital = hospital
         self.client.listMessages = []
@@ -18,5 +18,5 @@ class ServerMQTT(CustomMQTTClass):
     def on_message(self, client, userdata, msg):
         super().on_message(client, userdata, msg)
 
-        if "SERVER" in msg.topic:
+        if self.client.SERVER_TOPIC in msg.topic:
             client.listMessages.append(str(msg.payload.decode('utf-8')))

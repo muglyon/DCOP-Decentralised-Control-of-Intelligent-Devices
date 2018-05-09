@@ -9,7 +9,7 @@ from threading import Thread
 from datetime import datetime
 from helpers.dfs_generator import DfsGenerator
 from helpers.constraint_manager import ConstraintManager
-from helpers.mqtt_manager import MqttManager
+from helpers.mqtt_publish_manager import MQTTPublishManager
 from helpers.message_types import MessageTypes
 
 import numpy
@@ -35,7 +35,7 @@ class Dpop(Thread):
         self.JOIN = None  # JOIN matrix
 
         self.constraint_manager = ConstraintManager(self.room)
-        self.mqtt_manager = MqttManager(mqtt_client, self.room)
+        self.mqtt_manager = MQTTPublishManager(mqtt_client, self.room)
         self.dfs_generator = DfsGenerator(self.mqtt_manager, self.room)
 
     def run(self):
