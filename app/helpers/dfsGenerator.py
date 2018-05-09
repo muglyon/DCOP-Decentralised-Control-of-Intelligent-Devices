@@ -1,4 +1,5 @@
 #! python3
+from helpers.messageTypes import MessageTypes
 
 
 class DfsGenerator(object):
@@ -8,11 +9,11 @@ class DfsGenerator(object):
         self.room = room
         self.is_root = False
 
-        self.open = None  # neighbors Id
-        self.children = []  # children Id
-        self.parent_id = 0  # parent Id
-        self.pseudo_children = []  # pseudo_children Id
-        self.pseudo_parent = []  # pseudo_parents Id
+        self.open_neighbors_id = None  # neighbors Id : see "open" in the algorithm
+        self.children_id = []
+        self.parent_id = 0
+        self.pseudo_children_id = []
+        self.pseudo_parents_id = []
 
     def create_pseudo_tree(self):
 
@@ -21,7 +22,6 @@ class DfsGenerator(object):
         # Root Election
         self.mqtt_manager.publish_root_msg()
 
-        print("wait for ROOT")
         while len(self.mqtt_manager.mqtt_client.list_msgs_waiting) == 0:
             # Wait for Root choice
             pass
@@ -32,9 +32,9 @@ class DfsGenerator(object):
         if self.room.get_degree() > 0:
 
             if self.is_root:
-                self.open = self.room.get_neighbors_id_sorted()
-                self.children.append(self.open.pop(0))
-                self.mqtt_manager.publish_child_msg_to(self.children[0])
+                self.open_neighbors_id = self.room.get_neighbors_id_sorted()
+                self.children_id.append(self.open_neighbors_id.pop(0))
+                self.mqtt_manager.publish_child_msg_to(self.children_id[0])
 
             # MQTT wait for incoming message of type "messageType" from neighbor yi
             while 1:
@@ -46,25 +46,25 @@ class DfsGenerator(object):
                 message_type = message[0]
                 yi = int(message[1])
 
-                if self.open is None:
+                if self.open_neighbors_id is None:
                     # First time the agent is visited
-                    self.open = self.room.get_neighbors_id_sorted_except(yi)
+                    self.open_neighbors_id = self.room.get_neighbors_id_sorted_except(yi)
                     self.parent_id = yi
 
-                elif "CHILD" in message_type and yi in self.open:
-                    self.pseudo_children.append(self.open.pop(self.open.index(yi)))
+                elif message_type == MessageTypes.CHILD.value and yi in self.open_neighbors_id:
+                    self.pseudo_children_id.append(self.open_neighbors_id.pop(self.open_neighbors_id.index(yi)))
                     self.mqtt_manager.publish_pseudo_msg_to(yi)
                     continue
 
-                elif "PSEUDO" in message_type:
-                    if yi in self.children:
-                        self.children.pop(self.children.index(yi))
-                    self.pseudo_parent.append(yi)
+                elif message_type == MessageTypes.PSEUDO.value:
+                    if yi in self.children_id:
+                        self.children_id.pop(self.children_id.index(yi))
+                    self.pseudo_parents_id.append(yi)
 
                 # Forward the CHILD message to the next "open" neighbor
-                if len(self.open) > 0:
-                    yj = self.open[0]
-                    self.children.append(self.open.pop(0))
+                if len(self.open_neighbors_id) > 0:
+                    yj = self.open_neighbors_id[0]
+                    self.children_id.append(self.open_neighbors_id.pop(0))
                     self.mqtt_manager.publish_child_msg_to(yj)
                 else:
                     if not self.is_root:
@@ -82,13 +82,13 @@ class DfsGenerator(object):
         """
         string = str(self.room.id) + "\n"
 
-        for childId in self.children:
+        for childId in self.children_id:
             string += "| " + str(childId) + "\n"
 
-        for pseudoId in self.pseudo_parent:
+        for pseudoId in self.pseudo_parents_id:
             string += "--> " + str(pseudoId) + "\n"
 
-        for pseudoId in self.pseudo_children:
+        for pseudoId in self.pseudo_children_id:
             string += "<-- " + str(pseudoId) + "\n"
 
         return string

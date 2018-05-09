@@ -13,6 +13,7 @@ class Starter(Thread):
     DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241, 242]
     URGT_TIME = 30
     INFINITY_IDX = 16
+    TWO_MINUTS = 120
 
     def __init__(self, agents, mqtt_client):
         Thread.__init__(self)
@@ -72,7 +73,7 @@ class Starter(Thread):
                       " minutes. PRIORITY : ", priority)
                 self.old_results_index[agent_id] = received_index[agent_id]
 
-            time.sleep(120)  # 2 minutes
+            time.sleep(self.TWO_MINUTS)
 
     def manage_priorities(self, data_received):
         '''

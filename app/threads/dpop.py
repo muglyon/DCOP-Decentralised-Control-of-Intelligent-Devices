@@ -10,6 +10,7 @@ from datetime import datetime
 from helpers.dfsGenerator import DfsGenerator
 from helpers.constraintManager import ConstraintManager
 from helpers.mqtt_manager import MqttManager
+from helpers.messageTypes import MessageTypes
 
 import numpy
 import json
@@ -22,12 +23,14 @@ class Dpop(Thread):
     INFINITY = 241
     TIMEOUT = 200
 
+    DATA = "data"
+    VARS = "vars"
+
     def __init__(self, room, mqtt_client):
         Thread.__init__(self)
         self.room = room
-        self.is_root = False
 
-        self.matrix_dimensions = []  # order or the variables that create the JOIN Matrix
+        self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
         self.UTIL = None  # UTIL matrix
         self.JOIN = None  # JOIN matrix
 
@@ -53,30 +56,33 @@ class Dpop(Thread):
         count = 0
         start_time = datetime.now()
         
-        if len(self.dfs_generator.children) > 0:
+        if len(self.dfs_generator.children_id) > 0:
            
             # MQTT wait for incoming message of type UTIL for each child of the agent
-            while count < len(self.dfs_generator.children) \
+            while count < len(self.dfs_generator.children_id) \
                     and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
                 
                 if len(self.mqtt_manager.mqtt_client.util_msgs) == 0:
                     continue
                 
                 # We add to the join UTIL message from children as they arrive
-                data_received = json.loads(self.mqtt_manager.mqtt_client.util_msgs.pop(0).split("UTIL ")[1])
-                self.matrix_dimensions.extend(data_received["vars"])
-                matrix_data = numpy.asarray(data_received["data"]) 
+                data_received = json.loads(
+                    self.mqtt_manager.mqtt_client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
+                )
+
+                matrix_data = numpy.asarray(data_received[self.DATA])
+                self.matrix_dimensions_order.extend(data_received[self.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
 
-                self.matrix_dimensions = list(set(self.matrix_dimensions))  # Clean up duplicate entry
+                self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
 
-        if not self.is_root:
+        if not self.dfs_generator.is_root:
 
             # Also join all relations with parent/pseudo_parent
             self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_generator.parent_id), self.JOIN)
         
-            for pseudo_parent in self.dfs_generator.pseudo_parent:
+            for pseudo_parent in self.dfs_generator.pseudo_parents_id:
                 self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
 
         # Add to `self` constraint values
@@ -98,10 +104,12 @@ class Dpop(Thread):
         if self.UTIL is None:
             self.UTIL = numpy.zeros(self.DIMENSION_SIZE, int)
 
-        if not self.is_root:
+        if not self.dfs_generator.is_root:
 
-            self.mqtt_manager.publish_util_msg_to(self.dfs_generator.parent_id,
-                                                  json.dumps({"vars": self.matrix_dimensions, "data": self.UTIL.tolist()}))
+            self.mqtt_manager.publish_util_msg_to(
+                self.dfs_generator.parent_id,
+                json.dumps({self.VARS: self.matrix_dimensions_order, self.DATA: self.UTIL.tolist()})
+            )
 
             # MQTT wait for incoming message of type VALUE from parent
             while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
@@ -109,7 +117,9 @@ class Dpop(Thread):
                 if len(self.mqtt_manager.mqtt_client.value_msgs) == 0:
                     continue
 
-                values = json.loads(self.mqtt_manager.mqtt_client.value_msgs.pop(0).split("VALUES ")[1])
+                values = json.loads(
+                    self.mqtt_manager.mqtt_client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
+                )
                 break
 
         # Find best v
@@ -117,10 +127,10 @@ class Dpop(Thread):
         self.room.current_v = self.DIMENSION[index]
         values[str(self.room.id)] = index
 
-        for child in self.dfs_generator.children:
+        for child in self.dfs_generator.children_id:
             self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
 
-        if len(self.dfs_generator.children) == 0:
+        if len(self.dfs_generator.children_id) == 0:
             self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
 
         print("FINAL v : " + str(self.room.current_v))
@@ -153,7 +163,7 @@ class Dpop(Thread):
         best_index = 0
         tupl = tuple()
 
-        parents = self.dfs_generator.pseudo_parent
+        parents = self.dfs_generator.pseudo_parents_id
         parents.append(self.dfs_generator.parent_id)
 
         # Check for parents values
@@ -163,7 +173,7 @@ class Dpop(Thread):
                 tupl = tupl + (data[key],)
 
         # Check for dependant non-neighbors values if needed
-        for neighbor_id in self.matrix_dimensions:
+        for neighbor_id in self.matrix_dimensions_order:
 
             if len(self.JOIN.shape) - 1 == len(tupl):
                 break
@@ -233,7 +243,7 @@ class Dpop(Thread):
         """
         R = numpy.zeros((self.DIMENSION_SIZE, self.DIMENSION_SIZE), int)
 
-        if parent_id in self.matrix_dimensions:
+        if parent_id in self.matrix_dimensions_order:
             # Parent was already take in account by one of my children
             return None
 
@@ -241,7 +251,7 @@ class Dpop(Thread):
             for j in range(0, self.DIMENSION_SIZE):
                 R[i][j] += self.constraint_manager.c3(self.DIMENSION[i], self.DIMENSION[j])
 
-        self.matrix_dimensions.append(parent_id)
+        self.matrix_dimensions_order.append(parent_id)
         return R
 
     def add_my_utility_in(self, R):

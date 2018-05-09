@@ -4,6 +4,7 @@ class ConstraintManager(object):
     INFINITY = 241
     URGT_TIME = 30
     T_SYNCHRO = 30
+    THREE_HOURS = 180
 
     def __init__(self, room):
         self.room = room
@@ -40,7 +41,7 @@ class ConstraintManager(object):
     def c5(self, vi):
         if not self.room.is_in_critical_state() \
                 and self.room.get_min_end_of_prog() > self.URGT_TIME \
-                and self.room.tau < 180 \
+                and self.room.tau < self.THREE_HOURS \
                 and vi < self.INFINITY:
             return 1
 
