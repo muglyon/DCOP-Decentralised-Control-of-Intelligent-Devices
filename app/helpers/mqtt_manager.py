@@ -1,4 +1,4 @@
-from helpers.messageTypes import MessageTypes
+from helpers.message_types import MessageTypes
 
 
 class MqttManager(object):

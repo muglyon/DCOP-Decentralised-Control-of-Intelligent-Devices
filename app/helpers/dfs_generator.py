@@ -1,5 +1,5 @@
 #! python3
-from helpers.messageTypes import MessageTypes
+from helpers.message_types import MessageTypes
 
 
 class DfsGenerator(object):
