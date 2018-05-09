@@ -1,6 +1,6 @@
 Feature: (c5) RAS constraint
 
 	Scenario: Nothing to report
-		Given an AI agent
+		Given an AI in syringe pump
 		When there is nothing to report
-		Then agent should not call health workers
+		Then AI in syringe pump should not call healthcare professionals

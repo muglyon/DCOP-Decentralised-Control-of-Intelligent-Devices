@@ -64,14 +64,14 @@ def before_scenario(context, scenario):
 
     context.dpop_1 = Dpop(context.agent_1, context.mock_clientMqtt_1)
     context.dpop_1.is_root = True
-    context.dpop_1.children.append(context.agent_2.id)
-    context.dpop_1.pseudo_children.append(context.agent_3.id)
-    context.dpop_1.generate_pseudo_tree = MagicMock()
+    context.dpop_1.dfs_generator.children.append(context.agent_2.id)
+    context.dpop_1.dfs_generator.pseudo_children.append(context.agent_3.id)
+    context.dpop_1.dfs_generator.create_pseudo_tree = MagicMock()
 
     context.dpop_2 = Dpop(context.agent_2, context.mock_clientMqtt_2)
     context.dpop_2.TIMEOUT = 10
 
     context.dpop_4 = Dpop(context.agent_4, context.mock_clientMqtt_4)
-    context.dpop_4.parent_id = context.agent_2.id
-    context.dpop_4.children.append(context.agent_3.id)
-    context.dpop_4.generate_pseudo_tree = MagicMock()
+    context.dpop_4.dfs_generator.parent_id = context.agent_2.id
+    context.dpop_4.dfs_generator.children.append(context.agent_3.id)
+    context.dpop_4.dfs_generator.create_pseudo_tree = MagicMock()
