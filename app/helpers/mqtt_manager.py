@@ -1,28 +1,39 @@
+from helpers.message_types import MessageTypes
 
 
-class MqttManager(object):
+class MQTTManager(object):
 
-    def __init__(self, mqtt_client, room):
-        self.mqtt_client = mqtt_client
+    def __init__(self, client, room=None):
+        self.client = client
         self.room = room
 
     def publish_root_msg(self):
-        self.publish_to_topic_msg("DCOP/SERVER/ROOT", str(self.room.id) + ":" + str(self.room.get_degree()))
+        self.client.publish(self.client.ROOT_TOPIC, str(self.room.id) + ":" + str(self.room.get_degree()))
 
     def publish_child_msg_to(self, recipient_id):
-        self.publish_to_topic_msg("DCOP/" + str(recipient_id), "CHILD " + str(self.room.id))
+        self.client.publish(
+            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.CHILD.value + " " + str(self.room.id)
+        )
 
     def publish_pseudo_msg_to(self, recipient_id):
-        self.publish_to_topic_msg("DCOP/" + str(recipient_id), "PSEUDO " + str(self.room.id))
+        self.client.publish(
+            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.PSEUDO.value + " " + str(self.room.id)
+        )
 
     def publish_value_msg_to(self, recipient_id, values):
-        self.publish_to_topic_msg("DCOP/" + str(recipient_id), "VALUES " + values)
+        self.client.publish(
+            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.VALUES.value + " " + values
+        )
 
     def publish_value_msg_to_server(self, values):
-        self.publish_to_topic_msg("DCOP/SERVER/", "VALUES " + values)
+        self.client.publish(self.client.SERVER_TOPIC, MessageTypes.VALUES.value + " " + values)
 
     def publish_util_msg_to(self, recipient_id, data):
-        self.publish_to_topic_msg("DCOP/" + str(recipient_id), "UTIL " + data)
+        self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.UTIL.value + " " + data)
 
-    def publish_to_topic_msg(self, topic, msg):
-        self.mqtt_client.publish(topic, msg)
+    def publish_on_msg_to(self, recipient_id):
+        self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.ON.value)
+
+    def publish_elected_root_msg_to(self, recipient_id, root):
+        self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.ROOT.value + "_" + str(root))
+
