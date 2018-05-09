@@ -10,14 +10,14 @@ class MQTTManager(object):
     def has_no_msg(self):
         return len(self.client.list_msgs_waiting) == 0
 
-    def has_no_child_msg(self):
-        return len(self.client.child_msgs) == 0
+    def has_child_msg(self):
+        return len(self.client.child_msgs) > 0
 
-    def has_no_util_msg(self):
-        return len(self.client.util_msgs) == 0
+    def has_util_msg(self):
+        return len(self.client.util_msgs) > 0
 
-    def has_no_value_msg(self):
-        return len(self.client.value_msgs) == 0
+    def has_value_msg(self):
+        return len(self.client.value_msgs) > 0
 
     def publish_root_value_msg(self):
         self.client.publish(self.client.ROOT_TOPIC, str(self.room.id) + ":" + str(self.room.get_degree()))

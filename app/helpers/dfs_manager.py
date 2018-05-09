@@ -28,11 +28,15 @@ class DfsManager(object):
                 self.children_id.append(self.open_neighbors_id.pop(0))
                 self.mqtt_manager.publish_child_msg_to(self.children_id[0])
 
-            # MQTT wait for incoming message of type "messageType" from neighbor yi
-            while 1:
+            self.generate_dfs_with_others_agents()
 
-                if self.mqtt_manager.has_no_child_msg():
-                    continue
+    def generate_dfs_with_others_agents(self):
+
+        continue_generation = True
+        while continue_generation:
+
+            # MQTT wait for incoming message of type "message_type" from neighbor yi
+            if self.mqtt_manager.has_child_msg():
 
                 message = self.mqtt_manager.client.child_msgs.pop(0).split(" ")
                 message_type = message[0]
@@ -67,7 +71,7 @@ class DfsManager(object):
                         self.mqtt_manager.publish_child_msg_to(self.parent_id)
 
                     print(self.pseudo_tree_to_string())
-                    return
+                    continue_generation = False
 
     def root_selection(self):
 

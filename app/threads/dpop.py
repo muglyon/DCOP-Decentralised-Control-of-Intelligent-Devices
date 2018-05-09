@@ -47,35 +47,10 @@ class Dpop(Thread):
         self.value_propagation()
 
     def util_propagation(self):
-        """
-        UTIL Propagation phase
-        """
-
         print("\n---------- UTIL PROPAGATION ----------")
 
-        count = 0
-        start_time = datetime.now()
-        
         if len(self.dfs_manager.children_id) > 0:
-           
-            # MQTT wait for incoming message of type UTIL for each child of the agent
-            while count < len(self.dfs_manager.children_id) \
-                    and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
-                
-                if self.mqtt_manager.has_no_util_msg():
-                    continue
-                
-                # We add to the join UTIL message from children as they arrive
-                data_received = json.loads(
-                    self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
-                )
-
-                matrix_data = numpy.asarray(data_received[self.DATA])
-                self.matrix_dimensions_order.extend(data_received[self.VARS])
-                self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
-                count += 1
-
-                self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
+            self.get_util_matrix_from_childen()
 
         if not self.dfs_manager.is_root:
 
@@ -92,14 +67,9 @@ class Dpop(Thread):
         self.UTIL = self.project(self.JOIN)
 
     def value_propagation(self):
-        """
-        VALUE Propagation phase
-        """
-
         print("\n---------- VALUE PROPAGATION ----------")
 
         values = {}
-        start_time = datetime.now()
 
         if self.UTIL is None:
             self.UTIL = numpy.zeros(self.DIMENSION_SIZE, int)
@@ -111,16 +81,7 @@ class Dpop(Thread):
                 json.dumps({self.VARS: self.matrix_dimensions_order, self.DATA: self.UTIL.tolist()})
             )
 
-            # MQTT wait for incoming message of type VALUE from parent
-            while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
-
-                if self.mqtt_manager.has_no_value_msg():
-                    continue
-
-                values = json.loads(
-                    self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
-                )
-                break
+            values = self.get_values_from_parents()
 
         # Find best v
         index = self.get_index_of_best_value_with(values)
@@ -139,6 +100,36 @@ class Dpop(Thread):
     '''''''''''''''''''''''''''''''''''''''''''''''''''
               METHODS UTILS                      
     '''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    def get_values_from_parents(self):
+
+        start_time = datetime.now()
+
+        # MQTT wait for incoming message of type VALUE from parent
+        while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+            if self.mqtt_manager.has_value_msg():
+                return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
+
+    def get_util_matrix_from_childen(self):
+        count = 0
+        start_time = datetime.now()
+
+        # MQTT wait for incoming message of type UTIL for each child of the agent
+        while count < len(self.dfs_manager.children_id) \
+                and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+
+            if self.mqtt_manager.has_util_msg():
+                # We add to the join UTIL message from children as they arrive
+                data_received = json.loads(
+                    self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
+                )
+
+                matrix_data = numpy.asarray(data_received[self.DATA])
+                self.matrix_dimensions_order.extend(data_received[self.VARS])
+                self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
+                count += 1
+
+                self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
 
     def get_index_of_best_value_with(self, data):
         """
