@@ -43,29 +43,31 @@ class Starter(Thread):
             for agent in self.agents:
                 self.mqtt_manager.publish_on_msg_to(agent.id)
 
-            while len(self.mqtt_manager.client.listMessages) < len(self.agents):
+            while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
                 # Wait for ROOTs messages
                 pass
 
-            for msg in self.mqtt_manager.client.listMessages:
+            for msg in self.mqtt_manager.client.list_msgs_waiting:
                 splited = msg.split(":")
                 if int(splited[1]) > best_value:
                     root = int(splited[0])
                     best_value = int(splited[1])
 
-            self.mqtt_manager.client.listMessages = []
+            self.mqtt_manager.client.list_msgs_waiting = []
 
             for agent in self.agents:
                 self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
 
             while len(received_index) < len(self.agents):
 
-                if len(self.mqtt_manager.client.listMessages) == 0:
+                if self.mqtt_manager.has_no_msg():
                     # Wait for VALUES results
                     continue
 
+                print("---", self.mqtt_manager.client.list_msgs_waiting)
+
                 received_index.update(
-                    json.loads(self.mqtt_manager.client.listMessages.pop(0).split(MessageTypes.VALUES.value + " ")[1])
+                    json.loads(self.mqtt_manager.client.list_msgs_waiting.pop(0).split(MessageTypes.VALUES.value + " ")[1])
                 )
 
             self.manage_priorities(received_index)

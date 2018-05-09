@@ -9,36 +9,40 @@ class ConstraintManager(object):
     def __init__(self, room):
         self.room = room
 
-    def get_value_of_private_constraints_for_value(self, value):
-        return self.c1(value) + self.c2(value) + self.c4(value) + self.c5(value)
+    def get_cost_of_private_constraints_for_value(self, value):
+        return self.c1_no_devices(value) \
+               + self.c2_device_status(value) \
+               + self.c4_last_intervention(value) \
+               + self.c5_nothing_to_report(value)
 
-    def c1(self, vi):
-        if len(self.room.device_list) == 0 and vi < self.INFINITY:
+    def c1_no_devices(self, vi):
+        if self.room.has_no_devices() and vi < self.INFINITY:
             return self.INFINITY
         return 0
 
-    def c2(self, vi):
+    def c2_device_status(self, vi):
         if self.room.is_in_critical_state() and vi > 0:
             return self.INFINITY
 
-        x = self.room.get_min_end_of_prog()
-        if not self.room.is_in_critical_state() and x <= self.URGT_TIME and vi > x:
+        min_end_of_prog = self.room.get_min_end_of_prog()
+
+        if not self.room.is_in_critical_state() and min_end_of_prog <= self.URGT_TIME and vi > min_end_of_prog:
             return 1
 
         return 0
 
-    def c3(self, vi, vj):
-        val = abs(vi - vj)
-        if val <= self.T_SYNCHRO and val != 0:
+    def c3_neighbors_sync(self, vi, vj):
+        diff = abs(vi - vj)
+        if diff <= self.T_SYNCHRO and diff != 0:
             return 1
         return 0
 
-    def c4(self, vi):
+    def c4_last_intervention(self, vi):
         if self.room.is_tau_too_high() and vi > self.URGT_TIME:
             return self.INFINITY
         return 0
 
-    def c5(self, vi):
+    def c5_nothing_to_report(self, vi):
         if not self.room.is_in_critical_state() \
                 and self.room.get_min_end_of_prog() > self.URGT_TIME \
                 and self.room.tau < self.THREE_HOURS \

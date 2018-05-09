@@ -68,6 +68,9 @@ class Room(object):
             critic_state = random.random() < 0.05
             self.device_list.append(Device(int(id_device), randint(5, 241), critic_state))
 
+    def has_no_devices(self):
+        return len(self.device_list) == 0
+
     def is_in_critical_state(self):
         """
         Check if the room is in critical state

@@ -2,7 +2,7 @@
 from helpers.message_types import MessageTypes
 
 
-class DfsGenerator(object):
+class DfsManager(object):
 
     def __init__(self, mqtt_manager, room):
         self.mqtt_manager = mqtt_manager
@@ -19,15 +19,7 @@ class DfsGenerator(object):
 
         print("\n---------- DFS GENERATION ----------")
 
-        # Root Election
-        self.mqtt_manager.publish_root_msg()
-
-        while len(self.mqtt_manager.client.list_msgs_waiting) == 0:
-            # Wait for Root choice
-            pass
-
-        if int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id:
-            self.is_root = True
+        self.root_selection()
 
         if self.room.get_degree() > 0:
 
@@ -39,7 +31,7 @@ class DfsGenerator(object):
             # MQTT wait for incoming message of type "messageType" from neighbor yi
             while 1:
 
-                if len(self.mqtt_manager.client.child_msgs) == 0:
+                if self.mqtt_manager.has_no_child_msg():
                     continue
 
                 message = self.mqtt_manager.client.child_msgs.pop(0).split(" ")
@@ -51,12 +43,12 @@ class DfsGenerator(object):
                     self.open_neighbors_id = self.room.get_neighbors_id_sorted_except(yi)
                     self.parent_id = yi
 
-                elif message_type == MessageTypes.CHILD.value and yi in self.open_neighbors_id:
+                elif MessageTypes.is_child(message_type) and yi in self.open_neighbors_id:
                     self.pseudo_children_id.append(self.open_neighbors_id.pop(self.open_neighbors_id.index(yi)))
                     self.mqtt_manager.publish_pseudo_msg_to(yi)
                     continue
 
-                elif message_type == MessageTypes.PSEUDO.value:
+                elif MessageTypes.is_pseudo(message_type):
                     if yi in self.children_id:
                         self.children_id.pop(self.children_id.index(yi))
                     self.pseudo_parents_id.append(yi)
@@ -73,6 +65,22 @@ class DfsGenerator(object):
 
                     print(self.pseudo_tree_to_string())
                     return
+
+    def root_selection(self):
+
+        self.mqtt_manager.publish_root_value_msg()
+
+        while self.mqtt_manager.has_no_msg():
+            # Wait for Root choice from server
+            pass
+
+        self.is_root = self.i_am_the_elected_root()
+
+    def i_am_the_elected_root(self):
+        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id
+
+    def is_leaf(self):
+        return len(self.children_id) == 0
 
     def pseudo_tree_to_string(self):
         """

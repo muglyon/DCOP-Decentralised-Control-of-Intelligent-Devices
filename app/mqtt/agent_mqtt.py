@@ -14,7 +14,6 @@ class AgentMQTT(CustomMQTTClass):
         self.counter = 0
         self.start_time = datetime.now()
 
-        self.client.list_msgs_waiting = []
         self.client.child_msgs = []
         self.client.util_msgs = []
         self.client.value_msgs = []
@@ -23,7 +22,7 @@ class AgentMQTT(CustomMQTTClass):
 
         str_msg = str(msg.payload.decode('utf-8'))
 
-        if str_msg == MessageTypes.ON.value:
+        if MessageTypes.is_on(str_msg):
 
             print("---------- ITERATION ", self.counter, " --------")
 
