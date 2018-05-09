@@ -162,7 +162,9 @@ class Room(object):
                 is_device_exist = True
                 break
 
-        if not is_device_exist:
+        if is_device_exist:
+            pass
+        else:
             self.device_list.append(device)
 
     def to_string_neighbors(self):

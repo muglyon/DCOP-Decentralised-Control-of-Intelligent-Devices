@@ -21,13 +21,14 @@ class ConstraintManager(object):
         return 0
 
     def c2_device_status(self, vi):
-        if self.room.is_in_critical_state() and vi > 0:
-            return self.INFINITY
 
-        min_end_of_prog = self.room.get_min_end_of_prog()
-
-        if not self.room.is_in_critical_state() and min_end_of_prog <= self.URGT_TIME and vi > min_end_of_prog:
-            return 1
+        if self.room.is_in_critical_state():
+            if vi > 0:
+                return self.INFINITY
+        else:
+            min_end_of_prog = self.room.get_min_end_of_prog()
+            if min_end_of_prog <= self.URGT_TIME and vi > min_end_of_prog:
+                return 1
 
         return 0
 
@@ -43,10 +44,14 @@ class ConstraintManager(object):
         return 0
 
     def c5_nothing_to_report(self, vi):
-        if not self.room.is_in_critical_state() \
-                and self.room.get_min_end_of_prog() > self.URGT_TIME \
-                and self.room.tau < self.THREE_HOURS \
-                and vi < self.INFINITY:
-            return 1
+
+        if self.room.is_in_critical_state():
+            pass
+
+        else:
+            if self.room.get_min_end_of_prog() > self.URGT_TIME \
+                    and self.room.tau < self.THREE_HOURS \
+                    and vi < self.INFINITY:
+                return 1
 
         return 0

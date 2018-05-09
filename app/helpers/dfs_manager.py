@@ -59,7 +59,10 @@ class DfsManager(object):
                     self.children_id.append(self.open_neighbors_id.pop(0))
                     self.mqtt_manager.publish_child_msg_to(yj)
                 else:
-                    if not self.is_root:
+
+                    if self.is_root:
+                        pass
+                    else:
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.parent_id)
 
