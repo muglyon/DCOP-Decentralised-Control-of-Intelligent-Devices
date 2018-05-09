@@ -55,6 +55,6 @@ def step_impl(context):
 
 
 def set_up(context):
-    context.current_dpop_tested.matrix_dimensions = [1]
+    context.current_dpop_tested.matrix_dimensions_order = [1]
     context.util_matrix = numpy.arange(start=11, stop=2, step=-1).reshape(3, 3)
     context.data = {"1": 1}

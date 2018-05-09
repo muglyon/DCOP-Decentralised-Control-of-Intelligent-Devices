@@ -22,11 +22,11 @@ class DfsGenerator(object):
         # Root Election
         self.mqtt_manager.publish_root_msg()
 
-        while len(self.mqtt_manager.mqtt_client.list_msgs_waiting) == 0:
+        while len(self.mqtt_manager.client.list_msgs_waiting) == 0:
             # Wait for Root choice
             pass
 
-        if int(self.mqtt_manager.mqtt_client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id:
+        if int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id:
             self.is_root = True
 
         if self.room.get_degree() > 0:
@@ -39,10 +39,10 @@ class DfsGenerator(object):
             # MQTT wait for incoming message of type "messageType" from neighbor yi
             while 1:
 
-                if len(self.mqtt_manager.mqtt_client.child_msgs) == 0:
+                if len(self.mqtt_manager.client.child_msgs) == 0:
                     continue
 
-                message = self.mqtt_manager.mqtt_client.child_msgs.pop(0).split(" ")
+                message = self.mqtt_manager.client.child_msgs.pop(0).split(" ")
                 message_type = message[0]
                 yi = int(message[1])
 

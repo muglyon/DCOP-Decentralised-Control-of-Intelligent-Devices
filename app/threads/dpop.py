@@ -9,7 +9,7 @@ from threading import Thread
 from datetime import datetime
 from helpers.dfs_generator import DfsGenerator
 from helpers.constraint_manager import ConstraintManager
-from helpers.mqtt_publish_manager import MQTTPublishManager
+from helpers.mqtt_manager import MQTTManager
 from helpers.message_types import MessageTypes
 
 import numpy
@@ -35,7 +35,7 @@ class Dpop(Thread):
         self.JOIN = None  # JOIN matrix
 
         self.constraint_manager = ConstraintManager(self.room)
-        self.mqtt_manager = MQTTPublishManager(mqtt_client, self.room)
+        self.mqtt_manager = MQTTManager(mqtt_client, self.room)
         self.dfs_generator = DfsGenerator(self.mqtt_manager, self.room)
 
     def run(self):
@@ -62,12 +62,12 @@ class Dpop(Thread):
             while count < len(self.dfs_generator.children_id) \
                     and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
                 
-                if len(self.mqtt_manager.mqtt_client.util_msgs) == 0:
+                if len(self.mqtt_manager.client.util_msgs) == 0:
                     continue
                 
                 # We add to the join UTIL message from children as they arrive
                 data_received = json.loads(
-                    self.mqtt_manager.mqtt_client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
+                    self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
                 matrix_data = numpy.asarray(data_received[self.DATA])
@@ -114,11 +114,11 @@ class Dpop(Thread):
             # MQTT wait for incoming message of type VALUE from parent
             while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
 
-                if len(self.mqtt_manager.mqtt_client.value_msgs) == 0:
+                if len(self.mqtt_manager.client.value_msgs) == 0:
                     continue
 
                 values = json.loads(
-                    self.mqtt_manager.mqtt_client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
+                    self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
                 )
                 break
 
@@ -183,8 +183,8 @@ class Dpop(Thread):
                 tupl = tupl + (data[key],)
 
         for index, value in numpy.ndenumerate(self.JOIN):
-            if tupl == index[1:]:
 
+            if tupl == index[1:]:
                 if value <= best_value:
                     best_value = value
                     best_index = index[0]

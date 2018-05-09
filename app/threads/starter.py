@@ -1,6 +1,8 @@
 #! python3
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
+from helpers.message_types import MessageTypes
+from helpers.mqtt_manager import MQTTManager
 from threading import Thread
 
 import time
@@ -16,11 +18,13 @@ class Starter(Thread):
     TWO_MINUTS = 120
 
     def __init__(self, agents, mqtt_client):
+
         Thread.__init__(self)
+
         self.agents = agents
-        self.mqtt_client = mqtt_client
         self.priorities = {}
         self.old_results_index = {}
+        self.mqtt_manager = MQTTManager(mqtt_client)
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
@@ -37,30 +41,32 @@ class Starter(Thread):
             received_index = {}
     
             for agent in self.agents:
-                self.mqtt_client.publish("DCOP/" + str(agent.id), "ON")
+                self.mqtt_manager.publish_on_msg_to(agent.id)
 
-            while len(self.mqtt_client.listMessages) < len(self.agents):
+            while len(self.mqtt_manager.client.listMessages) < len(self.agents):
                 # Wait for ROOTs messages
                 pass
 
-            for msg in self.mqtt_client.listMessages:
+            for msg in self.mqtt_manager.client.listMessages:
                 splited = msg.split(":")
                 if int(splited[1]) > best_value:
                     root = int(splited[0])
                     best_value = int(splited[1])
 
-            self.mqtt_client.listMessages = []
+            self.mqtt_manager.client.listMessages = []
 
             for agent in self.agents:
-                self.mqtt_client.publish("DCOP/" + str(agent.id), "ROOT_" + str(root))
+                self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
 
             while len(received_index) < len(self.agents):
 
-                if len(self.mqtt_client.listMessages) == 0:
+                if len(self.mqtt_manager.client.listMessages) == 0:
                     # Wait for VALUES results
                     continue
 
-                received_index.update(json.loads(self.mqtt_client.listMessages.pop(0).split("VALUES ")[1]))
+                received_index.update(
+                    json.loads(self.mqtt_manager.client.listMessages.pop(0).split(MessageTypes.VALUES.value + " ")[1])
+                )
 
             self.manage_priorities(received_index)
 
@@ -76,12 +82,7 @@ class Starter(Thread):
             time.sleep(self.TWO_MINUTS)
 
     def manage_priorities(self, data_received):
-        '''
-        Update priority of agents if needed.
-        '''
         for key in data_received:
-            print("1", data_received)
-            print("2", self.old_results_index)
 
             if self.DIMENSION[self.old_results_index[key]] <= self.URGT_TIME \
                     and self.DIMENSION[data_received[key]] < self.URGT_TIME:
