@@ -8,10 +8,10 @@
 from threading import Thread
 
 from helpers.constraint_manager import ConstraintManager
-from helpers.dfs_manager import DfsManager
-from helpers.value_manager import ValueManager
-from helpers.mqtt_manager import MQTTManager
-from helpers.util_manager import UtilManager
+from helpers.managers.dfs_manager import DfsManager
+from helpers.managers.value_manager import ValueManager
+from mqtt.mqtt_manager import MQTTManager
+from helpers.managers.util_manager import UtilManager
 
 
 class Dpop(Thread):

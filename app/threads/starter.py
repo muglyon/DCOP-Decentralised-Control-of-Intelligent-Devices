@@ -3,7 +3,7 @@
 # It is a thread intended to be launched by the server
 from helpers.constants import Constants
 from helpers.message_types import MessageTypes
-from helpers.mqtt_manager import MQTTManager
+from mqtt.mqtt_manager import MQTTManager
 from threading import Thread
 
 import time
@@ -32,27 +32,12 @@ class Starter(Thread):
 
             print("--- START ALGORITHM ---")
 
-            root = 0
-            best_value = 0
             received_index = {}
     
             for agent in self.agents:
                 self.mqtt_manager.publish_on_msg_to(agent.id)
 
-            while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
-                # Wait for ROOTs messages
-                pass
-
-            for msg in self.mqtt_manager.client.list_msgs_waiting:
-                splited = msg.split(":")
-                if int(splited[1]) > best_value:
-                    root = int(splited[0])
-                    best_value = int(splited[1])
-
-            self.mqtt_manager.client.list_msgs_waiting = []
-
-            for agent in self.agents:
-                self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
+            self.choose_root()
 
             while len(received_index) < len(self.agents):
 
@@ -79,7 +64,29 @@ class Starter(Thread):
 
             time.sleep(Constants.TWO_MINUTS)
 
+    def choose_root(self):
+
+        root = 0
+        best_value = 0
+
+        while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
+            # Wait for ROOTs messages
+            pass
+
+        for msg in self.mqtt_manager.client.list_msgs_waiting:
+
+            splited = msg.split(":")
+            if int(splited[1]) > best_value:
+                root = int(splited[0])
+                best_value = int(splited[1])
+
+        self.mqtt_manager.client.list_msgs_waiting = []
+
+        for agent in self.agents:
+            self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
+
     def manage_priorities(self, data_received):
+
         for key in data_received:
 
             if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME \

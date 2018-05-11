@@ -1,13 +1,13 @@
 #! python3
+from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
 from model.dfs_structure import DfsStructure
 
 
-class DfsManager(object):
+class DfsManager(DpopManager):
 
     def __init__(self, mqtt_manager, room):
-        self.mqtt_manager = mqtt_manager
-        self.dfs_structure = DfsStructure(room)
+        DpopManager.__init__(self,mqtt_manager, DfsStructure(room))
 
     def generate_dfs(self):
 

@@ -1,22 +1,21 @@
 from datetime import datetime
 from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
+from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
 
 import numpy
 import json
 
 
-class UtilManager(object):
+class UtilManager(DpopManager):
 
     def __init__(self, mqtt_manager, dfs_structure):
+        DpopManager.__init__(self, mqtt_manager, dfs_structure)
+
         self.JOIN = None
         self.UTIL = None
-
-        self.mqtt_manager = mqtt_manager
-        self.dfs_structure = dfs_structure
         self.constraint_manager = ConstraintManager(dfs_structure.room)
-
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
