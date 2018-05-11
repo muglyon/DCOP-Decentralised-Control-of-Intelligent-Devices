@@ -1,32 +1,26 @@
 #! python3
 from helpers.message_types import MessageTypes
+from model.dfs_structure import DfsStructure
 
 
 class DfsManager(object):
 
     def __init__(self, mqtt_manager, room):
         self.mqtt_manager = mqtt_manager
-        self.room = room
-        self.is_root = False
+        self.dfs_structure = DfsStructure(room)
 
-        self.open_neighbors_id = None  # neighbors Id : see "open" in the algorithm
-        self.children_id = []
-        self.parent_id = 0
-        self.pseudo_children_id = []
-        self.pseudo_parents_id = []
-
-    def create_pseudo_tree(self):
+    def generate_dfs(self):
 
         print("\n---------- DFS GENERATION ----------")
 
-        self.root_selection()
+        self.choose_root()
 
-        if self.room.get_degree() > 0:
+        if self.dfs_structure.room.get_degree() > 0:
 
-            if self.is_root:
-                self.open_neighbors_id = self.room.get_neighbors_id_sorted()
-                self.children_id.append(self.open_neighbors_id.pop(0))
-                self.mqtt_manager.publish_child_msg_to(self.children_id[0])
+            if self.dfs_structure.is_root:
+                self.dfs_structure.open_neighbors_id = self.dfs_structure.room.get_neighbors_id_sorted()
+                self.dfs_structure.children_id.append(self.dfs_structure.open_neighbors_id.pop(0))
+                self.mqtt_manager.publish_child_msg_to(self.dfs_structure.children_id[0])
 
             self.generate_dfs_with_others_agents()
 
@@ -42,38 +36,40 @@ class DfsManager(object):
                 message_type = message[0]
                 yi = int(message[1])
 
-                if self.open_neighbors_id is None:
+                if self.dfs_structure.open_neighbors_id is None:
                     # First time the agent is visited
-                    self.open_neighbors_id = self.room.get_neighbors_id_sorted_except(yi)
-                    self.parent_id = yi
+                    self.dfs_structure.open_neighbors_id = self.dfs_structure.room.get_neighbors_id_sorted_except(yi)
+                    self.dfs_structure.parent_id = yi
 
-                elif MessageTypes.is_child(message_type) and yi in self.open_neighbors_id:
-                    self.pseudo_children_id.append(self.open_neighbors_id.pop(self.open_neighbors_id.index(yi)))
+                elif MessageTypes.is_child(message_type) and yi in self.dfs_structure.open_neighbors_id:
+                    self.dfs_structure.pseudo_children_id.append(
+                        self.dfs_structure.open_neighbors_id.pop(self.dfs_structure.open_neighbors_id.index(yi))
+                    )
                     self.mqtt_manager.publish_pseudo_msg_to(yi)
                     continue
 
                 elif MessageTypes.is_pseudo(message_type):
-                    if yi in self.children_id:
-                        self.children_id.pop(self.children_id.index(yi))
-                    self.pseudo_parents_id.append(yi)
+                    if yi in self.dfs_structure.children_id:
+                        self.dfs_structure.children_id.pop(self.dfs_structure.children_id.index(yi))
+                    self.dfs_structure.pseudo_parents_id.append(yi)
 
                 # Forward the CHILD message to the next "open" neighbor
-                if len(self.open_neighbors_id) > 0:
-                    yj = self.open_neighbors_id[0]
-                    self.children_id.append(self.open_neighbors_id.pop(0))
+                if len(self.dfs_structure.open_neighbors_id) > 0:
+                    yj = self.dfs_structure.open_neighbors_id[0]
+                    self.dfs_structure.children_id.append(self.dfs_structure.open_neighbors_id.pop(0))
                     self.mqtt_manager.publish_child_msg_to(yj)
                 else:
 
-                    if self.is_root:
+                    if self.dfs_structure.is_root:
                         pass
                     else:
                         # Backtrack
-                        self.mqtt_manager.publish_child_msg_to(self.parent_id)
+                        self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
                     print(self.pseudo_tree_to_string())
                     continue_generation = False
 
-    def root_selection(self):
+    def choose_root(self):
 
         self.mqtt_manager.publish_root_value_msg()
 
@@ -81,13 +77,10 @@ class DfsManager(object):
             # Wait for Root choice from server
             pass
 
-        self.is_root = self.i_am_the_elected_root()
+        self.dfs_structure.is_root = self.am_i_the_elected_root()
 
-    def i_am_the_elected_root(self):
-        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.room.id
-
-    def is_leaf(self):
-        return len(self.children_id) == 0
+    def am_i_the_elected_root(self):
+        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.dfs_structure.room.id
 
     def pseudo_tree_to_string(self):
         """
@@ -95,15 +88,15 @@ class DfsManager(object):
         :return: pseudo-tree in string format
         :rtype: string
         """
-        string = str(self.room.id) + "\n"
+        string = str(self.dfs_structure.room.id) + "\n"
 
-        for childId in self.children_id:
+        for childId in self.dfs_structure.children_id:
             string += "| " + str(childId) + "\n"
 
-        for pseudoId in self.pseudo_parents_id:
+        for pseudoId in self.dfs_structure.pseudo_parents_id:
             string += "--> " + str(pseudoId) + "\n"
 
-        for pseudoId in self.pseudo_children_id:
+        for pseudoId in self.dfs_structure.pseudo_children_id:
             string += "<-- " + str(pseudoId) + "\n"
 
         return string

@@ -63,15 +63,16 @@ def before_scenario(context, scenario):
         .append('UTIL ' + json.dumps({"vars": [4, 1], "data": numpy.ones((17, 17), float).tolist()}))
 
     context.dpop_1 = Dpop(context.agent_1, context.mock_clientMqtt_1)
-    context.dpop_1.dfs_manager.is_root = True
-    context.dpop_1.dfs_manager.children_id.append(context.agent_2.id)
-    context.dpop_1.dfs_manager.pseudo_children_id.append(context.agent_3.id)
-    context.dpop_1.dfs_manager.create_pseudo_tree = MagicMock()
+    context.dpop_1.dfs_manager.dfs_structure.is_root = True
+    context.dpop_1.dfs_manager.dfs_structure.children_id.append(context.agent_2.id)
+    context.dpop_1.dfs_manager.dfs_structure.pseudo_children_id.append(context.agent_3.id)
+    context.dpop_1.dfs_manager.generate_dfs = MagicMock()
 
     context.dpop_2 = Dpop(context.agent_2, context.mock_clientMqtt_2)
-    context.dpop_2.TIMEOUT = 10
+    context.dpop_2.util_manager.TIMEOUT = 10
+    context.dpop_2.value_manager.TIMEOUT = 10
 
     context.dpop_4 = Dpop(context.agent_4, context.mock_clientMqtt_4)
-    context.dpop_4.dfs_manager.parent_id = context.agent_2.id
-    context.dpop_4.dfs_manager.children_id.append(context.agent_3.id)
-    context.dpop_4.dfs_manager.create_pseudo_tree = MagicMock()
+    context.dpop_4.dfs_manager.dfs_structure.parent_id = context.agent_2.id
+    context.dpop_4.dfs_manager.dfs_structure.children_id.append(context.agent_3.id)
+    context.dpop_4.dfs_manager.generate_dfs = MagicMock()

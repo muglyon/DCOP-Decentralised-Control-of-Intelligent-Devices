@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 def step_impl(context):
     context.msg_to_ignore = context.util_2
     context.list = context.current_dpop_tested.mqtt_manager.client.util_msgs
-    context.current_dpop_tested.util_propagation = MagicMock()
-    context.current_dpop_tested.value_propagation = MagicMock()
+    context.current_dpop_tested.util_manager.do_util_propagation = MagicMock()
+    context.current_dpop_tested.value_manager.do_value_propagation = MagicMock()
     assert_that(context.current_dpop_tested.mqtt_manager.client.util_msgs, has_item(context.msg_to_ignore))
 
 
@@ -19,9 +19,9 @@ def step_impl(context):
 def step_impl(context):
     context.msg_to_ignore = context.value_2
     context.list = context.current_dpop_tested.mqtt_manager.client.value_msgs
-    context.current_dpop_tested.dfs_manager.children_id.append(4)
-    context.current_dpop_tested.dfs_manager.create_pseudo_tree = MagicMock()
-    context.current_dpop_tested.value_propagation = MagicMock()
+    context.current_dpop_tested.dfs_manager.dfs_structure.children_id.append(4)
+    context.current_dpop_tested.dfs_manager.generate_dfs = MagicMock()
+    context.current_dpop_tested.value_manager.do_value_propagation = MagicMock()
     assert_that(context.current_dpop_tested.mqtt_manager.client.value_msgs, has_item(context.msg_to_ignore))
 
 
@@ -34,10 +34,10 @@ def step_impl(context):
 
 @when("child does not send UTIL message before TIMEOUT")
 def step_impl(context):
-    context.current_dpop_tested.dfs_manager.children_id.append(4)
+    context.current_dpop_tested.dfs_manager.dfs_structure.children_id.append(4)
     context.current_dpop_tested.mqtt_manager.client.util_msgs = []
-    context.current_dpop_tested.dfs_manager.create_pseudo_tree = MagicMock()
-    context.current_dpop_tested.value_propagation = MagicMock()
+    context.current_dpop_tested.dfs_manager.generate_dfs = MagicMock()
+    context.current_dpop_tested.value_manager.do_value_propagation = MagicMock()
     assert_that(context.current_dpop_tested.mqtt_manager.client.util_msgs, is_not(has_item(context.util_2)))
 
 
@@ -45,16 +45,16 @@ def step_impl(context):
 def step_impl(context):
     context.current_dpop_tested.start()
     context.current_dpop_tested.join(timeout=20)
-    context.current_dpop_tested.value_propagation.assert_called_once_with()
+    context.current_dpop_tested.value_manager.do_value_propagation.assert_called_once()
 
 
 @when("parent does not send VALUE message before TIMEOUT")
 def step_impl(context):
-    context.current_dpop_tested.dfs_manager.parent = 1
+    context.current_dpop_tested.dfs_manager.dfs_structure.parent_id = 1
     context.current_dpop_tested.mqtt_manager.client.value_msgs = []
-    context.current_dpop_tested.dfs_manager.create_pseudo_tree = MagicMock()
+    context.current_dpop_tested.dfs_manager.generate_dfs = MagicMock()
     context.current_dpop_tested.util_propagation = MagicMock()
-    context.current_dpop_tested.get_index_of_best_value_with = MagicMock(return_value=0)
+    context.current_dpop_tested.value_manager.get_index_of_best_value_with = MagicMock(return_value=0)
     assert_that(context.current_dpop_tested.mqtt_manager.client.value_msgs, is_not(has_item(context.value_2)))
 
 
