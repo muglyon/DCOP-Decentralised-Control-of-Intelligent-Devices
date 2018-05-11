@@ -7,7 +7,7 @@
 
 from threading import Thread
 from datetime import datetime
-from helpers.dfs_generator import DfsGenerator
+from helpers.dfs_manager import DfsManager
 from helpers.constraint_manager import ConstraintManager
 from helpers.mqtt_manager import MQTTManager
 from helpers.message_types import MessageTypes
@@ -36,35 +36,89 @@ class Dpop(Thread):
 
         self.constraint_manager = ConstraintManager(self.room)
         self.mqtt_manager = MQTTManager(mqtt_client, self.room)
-        self.dfs_generator = DfsGenerator(self.mqtt_manager, self.room)
+        self.dfs_manager = DfsManager(self.mqtt_manager, self.room)
 
     def run(self):
         """
         /!\ Do the DPOP Algorithm /!\
         """
-        self.dfs_generator.create_pseudo_tree()
+        self.dfs_manager.create_pseudo_tree()
         self.util_propagation()
         self.value_propagation()
 
     def util_propagation(self):
-        """
-        UTIL Propagation phase
-        """
-
         print("\n---------- UTIL PROPAGATION ----------")
 
+        if len(self.dfs_manager.children_id) > 0:
+            self.get_util_matrix_from_childen()
+
+        if not self.dfs_manager.is_root:
+
+            # Also join all relations with parent/pseudo_parent
+            self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_manager.parent_id), self.JOIN)
+        
+            for pseudo_parent in self.dfs_manager.pseudo_parents_id:
+                self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
+
+        # Add to `self` constraint values
+        self.JOIN = self.add_my_utility_in(self.JOIN)
+
+        # Use projection to eliminate self out of message parent
+        self.UTIL = self.project(self.JOIN)
+
+    def value_propagation(self):
+        print("\n---------- VALUE PROPAGATION ----------")
+
+        values = {}
+
+        if self.UTIL is None:
+            self.UTIL = numpy.zeros(self.DIMENSION_SIZE, int)
+
+        if not self.dfs_manager.is_root:
+
+            self.mqtt_manager.publish_util_msg_to(
+                self.dfs_manager.parent_id,
+                json.dumps({self.VARS: self.matrix_dimensions_order, self.DATA: self.UTIL.tolist()})
+            )
+
+            values = self.get_values_from_parents()
+
+        # Find best v
+        index = self.get_index_of_best_value_with(values)
+        self.room.current_v = self.DIMENSION[index]
+        values[str(self.room.id)] = index
+
+        for child in self.dfs_manager.children_id:
+            self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
+
+        if self.dfs_manager.is_leaf():
+            self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
+
+        print("FINAL v : " + str(self.room.current_v))
+        print("const vals : ", self.constraint_manager.get_cost_of_private_constraints_for_value(self.room.current_v))
+
+    '''''''''''''''''''''''''''''''''''''''''''''''''''
+              METHODS UTILS                      
+    '''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    def get_values_from_parents(self):
+
+        start_time = datetime.now()
+
+        # MQTT wait for incoming message of type VALUE from parent
+        while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+            if self.mqtt_manager.has_value_msg():
+                return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
+
+    def get_util_matrix_from_childen(self):
         count = 0
         start_time = datetime.now()
-        
-        if len(self.dfs_generator.children_id) > 0:
-           
-            # MQTT wait for incoming message of type UTIL for each child of the agent
-            while count < len(self.dfs_generator.children_id) \
-                    and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
-                
-                if len(self.mqtt_manager.client.util_msgs) == 0:
-                    continue
-                
+
+        # MQTT wait for incoming message of type UTIL for each child of the agent
+        while count < len(self.dfs_manager.children_id) \
+                and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+
+            if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
                 data_received = json.loads(
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
@@ -76,69 +130,6 @@ class Dpop(Thread):
                 count += 1
 
                 self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
-
-        if not self.dfs_generator.is_root:
-
-            # Also join all relations with parent/pseudo_parent
-            self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_generator.parent_id), self.JOIN)
-        
-            for pseudo_parent in self.dfs_generator.pseudo_parents_id:
-                self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
-
-        # Add to `self` constraint values
-        self.JOIN = self.add_my_utility_in(self.JOIN)
-
-        # Use projection to eliminate self out of message parent
-        self.UTIL = self.project(self.JOIN)
-
-    def value_propagation(self):
-        """
-        VALUE Propagation phase
-        """
-
-        print("\n---------- VALUE PROPAGATION ----------")
-
-        values = {}
-        start_time = datetime.now()
-
-        if self.UTIL is None:
-            self.UTIL = numpy.zeros(self.DIMENSION_SIZE, int)
-
-        if not self.dfs_generator.is_root:
-
-            self.mqtt_manager.publish_util_msg_to(
-                self.dfs_generator.parent_id,
-                json.dumps({self.VARS: self.matrix_dimensions_order, self.DATA: self.UTIL.tolist()})
-            )
-
-            # MQTT wait for incoming message of type VALUE from parent
-            while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
-
-                if len(self.mqtt_manager.client.value_msgs) == 0:
-                    continue
-
-                values = json.loads(
-                    self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
-                )
-                break
-
-        # Find best v
-        index = self.get_index_of_best_value_with(values)
-        self.room.current_v = self.DIMENSION[index]
-        values[str(self.room.id)] = index
-
-        for child in self.dfs_generator.children_id:
-            self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
-
-        if len(self.dfs_generator.children_id) == 0:
-            self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
-
-        print("FINAL v : " + str(self.room.current_v))
-        print("const vals : ", self.constraint_manager.get_value_of_private_constraints_for_value(self.room.current_v))
-
-    '''''''''''''''''''''''''''''''''''''''''''''''''''
-              METHODS UTILS                      
-    '''''''''''''''''''''''''''''''''''''''''''''''''''
 
     def get_index_of_best_value_with(self, data):
         """
@@ -163,11 +154,11 @@ class Dpop(Thread):
         best_index = 0
         tupl = tuple()
 
-        parents = self.dfs_generator.pseudo_parents_id
-        parents.append(self.dfs_generator.parent_id)
+        all_parents_id = self.dfs_manager.pseudo_parents_id
+        all_parents_id.append(self.dfs_manager.parent_id)
 
         # Check for parents values
-        for parent_id in parents:
+        for parent_id in all_parents_id:
             key = str(parent_id)
             if key in data:
                 tupl = tupl + (data[key],)
@@ -249,7 +240,7 @@ class Dpop(Thread):
 
         for i in range(0, self.DIMENSION_SIZE):
             for j in range(0, self.DIMENSION_SIZE):
-                R[i][j] += self.constraint_manager.c3(self.DIMENSION[i], self.DIMENSION[j])
+                R[i][j] += self.constraint_manager.c3_neighbors_sync(self.DIMENSION[i], self.DIMENSION[j])
 
         self.matrix_dimensions_order.append(parent_id)
         return R
@@ -267,7 +258,7 @@ class Dpop(Thread):
             R = numpy.zeros(self.DIMENSION_SIZE, int)
         
         for index, value in numpy.ndenumerate(R):
-            R[index] += self.constraint_manager.get_value_of_private_constraints_for_value(self.DIMENSION[index[0]])
+            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(self.DIMENSION[index[0]])
 
             if R[index] == self.INFINITY:
                 R[index] = self.INFINITY

@@ -10,7 +10,9 @@ import operator
 
 class Room(object):
 
+    MIN_TAU_VALUE = 5
     MAX_NB_DEVICES = 6
+    INFINITY = 241
 
     def __init__(self, id_room):
         self.id = id_room
@@ -19,13 +21,16 @@ class Room(object):
         self.leftNeighbor = None
         self.current_v = 0
         self.previous_v = 0
-        self.tau = randint(5, 241)
+        self.tau = randint(self.MIN_TAU_VALUE, self.INFINITY)
         self.device_list = []
 
-        for i in range(0, randint(0, self.MAX_NB_DEVICES)):
-            id_device = str(self.id) + str(i + 1)
-            critic_state = random.random() < 0.05
-            self.device_list.append(Device(int(id_device), randint(5, 241), critic_state))
+        for device_id in range(0, randint(0, self.MAX_NB_DEVICES)):
+            self.add_new_device(device_id)
+
+    def add_new_device(self, device_id):
+        id_device = str(self.id) + str(device_id + 1)
+        critic_state = random.random() < 0.05
+        self.device_list.append(Device(int(id_device), randint(self.MIN_TAU_VALUE, self.INFINITY), critic_state))
 
     def set_left_neighbor(self, neighbor):
         self.leftNeighbor = neighbor
@@ -51,22 +56,25 @@ class Room(object):
 
         for device in self.device_list:
             if device.is_in_critic_state:
-                if random.random() < 0.5:
-                    self.device_list.pop(self.device_list.index(device))
-                else:
-                    device.is_in_critic_state = False
-                    device.set_end_of_prog(241)
+                self.randomly_pop_or_reprogram_device(device)
             else:
                 device.set_end_of_prog(device.end_of_prog - minutes)
 
-            if device.end_of_prog == 241:
+            if device.end_of_prog == self.INFINITY:
                 self.tau = 0
 
-        # Randomly add a new device
         if random.random() < 0.5:
-            id_device = str(self.id) + str(len(self.device_list) + 1)
-            critic_state = random.random() < 0.05
-            self.device_list.append(Device(int(id_device), randint(5, 241), critic_state))
+            self.add_new_device(len(self.device_list))
+
+    def randomly_pop_or_reprogram_device(self, device):
+        if random.random() < 0.5:
+            self.device_list.pop(self.device_list.index(device))
+        else:
+            device.is_in_critic_state = False
+            device.set_end_of_prog(241)
+
+    def has_no_devices(self):
+        return len(self.device_list) == 0
 
     def is_in_critical_state(self):
         """
@@ -159,7 +167,9 @@ class Room(object):
                 is_device_exist = True
                 break
 
-        if not is_device_exist:
+        if is_device_exist:
+            pass
+        else:
             self.device_list.append(device)
 
     def to_string_neighbors(self):

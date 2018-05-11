@@ -9,3 +9,15 @@ class MessageTypes(Enum):
     PSEUDO = "PSEUDO"
     UTIL = "UTIL"
     VALUES = "VALUES"
+
+    @staticmethod
+    def is_child(msg_type):
+        return msg_type == MessageTypes.CHILD.value
+
+    @staticmethod
+    def is_pseudo(msg_type):
+        return msg_type == MessageTypes.PSEUDO.value
+
+    @staticmethod
+    def is_on(msg_type):
+        return msg_type == MessageTypes.ON.value

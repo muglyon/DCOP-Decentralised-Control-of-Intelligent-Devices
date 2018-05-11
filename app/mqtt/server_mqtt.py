@@ -8,7 +8,6 @@ class ServerMQTT(CustomMQTTClass):
         CustomMQTTClass.__init__(self, "#")
 
         self.hospital = hospital
-        self.client.listMessages = []
 
     def on_connect(self, client, obj, flags, rc):
         super().on_connect(client, obj, flags, rc)
@@ -19,4 +18,4 @@ class ServerMQTT(CustomMQTTClass):
         super().on_message(client, userdata, msg)
 
         if self.client.SERVER_TOPIC in msg.topic:
-            client.listMessages.append(str(msg.payload.decode('utf-8')))
+            client.list_msgs_waiting.append(str(msg.payload.decode('utf-8')))
