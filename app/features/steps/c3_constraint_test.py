@@ -10,29 +10,29 @@ from helpers.constants import Constants
 @when('both AI call healthcare professionals in almost the same time t1 and t2 with t1 > t2')
 def step_impl(context):
     mock_constraints(context)
-    context.current_dpop_tested.util_manager.constraint_manager.c5_nothing_to_report\
+    context.dpop_to_test.util_manager.constraint_manager.c5_nothing_to_report\
         .side_effect = mocked_constraint_return_15
 
 
 @then('AI in syringe pump should call healthcare professionals together synchronized in t2')
 def step_impl(context):
-    context.current_dpop_tested.start()
-    context.current_dpop_tested.join(timeout=10)
-    assert_that(context.current_dpop_tested.room.current_v, equal_to(10))
+    context.dpop_to_test.start()
+    context.dpop_to_test.join(timeout=10)
+    assert_that(context.dpop_to_test.room.current_v, equal_to(10))
 
 
 @when('one is calling healthcare professionals but not the other one')
 def step_impl(context):
     mock_constraints(context)
-    context.current_dpop_tested.util_manager.constraint_manager.c5_nothing_to_report\
+    context.dpop_to_test.util_manager.constraint_manager.c5_nothing_to_report\
         .side_effect = mocked_constraint_return_241
 
 
 @then('only the AI who need intervention should call healthcare professionals')
 def step_impl(context):
-    context.current_dpop_tested.start()
-    context.current_dpop_tested.join(timeout=10)
-    assert_that(context.current_dpop_tested.room.current_v, equal_to(Constants.INFINITY))
+    context.dpop_to_test.start()
+    context.dpop_to_test.join(timeout=10)
+    assert_that(context.dpop_to_test.room.current_v, equal_to(Constants.INFINITY))
 
 
 ###
@@ -40,10 +40,10 @@ def step_impl(context):
 ###
 
 def mock_constraints(context):
-    context.current_dpop_tested.util_manager.constraint_manager.c1_no_devices = MagicMock(return_value=0)
-    context.current_dpop_tested.util_manager.constraint_manager.c2_device_status = MagicMock(return_value=0)
-    context.current_dpop_tested.util_manager.constraint_manager.c4_last_intervention = MagicMock(return_value=0)
-    context.current_dpop_tested.util_manager.constraint_manager.c5_nothing_to_report = MagicMock()
+    context.dpop_to_test.util_manager.constraint_manager.c1_no_devices = MagicMock(return_value=0)
+    context.dpop_to_test.util_manager.constraint_manager.c2_device_status = MagicMock(return_value=0)
+    context.dpop_to_test.util_manager.constraint_manager.c4_last_intervention = MagicMock(return_value=0)
+    context.dpop_to_test.util_manager.constraint_manager.c5_nothing_to_report = MagicMock()
 
 
 def mocked_constraint_return_15(arg):

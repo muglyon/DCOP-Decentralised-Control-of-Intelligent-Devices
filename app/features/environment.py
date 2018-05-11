@@ -18,6 +18,8 @@ import numpy
 
 def before_scenario(context, scenario):
 
+    Constants.TIMEOUT = 10
+
     context.util_2 = 'UTIL ' + json.dumps({"vars": [4, 1, 2], "data": numpy.zeros((17, 17), float).tolist()})
     context.value_2 = 'VALUES ' + json.dumps({"1": 0})
     
@@ -68,7 +70,6 @@ def before_scenario(context, scenario):
     context.dpop_1.dfs_manager.generate_dfs = MagicMock()
 
     context.dpop_2 = Dpop(context.agent_2, context.mock_clientMqtt_2)
-    Constants.TIMEOUT = 10
 
     context.dpop_4 = Dpop(context.agent_4, context.mock_clientMqtt_4)
     context.dpop_4.dfs_manager.dfs_structure.parent_id = context.agent_2.id
