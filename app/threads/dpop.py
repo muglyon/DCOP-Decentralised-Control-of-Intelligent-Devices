@@ -16,11 +16,6 @@ from helpers.util_manager import UtilManager
 
 class Dpop(Thread):
 
-    TIMEOUT = 200
-
-    DATA = "data"
-    VARS = "vars"
-
     def __init__(self, room, mqtt_client):
         Thread.__init__(self)
         self.room = room

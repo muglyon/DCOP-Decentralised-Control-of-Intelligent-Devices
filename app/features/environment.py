@@ -6,8 +6,8 @@
 # If the environment is not correct, dpop algorithm will fail
 # /!\ Pay specificly attention to the mocked DFS Generation results ! /!\
 # ----------------
-# Also, be aware that this is a basic setup that can be over written during specific setp_impl 
-
+# Also, be aware that this is a basic setup that can be over written during specific setp_impl
+from helpers.constants import Constants
 from model.room import Room
 from unittest.mock import MagicMock
 from threads.dpop import Dpop
@@ -18,7 +18,6 @@ import numpy
 
 def before_scenario(context, scenario):
 
-    context.INFINITY = 241
     context.util_2 = 'UTIL ' + json.dumps({"vars": [4, 1, 2], "data": numpy.zeros((17, 17), float).tolist()})
     context.value_2 = 'VALUES ' + json.dumps({"1": 0})
     
@@ -69,8 +68,7 @@ def before_scenario(context, scenario):
     context.dpop_1.dfs_manager.generate_dfs = MagicMock()
 
     context.dpop_2 = Dpop(context.agent_2, context.mock_clientMqtt_2)
-    context.dpop_2.util_manager.TIMEOUT = 10
-    context.dpop_2.value_manager.TIMEOUT = 10
+    Constants.TIMEOUT = 10
 
     context.dpop_4 = Dpop(context.agent_4, context.mock_clientMqtt_4)
     context.dpop_4.dfs_manager.dfs_structure.parent_id = context.agent_2.id

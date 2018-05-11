@@ -1,4 +1,5 @@
 from datetime import datetime
+from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.message_types import MessageTypes
 
@@ -7,13 +8,6 @@ import json
 
 
 class UtilManager(object):
-
-    DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241]
-    DIMENSION_SIZE = len(DIMENSION)
-    TIMEOUT = 200
-    INFINITY = 241
-    DATA = "data"
-    VARS = "vars"
 
     def __init__(self, mqtt_manager, dfs_structure):
         self.JOIN = None
@@ -51,7 +45,7 @@ class UtilManager(object):
 
         # MQTT wait for incoming message of type UTIL for each child of the agent
         while count < len(self.dfs_structure.children_id) \
-                and (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+                and (datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
 
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
@@ -59,8 +53,8 @@ class UtilManager(object):
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
-                matrix_data = numpy.asarray(data_received[self.DATA])
-                self.matrix_dimensions_order.extend(data_received[self.VARS])
+                matrix_data = numpy.asarray(data_received[Constants.DATA])
+                self.matrix_dimensions_order.extend(data_received[Constants.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
 
@@ -74,15 +68,15 @@ class UtilManager(object):
         :return: the utility matrix R
         :rtype: numpy.ndarray
         """
-        R = numpy.zeros((self.DIMENSION_SIZE, self.DIMENSION_SIZE), int)
+        R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
 
         if parent_id in self.matrix_dimensions_order:
             # Parent was already take in account by one of my children
             return None
 
-        for i in range(0, self.DIMENSION_SIZE):
-            for j in range(0, self.DIMENSION_SIZE):
-                R[i][j] += self.constraint_manager.c3_neighbors_sync(self.DIMENSION[i], self.DIMENSION[j])
+        for i in range(0, Constants.DIMENSION_SIZE):
+            for j in range(0, Constants.DIMENSION_SIZE):
+                R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
 
         self.matrix_dimensions_order.append(parent_id)
         return R
@@ -129,13 +123,13 @@ class UtilManager(object):
         :rtype: numpy.ndarray
         """
         if R is None:
-            R = numpy.zeros(self.DIMENSION_SIZE, int)
+            R = numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         for index, value in numpy.ndenumerate(R):
-            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(self.DIMENSION[index[0]])
+            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
 
-            if R[index] == self.INFINITY:
-                R[index] = self.INFINITY
+            if R[index] == Constants.INFINITY:
+                R[index] = Constants.INFINITY
 
         return R
 

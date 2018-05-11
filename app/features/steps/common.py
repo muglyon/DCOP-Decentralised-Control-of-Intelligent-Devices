@@ -3,6 +3,7 @@
 
 from behave import *
 from hamcrest import *
+from helpers.constants import Constants
 
 
 @given('an AI in syringe pump')
@@ -26,7 +27,7 @@ def step_impl(context):
 def step_impl(context):
     context.current_dpop_tested.start()
     context.current_dpop_tested.join(timeout=10)
-    assert_that(context.current_dpop_tested.room.current_v, equal_to(context.INFINITY))
+    assert_that(context.current_dpop_tested.room.current_v, equal_to(Constants.INFINITY))
 
 
 @then('AI in syringe pump should call healthcare professionals right now')

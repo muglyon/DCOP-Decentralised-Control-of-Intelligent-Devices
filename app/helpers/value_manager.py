@@ -1,19 +1,12 @@
 from datetime import datetime
+from helpers.constants import Constants
+from helpers.message_types import MessageTypes
 
 import numpy
 import json
 
-from helpers.message_types import MessageTypes
-
 
 class ValueManager(object):
-
-    DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241]
-    DIMENSION_SIZE = len(DIMENSION)
-    TIMEOUT = 200
-    INFINITY = 241
-    DATA = "data"
-    VARS = "vars"
 
     def __init__(self, mqtt_manager, dfs_structure):
         self.mqtt_manager = mqtt_manager
@@ -25,19 +18,19 @@ class ValueManager(object):
         values = {}
 
         if util_matrix is None:
-            util_matrix = numpy.zeros(self.DIMENSION_SIZE, int)
+            util_matrix = numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         if not self.dfs_structure.is_root:
             self.mqtt_manager.publish_util_msg_to(
                 self.dfs_structure.parent_id,
-                json.dumps({self.VARS: matrix_dimensions_order, self.DATA: util_matrix.tolist()})
+                json.dumps({Constants.VARS: matrix_dimensions_order, Constants.DATA: util_matrix.tolist()})
             )
 
             values = self.get_values_from_parents()
 
         # Find best v
         index = self.get_index_of_best_value_with(values, matrix_dimensions_order, join_matrix)
-        self.dfs_structure.room.current_v = self.DIMENSION[index]
+        self.dfs_structure.room.current_v = Constants.DIMENSION[index]
         values[str(self.dfs_structure.room.id)] = index
 
         for child in self.dfs_structure.children_id:
@@ -51,7 +44,7 @@ class ValueManager(object):
         start_time = datetime.now()
 
         # MQTT wait for incoming message of type VALUE from parent
-        while (datetime.now() - start_time).total_seconds() < self.TIMEOUT:
+        while (datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
             if self.mqtt_manager.has_value_msg():
                 return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
 
@@ -67,7 +60,7 @@ class ValueManager(object):
         if data is None or not type(data) is dict:
             raise Exception("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)")
 
-        best_value = self.INFINITY + 1
+        best_value = Constants.INFINITY + 1
         best_index = 0
         tupl = tuple()
 

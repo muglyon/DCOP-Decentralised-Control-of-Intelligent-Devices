@@ -1,6 +1,7 @@
 #! python3
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
+from helpers.constants import Constants
 from helpers.message_types import MessageTypes
 from helpers.mqtt_manager import MQTTManager
 from threading import Thread
@@ -11,11 +12,6 @@ import operator
 
 
 class Starter(Thread):
-
-    DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241, 242]
-    URGT_TIME = 30
-    INFINITY_IDX = 16
-    TWO_MINUTS = 120
 
     def __init__(self, agents, mqtt_client):
 
@@ -28,7 +24,7 @@ class Starter(Thread):
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
-            self.old_results_index[str(agent.id)] = self.INFINITY_IDX
+            self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
 
     def run(self):
 
@@ -77,17 +73,17 @@ class Starter(Thread):
             sorted_priorities = sorted(self.priorities.items(), key=operator.itemgetter(1))
             for agent_id, priority in sorted_priorities:
                 print("Room ", agent_id,
-                      " need intervention in ", self.DIMENSION[received_index[agent_id]],
+                      " need intervention in ", Constants.DIMENSION[received_index[agent_id]],
                       " minutes. PRIORITY : ", priority)
                 self.old_results_index[agent_id] = received_index[agent_id]
 
-            time.sleep(self.TWO_MINUTS)
+            time.sleep(Constants.TWO_MINUTS)
 
     def manage_priorities(self, data_received):
         for key in data_received:
 
-            if self.DIMENSION[self.old_results_index[key]] <= self.URGT_TIME \
-                    and self.DIMENSION[data_received[key]] < self.URGT_TIME:
+            if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME \
+                    and Constants.DIMENSION[data_received[key]] < Constants.URGT_TIME:
                 self.priorities[key] += 1
             else:
                 self.priorities[key] = 0
