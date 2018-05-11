@@ -11,7 +11,7 @@ def step_impl(context):
 
 @when('project the agent')
 def step_impl(context):
-    context.result = context.dpop_1.project(context.matrix)
+    context.result = context.dpop_1.util_manager.project(context.matrix)
 
 
 @then('result is a matrix has one less dimension')

@@ -1,10 +1,7 @@
+from helpers.constants import Constants
+
 
 class ConstraintManager(object):
-
-    INFINITY = 241
-    URGT_TIME = 30
-    T_SYNCHRO = 30
-    THREE_HOURS = 180
 
     def __init__(self, room):
         self.room = room
@@ -16,31 +13,31 @@ class ConstraintManager(object):
                + self.c5_nothing_to_report(value)
 
     def c1_no_devices(self, vi):
-        if self.room.has_no_devices() and vi < self.INFINITY:
-            return self.INFINITY
+        if self.room.has_no_devices() and vi < Constants.INFINITY:
+            return Constants.INFINITY
         return 0
 
     def c2_device_status(self, vi):
 
         if self.room.is_in_critical_state():
             if vi > 0:
-                return self.INFINITY
+                return Constants.INFINITY
         else:
             min_end_of_prog = self.room.get_min_end_of_prog()
-            if min_end_of_prog <= self.URGT_TIME and vi > min_end_of_prog:
+            if min_end_of_prog <= Constants.URGT_TIME and vi > min_end_of_prog:
                 return 1
 
         return 0
 
     def c3_neighbors_sync(self, vi, vj):
         diff = abs(vi - vj)
-        if diff <= self.T_SYNCHRO and diff != 0:
+        if diff <= Constants.T_SYNCHRO and diff != 0:
             return 1
         return 0
 
     def c4_last_intervention(self, vi):
-        if self.room.is_tau_too_high() and vi > self.URGT_TIME:
-            return self.INFINITY
+        if self.room.is_tau_too_high() and vi > Constants.URGT_TIME:
+            return Constants.INFINITY
         return 0
 
     def c5_nothing_to_report(self, vi):
@@ -49,9 +46,9 @@ class ConstraintManager(object):
             pass
 
         else:
-            if self.room.get_min_end_of_prog() > self.URGT_TIME \
-                    and self.room.tau < self.THREE_HOURS \
-                    and vi < self.INFINITY:
+            if self.room.get_min_end_of_prog() > Constants.URGT_TIME \
+                    and self.room.tau < Constants.THREE_HOURS \
+                    and vi < Constants.INFINITY:
                 return 1
 
         return 0

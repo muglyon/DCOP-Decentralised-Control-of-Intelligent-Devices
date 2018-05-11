@@ -1,8 +1,9 @@
 #! python3
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
+from helpers.constants import Constants
 from helpers.message_types import MessageTypes
-from helpers.mqtt_manager import MQTTManager
+from mqtt.mqtt_manager import MQTTManager
 from threading import Thread
 
 import time
@@ -11,11 +12,6 @@ import operator
 
 
 class Starter(Thread):
-
-    DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241, 242]
-    URGT_TIME = 30
-    INFINITY_IDX = 16
-    TWO_MINUTS = 120
 
     def __init__(self, agents, mqtt_client):
 
@@ -28,7 +24,7 @@ class Starter(Thread):
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
-            self.old_results_index[str(agent.id)] = self.INFINITY_IDX
+            self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
 
     def run(self):
 
@@ -36,27 +32,12 @@ class Starter(Thread):
 
             print("--- START ALGORITHM ---")
 
-            root = 0
-            best_value = 0
             received_index = {}
     
             for agent in self.agents:
                 self.mqtt_manager.publish_on_msg_to(agent.id)
 
-            while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
-                # Wait for ROOTs messages
-                pass
-
-            for msg in self.mqtt_manager.client.list_msgs_waiting:
-                splited = msg.split(":")
-                if int(splited[1]) > best_value:
-                    root = int(splited[0])
-                    best_value = int(splited[1])
-
-            self.mqtt_manager.client.list_msgs_waiting = []
-
-            for agent in self.agents:
-                self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
+            self.choose_root()
 
             while len(received_index) < len(self.agents):
 
@@ -77,17 +58,39 @@ class Starter(Thread):
             sorted_priorities = sorted(self.priorities.items(), key=operator.itemgetter(1))
             for agent_id, priority in sorted_priorities:
                 print("Room ", agent_id,
-                      " need intervention in ", self.DIMENSION[received_index[agent_id]],
+                      " need intervention in ", Constants.DIMENSION[received_index[agent_id]],
                       " minutes. PRIORITY : ", priority)
                 self.old_results_index[agent_id] = received_index[agent_id]
 
-            time.sleep(self.TWO_MINUTS)
+            time.sleep(Constants.TWO_MINUTS)
+
+    def choose_root(self):
+
+        root = 0
+        best_value = 0
+
+        while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
+            # Wait for ROOTs messages
+            pass
+
+        for msg in self.mqtt_manager.client.list_msgs_waiting:
+
+            splited = msg.split(":")
+            if int(splited[1]) > best_value:
+                root = int(splited[0])
+                best_value = int(splited[1])
+
+        self.mqtt_manager.client.list_msgs_waiting = []
+
+        for agent in self.agents:
+            self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
 
     def manage_priorities(self, data_received):
+
         for key in data_received:
 
-            if self.DIMENSION[self.old_results_index[key]] <= self.URGT_TIME \
-                    and self.DIMENSION[data_received[key]] < self.URGT_TIME:
+            if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME \
+                    and Constants.DIMENSION[data_received[key]] < Constants.URGT_TIME:
                 self.priorities[key] += 1
             else:
                 self.priorities[key] = 0

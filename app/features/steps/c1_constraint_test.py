@@ -6,4 +6,4 @@ from behave import *
 
 @when('no IoT devices are connected to the AI in syringe pump')
 def step_impl(context):
-    context.current_dpop_tested.room.set_devices([])
+    context.dpop_to_test.room.set_devices([])
