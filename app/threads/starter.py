@@ -3,6 +3,7 @@
 # It is a thread intended to be launched by the server
 from helpers.constants import Constants
 from helpers.message_types import MessageTypes
+from helpers import log
 from mqtt.mqtt_manager import MQTTManager
 from threading import Thread
 
@@ -30,8 +31,9 @@ class Starter(Thread):
 
         while 1:
 
-            print("--- START ALGORITHM ---")
+            log.info("Start", "DCOP/SERVER/")
 
+            results = ""
             received_index = {}
     
             for agent in self.agents:
@@ -45,23 +47,20 @@ class Starter(Thread):
                     # Wait for VALUES results
                     continue
 
-                print("---", self.mqtt_manager.client.list_msgs_waiting)
-
                 received_index.update(
                     json.loads(self.mqtt_manager.client.list_msgs_waiting.pop(0).split(MessageTypes.VALUES.value + " ")[1])
                 )
 
             self.manage_priorities(received_index)
 
-            print("--- RESULTS ---")
-
             sorted_priorities = sorted(self.priorities.items(), key=operator.itemgetter(1))
             for agent_id, priority in sorted_priorities:
-                print("Room ", agent_id,
-                      " need intervention in ", Constants.DIMENSION[received_index[agent_id]],
-                      " minutes. PRIORITY : ", priority)
+                results += "Room " + str(agent_id) + \
+                           " need intervention in " + str(Constants.DIMENSION[received_index[agent_id]]) + \
+                           " minutes. PRIORITY : " + str(priority) + " "
                 self.old_results_index[agent_id] = received_index[agent_id]
 
+            log.info(results, "DCOP/SERVER/")
             time.sleep(Constants.TWO_MINUTS)
 
     def choose_root(self):

@@ -3,6 +3,7 @@ from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
+from helpers import log
 
 import numpy
 import json
@@ -19,7 +20,7 @@ class UtilManager(DpopManager):
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
-        print("\n---------- UTIL PROPAGATION ----------")
+        log.info("UTIL PROPAGATION", 'DCOP/' + str(self.dfs_structure.room.id))
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
@@ -109,7 +110,7 @@ class UtilManager(DpopManager):
                     tupl = tuple(numpy.concatenate((numpy.array(index1), numpy.delete(numpy.array(index2), 0, 0))))
                     final_matrix[tupl] = value1 + value2
 
-        print("SHAPE OF COMBINED MATRIX : " + str(final_matrix.shape))
+        log.info("Shape of Combined matrix : " + str(final_matrix.shape), "DCOP/" + str(self.dfs_structure.room.id))
         return final_matrix
 
     def add_my_utility_in(self, R):

@@ -191,8 +191,8 @@ class Room(object):
         return string
 
     def to_string(self):
-        string = "ROOM " + str(self.id) + " : \n"
-        string += "Tau : " + str(self.tau) + "\n"
+        string = "ROOM " + str(self.id) + " : "
+        string += "Tau : " + str(self.tau)
 
         for device in self.device_list:
             string += device.to_string()

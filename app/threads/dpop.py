@@ -10,6 +10,7 @@ from threading import Thread
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dfs_manager import DfsManager
 from helpers.managers.value_manager import ValueManager
+from helpers import log
 from mqtt.mqtt_manager import MQTTManager
 from helpers.managers.util_manager import UtilManager
 
@@ -34,6 +35,7 @@ class Dpop(Thread):
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
 
-        print("FINAL v : " + str(self.room.current_v))
-        print("const vals : ", ConstraintManager(self.room)
-              .get_cost_of_private_constraints_for_value(self.room.current_v))
+        log.info("FINAL v = " + str(self.room.current_v), "DCOP/" + str(self.room.id))
+        log.info("const vals : " +
+                 str(ConstraintManager(self.room).get_cost_of_private_constraints_for_value(self.room.current_v)),
+                 "DCOP/" + str(self.room.id))

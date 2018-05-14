@@ -2,6 +2,7 @@ from datetime import datetime
 from helpers.constants import Constants
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
+from helpers import log
 
 import numpy
 import json
@@ -13,7 +14,7 @@ class ValueManager(DpopManager):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
-        print("\n---------- VALUE PROPAGATION ----------")
+        log.info("Value Propagation", "DCOP/" + str(self.dfs_structure.room.id))
 
         values = {}
 

@@ -6,7 +6,6 @@ class ServerMQTT(CustomMQTTClass):
 
     def __init__(self, hospital):
         CustomMQTTClass.__init__(self, "#")
-
         self.hospital = hospital
 
     def on_connect(self, client, obj, flags, rc):

@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from helpers import log
 from helpers.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from threads.dpop import Dpop
@@ -24,13 +24,13 @@ class AgentMQTT(CustomMQTTClass):
 
         if MessageTypes.is_on(str_msg):
 
-            print("---------- ITERATION ", self.counter, " --------")
+            log.info("Iteration " + str(self.counter), "DCOP/" + str(self.room.id))
 
             if self.counter > 0:
                 self.room.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.room.previous_v = self.room.current_v
                 self.start_time = datetime.now()
-                print("\n", self.room.to_string())
+                log.info(self.room.to_string(), "DCOP/" + str(self.room.id))
 
             thread = Dpop(self.room, client)
             thread.start()

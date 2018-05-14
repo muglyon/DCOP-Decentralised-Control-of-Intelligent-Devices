@@ -1,17 +1,18 @@
 #! python3
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
+from helpers import log
 from model.dfs_structure import DfsStructure
 
 
 class DfsManager(DpopManager):
 
     def __init__(self, mqtt_manager, room):
-        DpopManager.__init__(self,mqtt_manager, DfsStructure(room))
+        DpopManager.__init__(self, mqtt_manager, DfsStructure(room))
 
     def generate_dfs(self):
 
-        print("\n---------- DFS GENERATION ----------")
+        log.info("DFS GENERATION", 'DCOP/' + str(self.dfs_structure.room.id))
 
         self.choose_root()
 
@@ -66,7 +67,7 @@ class DfsManager(DpopManager):
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
-                    print(self.pseudo_tree_to_string())
+                    log.info(self.pseudo_tree_to_string(), 'DCOP/' + str(self.dfs_structure.room.id))
                     continue_generation = False
 
     def choose_root(self):
@@ -88,15 +89,15 @@ class DfsManager(DpopManager):
         :return: pseudo-tree in string format
         :rtype: string
         """
-        string = str(self.dfs_structure.room.id) + "\n"
+        string = str(self.dfs_structure.room.id)
 
         for childId in self.dfs_structure.children_id:
-            string += "| " + str(childId) + "\n"
+            string += "[| " + str(childId) + "]"
 
         for pseudoId in self.dfs_structure.pseudo_parents_id:
-            string += "--> " + str(pseudoId) + "\n"
+            string += "[--> " + str(pseudoId) + "]"
 
         for pseudoId in self.dfs_structure.pseudo_children_id:
-            string += "<-- " + str(pseudoId) + "\n"
+            string += "[<-- " + str(pseudoId) + "]"
 
         return string

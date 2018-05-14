@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import logging
 
 
 class CustomMQTTClass:
@@ -20,15 +21,17 @@ class CustomMQTTClass:
 
         self.topic_to_subscribe = self.client.DCOP_TOPIC + subtopic
 
+        self.log = logging.getLogger()
+
     def on_connect(self, client, obj, flags, rc):
         self.client.subscribe(self.topic_to_subscribe)
-        print("Subscribe to ", self.topic_to_subscribe)
+        self.log.info("Subscribe", extra={'topic': self.topic_to_subscribe})
 
     def on_message(self, client, obj, msg):
-        print(msg.topic + " " + str(msg.payload))
+        self.log.info(str(msg.payload.decode('utf-8')), extra={'topic': msg.topic})
 
     def on_disconnect(self, client, userdata, rc=0):
-        print("Disconnected result code :", rc)
+        self.log.info("Disconnected result code :" + rc, extra={'topic': self.topic_to_subscribe})
         client.loop_stop()
 
     def run(self):
