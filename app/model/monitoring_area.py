@@ -1,5 +1,5 @@
 #! python3
-# room.py - Modelisation of a room
+# monitoring_area.py - Modelisation of a room
 
 from model.device import Device
 from random import randint
@@ -9,14 +9,14 @@ import operator
 import json
 
 
-class Room(object):
+class MonitoringArea(object):
 
     MIN_TAU_VALUE = 5
     MAX_NB_DEVICES = 6
     INFINITY = 241
 
-    def __init__(self, id_room):
-        self.id = id_room
+    def __init__(self, id_monitored_area):
+        self.id = id_monitored_area
         self.frontNeighbor = None
         self.rightNeighbor = None
         self.leftNeighbor = None
@@ -179,7 +179,7 @@ class Room(object):
         :return: neighbors in string format
         :rtype: string
         """
-        string = "ROOM " + str(self.id) + " : \n"
+        string = "monitored_area " + str(self.id) + " : \n"
 
         if self.leftNeighbor is not None:
             string += " | LeftNeighbor : " + str(self.leftNeighbor.id) + "\n"

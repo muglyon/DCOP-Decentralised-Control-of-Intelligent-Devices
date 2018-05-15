@@ -14,7 +14,7 @@ class ValueManager(DpopManager):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
-        log.info("Start", self.dfs_structure.room.id, Constants.VALUE)
+        log.info("Start", self.dfs_structure.monitored_area.id, Constants.VALUE)
 
         values = dict()
 
@@ -31,8 +31,8 @@ class ValueManager(DpopManager):
 
         # Find best v
         index = self.get_index_of_best_value_with(values, matrix_dimensions_order, join_matrix)
-        self.dfs_structure.room.current_v = Constants.DIMENSION[index]
-        values[str(self.dfs_structure.room.id)] = index
+        self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
+        values[str(self.dfs_structure.monitored_area.id)] = index
 
         for child in self.dfs_structure.children_id:
             self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))

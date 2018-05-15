@@ -18,7 +18,7 @@ def step_impl(context):
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.room.current_v, equal_to(10))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(10))
 
 
 @when('one is calling healthcare professionals but not the other one')
@@ -32,7 +32,7 @@ def step_impl(context):
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.room.current_v, equal_to(Constants.INFINITY))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(Constants.INFINITY))
 
 
 ###

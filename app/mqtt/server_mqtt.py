@@ -10,7 +10,7 @@ class ServerMQTT(CustomMQTTClass):
 
     def on_connect(self, client, obj, flags, rc):
         super().on_connect(client, obj, flags, rc)
-        thread = Starter(self.hospital.roomList, client)
+        thread = Starter(self.hospital.monitored_area_list, client)
         thread.start()
 
     def on_message(self, client, userdata, msg):

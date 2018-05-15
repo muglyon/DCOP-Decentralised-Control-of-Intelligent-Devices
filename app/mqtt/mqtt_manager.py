@@ -3,9 +3,9 @@ from helpers.message_types import MessageTypes
 
 class MQTTManager(object):
 
-    def __init__(self, client, room=None):
+    def __init__(self, client, monitored_area=None):
         self.client = client
-        self.room = room
+        self.monitored_area = monitored_area
 
     def has_no_msg(self):
         return len(self.client.list_msgs_waiting) == 0
@@ -20,16 +20,16 @@ class MQTTManager(object):
         return len(self.client.value_msgs) > 0
 
     def publish_root_value_msg(self):
-        self.client.publish(self.client.ROOT_TOPIC, str(self.room.id) + ":" + str(self.room.get_degree()))
+        self.client.publish(self.client.ROOT_TOPIC, str(self.monitored_area.id) + ":" + str(self.monitored_area.get_degree()))
 
     def publish_child_msg_to(self, recipient_id):
         self.client.publish(
-            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.CHILD.value + " " + str(self.room.id)
+            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.CHILD.value + " " + str(self.monitored_area.id)
         )
 
     def publish_pseudo_msg_to(self, recipient_id):
         self.client.publish(
-            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.PSEUDO.value + " " + str(self.room.id)
+            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.PSEUDO.value + " " + str(self.monitored_area.id)
         )
 
     def publish_value_msg_to(self, recipient_id, values):

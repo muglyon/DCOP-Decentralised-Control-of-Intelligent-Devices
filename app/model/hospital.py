@@ -1,16 +1,16 @@
 #! python3
 # hospital.py - Implement the environment model for testing/configuring
 
-from model.room import Room
+from model.monitoring_area import MonitoringArea
 
 
 class Hospital(object):
 
     def __init__(self, size):
-        self.roomList = []
+        self.monitored_area_list = []
 
         for i in range(1, size + 1):
-            self.roomList.append(Room(i))
+            self.monitored_area_list.append(MonitoringArea(i))
 
         self.setup_neighbors()
 
@@ -19,9 +19,9 @@ class Hospital(object):
         Setup Neighbors on two lines (cf. Java Code)
         """
 
-        moitie_agent = int(len(self.roomList) / 2)
-        left_side = self.roomList[0:moitie_agent]
-        right_side = self.roomList[moitie_agent:len(self.roomList)]
+        moitie_agent = int(len(self.monitored_area_list) / 2)
+        left_side = self.monitored_area_list[0:moitie_agent]
+        right_side = self.monitored_area_list[moitie_agent:len(self.monitored_area_list)]
 
         for k in range(0, moitie_agent):
             
@@ -50,6 +50,6 @@ class Hospital(object):
 
     def to_string(self):
         string = ""
-        for room in self.roomList:
-            string += room.to_string()
+        for monitored_area in self.monitored_area_list:
+            string += monitored_area.to_json()
         return string

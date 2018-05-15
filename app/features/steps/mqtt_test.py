@@ -63,4 +63,4 @@ def step_impl(context):
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=20)
-    assert_that(context.dpop_to_test.room.current_v, not_none())
+    assert_that(context.dpop_to_test.monitored_area.current_v, not_none())

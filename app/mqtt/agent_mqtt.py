@@ -8,10 +8,10 @@ from threads.dpop import Dpop
 
 class AgentMQTT(CustomMQTTClass):
 
-    def __init__(self, room):
-        CustomMQTTClass.__init__(self, str(room.id) + "/#")
+    def __init__(self, monitored_area):
+        CustomMQTTClass.__init__(self, str(monitored_area.id) + "/#")
 
-        self.room = room
+        self.monitored_area = monitored_area
         self.counter = 0
         self.start_time = datetime.now()
 
@@ -25,15 +25,15 @@ class AgentMQTT(CustomMQTTClass):
 
         if MessageTypes.is_on(str_msg):
 
-            log.info("Iteration " + str(self.counter), self.room.id, Constants.INFO)
+            log.info("Iteration " + str(self.counter), self.monitored_area.id, Constants.INFO)
 
             if self.counter > 0:
-                self.room.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
-                self.room.previous_v = self.room.current_v
+                self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
+                self.monitored_area.previous_v = self.monitored_area.current_v
                 self.start_time = datetime.now()
-                log.info(self.room.to_json(), self.room.id, Constants.STATE)
+                log.info(self.monitored_area.to_json(), self.monitored_area.id, Constants.STATE)
 
-            thread = Dpop(self.room, client)
+            thread = Dpop(self.monitored_area, client)
             thread.start()
             thread.join(timeout=10)
             self.counter += 1
