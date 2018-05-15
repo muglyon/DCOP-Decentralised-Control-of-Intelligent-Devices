@@ -2,6 +2,7 @@
 # agent_main.py - Run an agent for a DCOP system in the hospital
 # Usage: py.exe agent_main.py <agentId> - Run the agent number <agentId>
 from helpers import log
+from helpers.constants import Constants
 from model.hospital import Hospital
 from mqtt.agent_mqtt import AgentMQTT
 from datetime import datetime
@@ -22,6 +23,6 @@ if __name__ == "__main__":
 
     log_file = "logs/agents/log_agent_" + str(room.id) + "_" + datetime.now().strftime("%Y-%m-%d") + ".json"
     log.setup_custom_logger(log_file)
-    log.info(room.to_string(), "DCOP/" + str(room.id))
+    log.info(room.to_json(), str(room.id), Constants.STATE)
 
     AgentMQTT(room).run()

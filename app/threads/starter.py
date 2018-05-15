@@ -31,7 +31,7 @@ class Starter(Thread):
 
         while 1:
 
-            log.info("Start", "DCOP/SERVER/")
+            log.info("Start", Constants.SERVER, Constants.INFO)
 
             results = ""
             received_index = {}
@@ -60,7 +60,7 @@ class Starter(Thread):
                            " minutes. PRIORITY : " + str(priority) + " "
                 self.old_results_index[agent_id] = received_index[agent_id]
 
-            log.info(results, "DCOP/SERVER/")
+            log.info(results, Constants.SERVER, Constants.RESULTS)
             time.sleep(Constants.TWO_MINUTS)
 
     def choose_root(self):

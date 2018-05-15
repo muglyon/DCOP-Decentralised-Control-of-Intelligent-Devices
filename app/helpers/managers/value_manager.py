@@ -14,9 +14,9 @@ class ValueManager(DpopManager):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
-        log.info("Value Propagation", "DCOP/" + str(self.dfs_structure.room.id))
+        log.info("Start", self.dfs_structure.room.id, Constants.VALUE)
 
-        values = {}
+        values = dict()
 
         if util_matrix is None:
             util_matrix = numpy.zeros(Constants.DIMENSION_SIZE, int)

@@ -7,6 +7,7 @@
 
 from threading import Thread
 
+from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dfs_manager import DfsManager
 from helpers.managers.value_manager import ValueManager
@@ -35,7 +36,8 @@ class Dpop(Thread):
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
 
-        log.info("FINAL v = " + str(self.room.current_v), "DCOP/" + str(self.room.id))
+        log.info("v = " + str(self.room.current_v), self.room.id, Constants.RESULTS)
         log.info("const vals : " +
                  str(ConstraintManager(self.room).get_cost_of_private_constraints_for_value(self.room.current_v)),
-                 "DCOP/" + str(self.room.id))
+                 self.room.id,
+                 Constants.RESULTS)

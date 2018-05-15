@@ -6,6 +6,7 @@ from random import randint
 
 import random
 import operator
+import json
 
 
 class Room(object):
@@ -190,11 +191,13 @@ class Room(object):
             string += " | FrontNeighbor : " + str(self.frontNeighbor.id) + "\n"
         return string
 
-    def to_string(self):
-        string = "ROOM " + str(self.id) + " : "
-        string += "Tau : " + str(self.tau)
+    def to_json(self):
+
+        list_json = []
+        data = {"id": self.id, "tau": self.tau}
 
         for device in self.device_list:
-            string += device.to_string()
+            list_json.append(device.to_json())
 
-        return string
+        data["devices"] = list_json
+        return json.dumps(data)

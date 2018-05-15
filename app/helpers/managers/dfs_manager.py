@@ -1,8 +1,11 @@
 #! python3
+from helpers.constants import Constants
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
 from helpers import log
 from model.dfs_structure import DfsStructure
+
+import json
 
 
 class DfsManager(DpopManager):
@@ -12,7 +15,7 @@ class DfsManager(DpopManager):
 
     def generate_dfs(self):
 
-        log.info("DFS GENERATION", 'DCOP/' + str(self.dfs_structure.room.id))
+        log.info("Start", self.dfs_structure.room.id, Constants.DFS)
 
         self.choose_root()
 
@@ -67,7 +70,7 @@ class DfsManager(DpopManager):
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
-                    log.info(self.pseudo_tree_to_string(), 'DCOP/' + str(self.dfs_structure.room.id))
+                    log.info(self.pseudo_tree_to_json(), self.dfs_structure.room.id, Constants.DFS)
                     continue_generation = False
 
     def choose_root(self):
@@ -83,21 +86,17 @@ class DfsManager(DpopManager):
     def am_i_the_elected_root(self):
         return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.dfs_structure.room.id
 
-    def pseudo_tree_to_string(self):
-        """
-        Convert PSEUDO-Tree in String Format
-        :return: pseudo-tree in string format
-        :rtype: string
-        """
-        string = str(self.dfs_structure.room.id)
+    def pseudo_tree_to_json(self):
+
+        data = {"id": self.dfs_structure.room.id, "children": []}
 
         for childId in self.dfs_structure.children_id:
-            string += "[| " + str(childId) + "]"
+            data["children"].append(childId)
 
         for pseudoId in self.dfs_structure.pseudo_parents_id:
-            string += "[--> " + str(pseudoId) + "]"
+            data["pseudo_parent"].append(pseudoId)
 
         for pseudoId in self.dfs_structure.pseudo_children_id:
-            string += "[<-- " + str(pseudoId) + "]"
+            data["pseudo_children"].append(pseudoId)
 
-        return string
+        return json.dumps(data)

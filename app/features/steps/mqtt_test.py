@@ -55,6 +55,7 @@ def step_impl(context):
     context.dpop_to_test.dfs_manager.generate_dfs = MagicMock()
     context.dpop_to_test.util_propagation = MagicMock()
     context.dpop_to_test.value_manager.get_index_of_best_value_with = MagicMock(return_value=0)
+    context.dpop_to_test.value_manager.get_values_from_parents = MagicMock(return_value={})
     assert_that(context.dpop_to_test.mqtt_manager.client.value_msgs, is_not(has_item(context.value_2)))
 
 
