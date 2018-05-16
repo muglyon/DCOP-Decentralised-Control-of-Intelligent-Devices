@@ -70,7 +70,7 @@ class DfsManager(DpopManager):
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
-                    log.info(self.pseudo_tree_to_json(), self.dfs_structure.monitored_area.id, Constants.DFS)
+                    log.info(self.pseudo_tree_to_json_format(), self.dfs_structure.monitored_area.id, Constants.DFS)
                     continue_generation = False
 
     def choose_root(self):
@@ -86,9 +86,12 @@ class DfsManager(DpopManager):
     def am_i_the_elected_root(self):
         return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.dfs_structure.monitored_area.id
 
-    def pseudo_tree_to_json(self):
+    def pseudo_tree_to_json_format(self):
 
-        data = {"id": self.dfs_structure.monitored_area.id, "children": []}
+        data = {"id": self.dfs_structure.monitored_area.id,
+                "children": [],
+                "pseudo_parent": [],
+                "pseudo_children": []}
 
         for childId in self.dfs_structure.children_id:
             data["children"].append(childId)
@@ -99,4 +102,4 @@ class DfsManager(DpopManager):
         for pseudoId in self.dfs_structure.pseudo_children_id:
             data["pseudo_children"].append(pseudoId)
 
-        return json.dumps(data)
+        return data

@@ -4,7 +4,6 @@
 from helpers import log
 from helpers.constants import Constants
 from model.hospital import Hospital
-from model.monitoring_area import MonitoringArea
 from mqtt.agent_mqtt import AgentMQTT
 from datetime import datetime
 
@@ -24,6 +23,6 @@ if __name__ == "__main__":
 
     log_file = "logs/agents/log_agent_" + str(monitored_area.id) + "_" + datetime.now().strftime("%Y-%m-%d") + ".json"
     log.setup_custom_logger(log_file)
-    log.info(monitored_area.to_json(), str(monitored_area.id), Constants.STATE)
+    log.info(monitored_area.to_json_format(), str(monitored_area.id), Constants.STATE)
 
     AgentMQTT(monitored_area).run()

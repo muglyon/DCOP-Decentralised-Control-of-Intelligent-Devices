@@ -31,7 +31,7 @@ class AgentMQTT(CustomMQTTClass):
                 self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.monitored_area.previous_v = self.monitored_area.current_v
                 self.start_time = datetime.now()
-                log.info(self.monitored_area.to_json(), self.monitored_area.id, Constants.STATE)
+                log.info(self.monitored_area.to_json_format(), self.monitored_area.id, Constants.STATE)
 
             thread = Dpop(self.monitored_area, client)
             thread.start()

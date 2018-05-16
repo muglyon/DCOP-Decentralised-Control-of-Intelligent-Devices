@@ -29,27 +29,27 @@ class Hospital(object):
             right_current = right_side[k]
 
             if k == 0:
-                left_current.set_left_neighbor(right_current)
-                right_current.set_left_neighbor(left_current)
+                left_current.left_neighbor = right_current
+                right_current.left_neighbor = left_current
 
             if k > 0:
-                left_current.set_left_neighbor(left_side[k - 1])
-                right_current.set_left_neighbor(right_side[k - 1])
+                left_current.left_neighbor = left_side[k - 1]
+                right_current.left_neighbor = right_side[k - 1]
 
             if k < moitie_agent - 1:
-                left_current.set_right_neighbor(left_side[k + 1])
-                right_current.set_right_neighbor(right_side[k + 1])
+                left_current.right_neighbor = left_side[k + 1]
+                right_current.right_neighbor = right_side[k + 1]
 
             if k == moitie_agent - 1:
-                left_current.set_right_neighbor(right_current)
-                right_current.set_right_neighbor(left_current)
+                left_current.right_neighbor = right_current
+                right_current.right_neighbor = left_current
 
-            if k > 0 and k < moitie_agent - 1:
-                left_current.set_front_neighbor(right_current)
-                right_current.set_front_neighbor(left_current)
+            if 0 < k < moitie_agent - 1:
+                left_current.front_neighbor = right_current
+                right_current.front_neighbor = left_current
 
     def to_string(self):
         string = ""
         for monitored_area in self.monitored_area_list:
-            string += monitored_area.to_json()
+            string += monitored_area.to_json_format()
         return string

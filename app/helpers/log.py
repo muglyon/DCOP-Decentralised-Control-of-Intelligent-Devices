@@ -1,12 +1,13 @@
 import logging
+import json
 from pythonjsonlogger import jsonlogger
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-FORMAT_STR = "{'asctime': '%(asctime)s', " \
-             "'topic': '%(topic)s', " \
-             "'type': '%(type)s', " \
-             "'content': '%(message)s', " \
-             "'level': '%(levelname)s'}"
+FORMAT_STR = '{"asctime": %(asctime)s, ' \
+             '"topic": "%(topic)s", ' \
+             '"type": "%(type)s", ' \
+             '"content": %(message)s, ' \
+             '"level": "%(levelname)s"}'
 
 
 def setup_custom_logger(file_name):
@@ -22,6 +23,6 @@ def setup_custom_logger(file_name):
 
 
 def info(msg, id, type):
-    id = {x.replace('DCOP/', '') for x in str(id)}
-    logging.getLogger().info(msg, extra={'topic': "DCOP/" + str(id), 'type': type})
+    prefix = "" if "DCOP/" in str(id) else "DCOP/"
+    logging.getLogger().info(json.dumps(msg), extra={'topic': prefix + str(id), 'type': type})
 

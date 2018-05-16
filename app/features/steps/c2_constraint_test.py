@@ -8,7 +8,7 @@ from model.device import Device
 
 @when('an IoT device is ending its program in less then 30 minutes')
 def step_impl(context):
-    context.dpop_to_test.monitored_area.set_devices([Device(1, 29, False)])
+    context.dpop_to_test.monitored_area.device_list = [Device(1, 29, False)]
     context.dpop_to_test.monitored_area.tau = 60
 
 
@@ -21,4 +21,4 @@ def step_impl(context):
 
 @when("an IoT device is in critical state and ends its program in less then 30 minutes")
 def step_impl(context):
-    context.dpop_to_test.monitored_area.set_devices([Device(1, 30, False), Device(2, 241, True)])
+    context.dpop_to_test.monitored_area.device_list = [Device(1, 30, False), Device(2, 241, True)]

@@ -17,9 +17,9 @@ class MonitoringArea(object):
 
     def __init__(self, id_monitored_area):
         self.id = id_monitored_area
-        self.frontNeighbor = None
-        self.rightNeighbor = None
-        self.leftNeighbor = None
+        self.front_neighbor = None
+        self.right_neighbor = None
+        self.left_neighbor = None
         self.current_v = 0
         self.previous_v = 0
         self.tau = randint(self.MIN_TAU_VALUE, self.INFINITY)
@@ -32,18 +32,6 @@ class MonitoringArea(object):
         id_device = str(self.id) + str(device_id + 1)
         critic_state = random.random() < 0.05
         self.device_list.append(Device(int(id_device), randint(self.MIN_TAU_VALUE, self.INFINITY), critic_state))
-
-    def set_left_neighbor(self, neighbor):
-        self.leftNeighbor = neighbor
-
-    def set_right_neighbor(self, neighbor):
-        self.rightNeighbor = neighbor
-
-    def set_front_neighbor(self, neighbor):
-        self.frontNeighbor = neighbor
-
-    def set_devices(self, devices):
-        self.device_list = devices
 
     def increment_time(self, minutes):
         """
@@ -115,11 +103,11 @@ class MonitoringArea(object):
         :rtype: integer
         """
         count = 0
-        if self.leftNeighbor is not None:
+        if self.left_neighbor is not None:
             count += 1
-        if self.rightNeighbor is not None:
+        if self.right_neighbor is not None:
             count += 1
-        if self.frontNeighbor is not None:
+        if self.front_neighbor is not None:
             count += 1
         return count
 
@@ -141,14 +129,14 @@ class MonitoringArea(object):
         """
         neighbors = {}      
 
-        if self.leftNeighbor is not None and self.leftNeighbor.id != int(agent_id):
-            neighbors[str(self.leftNeighbor.id)] = self.leftNeighbor.get_degree()
+        if self.left_neighbor is not None and self.left_neighbor.id != int(agent_id):
+            neighbors[str(self.left_neighbor.id)] = self.left_neighbor.get_degree()
 
-        if self.rightNeighbor is not None and self.rightNeighbor.id != int(agent_id):
-            neighbors[str(self.rightNeighbor.id)] = self.rightNeighbor.get_degree()
+        if self.right_neighbor is not None and self.right_neighbor.id != int(agent_id):
+            neighbors[str(self.right_neighbor.id)] = self.right_neighbor.get_degree()
 
-        if self.frontNeighbor is not None and self.frontNeighbor.id != int(agent_id):
-            neighbors[str(self.frontNeighbor.id)] = self.frontNeighbor.get_degree()
+        if self.front_neighbor is not None and self.front_neighbor.id != int(agent_id):
+            neighbors[str(self.front_neighbor.id)] = self.front_neighbor.get_degree()
 
         neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
         return [int(x) for x, _ in neighbors]
@@ -181,23 +169,21 @@ class MonitoringArea(object):
         """
         string = "monitored_area " + str(self.id) + " : \n"
 
-        if self.leftNeighbor is not None:
-            string += " | LeftNeighbor : " + str(self.leftNeighbor.id) + "\n"
+        if self.left_neighbor is not None:
+            string += " | LeftNeighbor : " + str(self.left_neighbor.id) + "\n"
 
-        if self.rightNeighbor is not None:
-            string += " | RightNeighbor : " + str(self.rightNeighbor.id) + "\n"
+        if self.right_neighbor is not None:
+            string += " | RightNeighbor : " + str(self.right_neighbor.id) + "\n"
 
-        if self.frontNeighbor is not None:
-            string += " | FrontNeighbor : " + str(self.frontNeighbor.id) + "\n"
+        if self.front_neighbor is not None:
+            string += " | FrontNeighbor : " + str(self.front_neighbor.id) + "\n"
         return string
 
-    def to_json(self):
+    def to_json_format(self):
 
-        list_json = []
-        data = {"id": self.id, "tau": self.tau}
+        data = {"id": self.id, "tau": self.tau, "devices": []}
 
         for device in self.device_list:
-            list_json.append(device.to_json())
+            data["devices"].append(device.to_json_format())
 
-        data["devices"] = list_json
-        return json.dumps(data)
+        return data

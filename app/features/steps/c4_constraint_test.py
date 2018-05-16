@@ -9,23 +9,23 @@ from model.device import Device
 @when('the room contains more then 5 devices and last passage was more then 3 hours ago')
 def step_impl(context):
     context.dpop_to_test.monitored_area.tau = 181
-    context.dpop_to_test.monitored_area.set_devices([Device(1, 240, False),
-                                                  Device(2, 240, False),
-                                                  Device(3, 240, False),
-                                                  Device(4, 240, False),
-                                                  Device(5, 240, False),
-                                                  Device(6, 240, False)])
+    context.dpop_to_test.monitored_area.device_list = [Device(1, 240, False),
+                                                       Device(2, 240, False),
+                                                       Device(3, 240, False),
+                                                       Device(4, 240, False),
+                                                       Device(5, 240, False),
+                                                       Device(6, 240, False)]
 
 
 @when('the room contains less then 5 devices and last passage was more then 3 hours ago')
 def step_impl(context):
-    context.dpop_to_test.monitored_area.set_devices([Device(1, 240, False), Device(2, 240, False)])
+    context.dpop_to_test.monitored_area.device_list = [Device(1, 240, False), Device(2, 240, False)]
     context.dpop_to_test.monitored_area.tau = 181
 
 
 @when('the room contains less then 5 devices and last passage was more then 4 hours ago')
 def step_impl(context):
-    context.dpop_to_test.monitored_area.set_devices([Device(1, 240, False), Device(2, 240, False)])
+    context.dpop_to_test.monitored_area.device_list = [Device(1, 240, False), Device(2, 240, False)]
     context.dpop_to_test.monitored_area.tau = 211
 
 

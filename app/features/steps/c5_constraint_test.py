@@ -8,7 +8,7 @@ from model.device import Device
 
 @when('there is nothing to report')
 def step_impl(context):
-    context.agent_2.set_devices([Device(11, 40, False)])
+    context.agent_2.device_list = [Device(11, 40, False)]
     context.agent_2.tau = 80
 
     context.dpop_to_test = context.dpop_2

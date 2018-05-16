@@ -28,17 +28,17 @@ def before_scenario(context, scenario):
     context.agent_3 = MonitoringArea(3)
     context.agent_4 = MonitoringArea(4)
     
-    context.agent_1.set_left_neighbor(context.agent_2)
-    context.agent_1.set_right_neighbor(context.agent_3)
+    context.agent_1.left_neighbor = context.agent_2
+    context.agent_1.right_neighbor = context.agent_3
 
-    context.agent_2.set_left_neighbor(context.agent_4)
-    context.agent_2.set_right_neighbor(context.agent_1)
+    context.agent_2.left_neighbor = context.agent_4
+    context.agent_2.right_neighbor = context.agent_1
 
-    context.agent_3.set_left_neighbor(context.agent_4)
-    context.agent_3.set_right_neighbor(context.agent_1)
+    context.agent_3.left_neighbor = context.agent_4
+    context.agent_3.right_neighbor = context.agent_1
 
-    context.agent_4.set_right_neighbor(context.agent_2)
-    context.agent_4.set_left_neighbor(context.agent_3)
+    context.agent_4.right_neighbor = context.agent_2
+    context.agent_4.left_neighbor = context.agent_3
     
     context.mock_clientMqtt_1 = MagicMock()
     context.mock_clientMqtt_1.util_msgs = []

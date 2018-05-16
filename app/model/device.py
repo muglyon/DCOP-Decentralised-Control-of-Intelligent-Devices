@@ -1,7 +1,6 @@
 #! python3
 # device.py - Implement the device model
 # Usefull for testing !
-import json
 
 
 class Device(object):
@@ -14,5 +13,5 @@ class Device(object):
     def set_end_of_prog(self, ending_time):
         self.end_of_prog = ending_time if ending_time > 0 else 241
 
-    def to_json(self):
-        return json.dumps({"id": self.id, "critic_state": self.is_in_critic_state, "end_of_prog": self.end_of_prog})
+    def to_json_format(self):
+        return {"id": self.id, "critic_state": self.is_in_critic_state, "end_of_prog": self.end_of_prog}
