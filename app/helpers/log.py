@@ -1,9 +1,12 @@
 import logging
 import json
+
 from pythonjsonlogger import jsonlogger
+from helpers import elasticsearch
+from helpers.constants import Constants
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
-FORMAT_STR = '{"asctime": %(asctime)s, ' \
+FORMAT_STR = '{"asctime": "%(asctime)s", ' \
              '"topic": "%(topic)s", ' \
              '"type": "%(type)s", ' \
              '"content": %(message)s, ' \
@@ -13,16 +16,29 @@ FORMAT_STR = '{"asctime": %(asctime)s, ' \
 def setup_custom_logger(file_name):
     logging.basicConfig(format=FORMAT_STR, filename=file_name, level=logging.INFO, datefmt=DATE_FORMAT)
 
-    handler = logging.StreamHandler()
-    handler.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
+    handler_log = logging.StreamHandler()
+    handler_log.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
 
     logger = logging.getLogger()
-    logger.addHandler(handler)
+    logger.addHandler(handler_log)
     logger.propagate = False
+
     return logger
 
 
 def info(msg, id, type):
+
+    logger = logging.getLogger()
     prefix = "" if "DCOP/" in str(id) else "DCOP/"
-    logging.getLogger().info(json.dumps(msg), extra={'topic': prefix + str(id), 'type': type})
+    payload = json.dumps(msg)
+
+    logger.info(payload, extra={'topic': prefix + str(id), 'type': type})
+
+    f_read = open(logger.handlers[0].baseFilename, "r")
+    last_line = f_read.readlines()[-1]
+    elasticsearch.save_data(last_line)
+
+
+
+
 

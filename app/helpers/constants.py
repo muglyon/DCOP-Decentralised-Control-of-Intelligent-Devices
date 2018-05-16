@@ -23,3 +23,4 @@ class Constants(object):
     UTIL = "Util"
     VALUE = "Value"
     RESULTS = "Results"
+    LOG = "Log"

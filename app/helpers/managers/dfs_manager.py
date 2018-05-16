@@ -15,7 +15,7 @@ class DfsManager(DpopManager):
 
     def generate_dfs(self):
 
-        log.info("Start", self.dfs_structure.monitored_area.id, Constants.DFS)
+        log.info("Dfs Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         self.choose_root()
 

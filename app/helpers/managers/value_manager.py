@@ -14,7 +14,7 @@ class ValueManager(DpopManager):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
-        log.info("Start", self.dfs_structure.monitored_area.id, Constants.VALUE)
+        log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         values = dict()
 

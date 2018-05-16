@@ -20,7 +20,7 @@ class UtilManager(DpopManager):
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
-        log.info("Start", self.dfs_structure.monitored_area.id, Constants.UTIL)
+        log.info("Util Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
