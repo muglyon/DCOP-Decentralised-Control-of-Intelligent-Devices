@@ -4,3 +4,4 @@ numpy
 paho-mqtt
 pyhamcrest
 python-etcd
+python-json-logger
