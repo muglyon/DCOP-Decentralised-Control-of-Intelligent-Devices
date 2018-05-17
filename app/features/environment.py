@@ -7,13 +7,14 @@
 # /!\ Pay specificly attention to the mocked DFS Generation results ! /!\
 # ----------------
 # Also, be aware that this is a basic setup that can be over written during specific setp_impl
+import json
+import numpy
+
+from helpers import log
 from helpers.constants import Constants
 from model.monitoring_area import MonitoringArea
 from unittest.mock import MagicMock
 from threads.dpop import Dpop
-
-import json
-import numpy
 
 
 def before_scenario(context, scenario):
@@ -39,6 +40,8 @@ def before_scenario(context, scenario):
 
     context.agent_4.right_neighbor = context.agent_2
     context.agent_4.left_neighbor = context.agent_3
+
+    log.info = MagicMock()
     
     context.mock_clientMqtt_1 = MagicMock()
     context.mock_clientMqtt_1.util_msgs = []

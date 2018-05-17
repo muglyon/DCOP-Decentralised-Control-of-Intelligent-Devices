@@ -5,6 +5,8 @@
 # /!\ WARNING /!\
 # The objective in this case is to MINIMIZE all constraints.
 
+import time
+
 from threading import Thread
 from helpers import log
 from helpers.constants import Constants
@@ -29,11 +31,26 @@ class Dpop(Thread):
         """
         Do the DPOP Algorithm
         """
+
+        start_time = time.time()
+
         self.dfs_manager.generate_dfs()
         self.util_manager.do_util_propagation()
         self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
+
+        log.info("Avg size of msg RECEIVED (bytes) : " + str(self.mqtt_manager.client.avg_msg_size),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Nb msg RECEIVED : " + str(self.mqtt_manager.client.nb_msg_exchanged),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Execution time (s) : " + str(time.time() - start_time),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
 
         log.info("v = " + str(self.monitored_area.current_v),
                  self.monitored_area.id,

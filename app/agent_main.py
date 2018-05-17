@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     log_file = "logs/agents/log_agent_" + str(monitored_area.id) + "_" + datetime.now().strftime("%Y-%m-%d") + ".json"
     log.setup_custom_logger(log_file)
-    log.info(monitored_area.to_json_format(), str(monitored_area.id), Constants.STATE)
+    log.info(monitored_area.to_json_format(), monitored_area.id, Constants.STATE)
 
-    AgentMQTT(monitored_area).run()
+    agent_mqtt = AgentMQTT(monitored_area)
+    agent_mqtt.run()
