@@ -1,12 +1,13 @@
 from datetime import datetime
+
+import json
+import numpy
+
 from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
 from helpers import log
-
-import numpy
-import json
 
 
 class UtilManager(DpopManager):
@@ -110,7 +111,10 @@ class UtilManager(DpopManager):
                     tupl = tuple(numpy.concatenate((numpy.array(index1), numpy.delete(numpy.array(index2), 0, 0))))
                     final_matrix[tupl] = value1 + value2
 
-        log.info("Shape Combined matrix : " + str(final_matrix.shape), self.dfs_structure.monitored_area.id, Constants.UTIL)
+        log.info("Shape Combined matrix : " + str(final_matrix.shape),
+                 self.dfs_structure.monitored_area.id,
+                 Constants.UTIL)
+
         return final_matrix
 
     def add_my_utility_in(self, R):
@@ -133,7 +137,8 @@ class UtilManager(DpopManager):
 
         return R
 
-    def project(self, matrix):
+    @staticmethod
+    def project(matrix):
         """
         PROJECT me out of the matrix
         :param matrix: matrix to be projected out

@@ -1,11 +1,12 @@
 from datetime import datetime
+
+import json
+import numpy
+
 from helpers.constants import Constants
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
 from helpers import log
-
-import numpy
-import json
 
 
 class ValueManager(DpopManager):
@@ -58,7 +59,7 @@ class ValueManager(DpopManager):
             indices = [i for i, x in enumerate(join_matrix) if x == min(join_matrix)]
             return indices[len(indices) - 1]
 
-        if data is None or not type(data) is dict:
+        if data is None or not isinstance(data, dict):
             raise Exception("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)")
 
         best_value = Constants.INFINITY + 1

@@ -3,7 +3,6 @@ import json
 
 from pythonjsonlogger import jsonlogger
 from helpers import elasticsearch
-from helpers.constants import Constants
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 FORMAT_STR = '{"asctime": "%(asctime)s", ' \
@@ -14,7 +13,11 @@ FORMAT_STR = '{"asctime": "%(asctime)s", ' \
 
 
 def setup_custom_logger(file_name):
-    logging.basicConfig(format=FORMAT_STR, filename=file_name, level=logging.INFO, datefmt=DATE_FORMAT)
+
+    logging.basicConfig(format=FORMAT_STR,
+                        filename=file_name,
+                        level=logging.INFO,
+                        datefmt=DATE_FORMAT)
 
     handler_log = logging.StreamHandler()
     handler_log.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
@@ -26,19 +29,14 @@ def setup_custom_logger(file_name):
     return logger
 
 
-def info(msg, id, type):
+def info(msg, sender_id, msg_type):
 
     logger = logging.getLogger()
-    prefix = "" if "DCOP/" in str(id) else "DCOP/"
+    prefix = "" if "DCOP/" in str(sender_id) else "DCOP/"
     payload = json.dumps(msg)
 
-    logger.info(payload, extra={'topic': prefix + str(id), 'type': type})
+    logger.info(payload, extra={'topic': prefix + str(sender_id), 'type': msg_type})
 
     f_read = open(logger.handlers[0].baseFilename, "r")
     last_line = f_read.readlines()[-1]
     elasticsearch.save_data(last_line)
-
-
-
-
-

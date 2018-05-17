@@ -1,7 +1,6 @@
-from helpers import log
-
 import paho.mqtt.client as mqtt
 
+from helpers import log
 from helpers.constants import Constants
 
 

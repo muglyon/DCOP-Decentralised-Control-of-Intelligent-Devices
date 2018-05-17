@@ -1,12 +1,10 @@
 #! python3
 # monitoring_area.py - Modelisation of a room
-
-from model.device import Device
-from random import randint
-
 import random
 import operator
-import json
+
+from random import randint
+from model.device import Device
 
 
 class MonitoringArea(object):
@@ -127,7 +125,7 @@ class MonitoringArea(object):
         :return: neighbors id list sorted by degree
         :rtype: list
         """
-        neighbors = {}      
+        neighbors = {}
 
         if self.left_neighbor is not None and self.left_neighbor.id != int(agent_id):
             neighbors[str(self.left_neighbor.id)] = self.left_neighbor.get_degree()

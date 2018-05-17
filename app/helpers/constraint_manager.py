@@ -6,6 +6,13 @@ class ConstraintManager(object):
     def __init__(self, monitored_area):
         self.monitored_area = monitored_area
 
+    @staticmethod
+    def c3_neighbors_sync(vi, vj):
+        diff = abs(vi - vj)
+        if diff <= Constants.T_SYNCHRO and diff != 0:
+            return 1
+        return 0
+
     def get_cost_of_private_constraints_for_value(self, value):
         return self.c1_no_devices(value) \
                + self.c2_device_status(value) \
@@ -27,12 +34,6 @@ class ConstraintManager(object):
             if min_end_of_prog <= Constants.URGT_TIME and vi > min_end_of_prog:
                 return 1
 
-        return 0
-
-    def c3_neighbors_sync(self, vi, vj):
-        diff = abs(vi - vj)
-        if diff <= Constants.T_SYNCHRO and diff != 0:
-            return 1
         return 0
 
     def c4_last_intervention(self, vi):

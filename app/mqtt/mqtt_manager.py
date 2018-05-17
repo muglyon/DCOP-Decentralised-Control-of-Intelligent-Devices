@@ -48,4 +48,3 @@ class MQTTManager(object):
 
     def publish_elected_root_msg_to(self, recipient_id, root):
         self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.ROOT.value + "_" + str(root))
-

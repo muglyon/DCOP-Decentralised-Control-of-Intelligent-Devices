@@ -1,15 +1,15 @@
 #! python3
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
+import time
+import json
+import operator
+
+from threading import Thread
 from helpers.constants import Constants
 from helpers.message_types import MessageTypes
 from helpers import log
 from mqtt.mqtt_manager import MQTTManager
-from threading import Thread
-
-import time
-import json
-import operator
 
 
 class Starter(Thread):
@@ -35,7 +35,7 @@ class Starter(Thread):
 
             results = ""
             received_index = {}
-    
+
             for agent in self.agents:
                 self.mqtt_manager.publish_on_msg_to(agent.id)
 
@@ -47,9 +47,9 @@ class Starter(Thread):
                     # Wait for VALUES results
                     continue
 
-                received_index.update(
-                    json.loads(self.mqtt_manager.client.list_msgs_waiting.pop(0).split(MessageTypes.VALUES.value + " ")[1])
-                )
+                msg_received = self.mqtt_manager.client.list_msgs_waiting.pop(0)
+                value_data = msg_received.split(MessageTypes.VALUES.value + " ")[1]
+                received_index.update(json.loads(value_data))
 
             self.manage_priorities(received_index)
 

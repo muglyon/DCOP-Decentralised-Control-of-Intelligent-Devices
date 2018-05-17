@@ -13,8 +13,8 @@ class ServerMQTT(CustomMQTTClass):
         thread = Starter(self.hospital.monitored_area_list, client)
         thread.start()
 
-    def on_message(self, client, userdata, msg):
-        super().on_message(client, userdata, msg)
+    def on_message(self, client, obj, msg):
+        super().on_message(client, obj, msg)
 
         if self.client.SERVER_TOPIC in msg.topic:
             client.list_msgs_waiting.append(str(msg.payload.decode('utf-8')))

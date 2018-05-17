@@ -6,14 +6,13 @@
 # The objective in this case is to MINIMIZE all constraints.
 
 from threading import Thread
-
+from helpers import log
 from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dfs_manager import DfsManager
 from helpers.managers.value_manager import ValueManager
-from helpers import log
-from mqtt.mqtt_manager import MQTTManager
 from helpers.managers.util_manager import UtilManager
+from mqtt.mqtt_manager import MQTTManager
 
 
 class Dpop(Thread):
@@ -28,7 +27,7 @@ class Dpop(Thread):
 
     def run(self):
         """
-        /!\ Do the DPOP Algorithm /!\
+        Do the DPOP Algorithm
         """
         self.dfs_manager.generate_dfs()
         self.util_manager.do_util_propagation()
@@ -36,7 +35,10 @@ class Dpop(Thread):
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
 
-        log.info("v = " + str(self.monitored_area.current_v), self.monitored_area.id, Constants.RESULTS)
+        log.info("v = " + str(self.monitored_area.current_v),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
         log.info("const vals : " +
                  str(ConstraintManager(self.monitored_area)
                      .get_cost_of_private_constraints_for_value(self.monitored_area.current_v)),

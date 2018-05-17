@@ -19,7 +19,7 @@ class AgentMQTT(CustomMQTTClass):
         self.client.util_msgs = []
         self.client.value_msgs = []
 
-    def on_message(self, client, userdata, msg):
+    def on_message(self, client, obj, msg):
 
         str_msg = str(msg.payload.decode('utf-8'))
 
@@ -31,7 +31,10 @@ class AgentMQTT(CustomMQTTClass):
                 self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.monitored_area.previous_v = self.monitored_area.current_v
                 self.start_time = datetime.now()
-                log.info(self.monitored_area.to_json_format(), self.monitored_area.id, Constants.STATE)
+
+                log.info(self.monitored_area.to_json_format(),
+                         self.monitored_area.id,
+                         Constants.STATE)
 
             thread = Dpop(self.monitored_area, client)
             thread.start()
@@ -47,4 +50,4 @@ class AgentMQTT(CustomMQTTClass):
         else:
             client.list_msgs_waiting.append(str_msg)
 
-        super().on_message(client, userdata, msg)
+        super().on_message(client, obj, msg)

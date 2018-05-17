@@ -5,8 +5,6 @@ from helpers.message_types import MessageTypes
 from helpers import log
 from model.dfs_structure import DfsStructure
 
-import json
-
 
 class DfsManager(DpopManager):
 
@@ -42,7 +40,8 @@ class DfsManager(DpopManager):
 
                 if self.dfs_structure.open_neighbors_id is None:
                     # First time the agent is visited
-                    self.dfs_structure.open_neighbors_id = self.dfs_structure.monitored_area.get_neighbors_id_sorted_except(yi)
+                    self.dfs_structure.open_neighbors_id = \
+                        self.dfs_structure.monitored_area.get_neighbors_id_sorted_except(yi)
                     self.dfs_structure.parent_id = yi
 
                 elif MessageTypes.is_child(message_type) and yi in self.dfs_structure.open_neighbors_id:
@@ -70,7 +69,10 @@ class DfsManager(DpopManager):
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
-                    log.info(self.pseudo_tree_to_json_format(), self.dfs_structure.monitored_area.id, Constants.DFS)
+                    log.info(self.pseudo_tree_to_json_format(),
+                             self.dfs_structure.monitored_area.id,
+                             Constants.DFS)
+
                     continue_generation = False
 
     def choose_root(self):
@@ -84,7 +86,8 @@ class DfsManager(DpopManager):
         self.dfs_structure.is_root = self.am_i_the_elected_root()
 
     def am_i_the_elected_root(self):
-        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.dfs_structure.monitored_area.id
+        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) \
+               == self.dfs_structure.monitored_area.id
 
     def pseudo_tree_to_json_format(self):
 
@@ -93,13 +96,13 @@ class DfsManager(DpopManager):
                 "pseudo_parent": [],
                 "pseudo_children": []}
 
-        for childId in self.dfs_structure.children_id:
-            data["children"].append(childId)
+        for child_id in self.dfs_structure.children_id:
+            data["children"].append(child_id)
 
-        for pseudoId in self.dfs_structure.pseudo_parents_id:
-            data["pseudo_parent"].append(pseudoId)
+        for pseudo_id in self.dfs_structure.pseudo_parents_id:
+            data["pseudo_parent"].append(pseudo_id)
 
-        for pseudoId in self.dfs_structure.pseudo_children_id:
-            data["pseudo_children"].append(pseudoId)
+        for pseudo_id in self.dfs_structure.pseudo_children_id:
+            data["pseudo_children"].append(pseudo_id)
 
         return data
