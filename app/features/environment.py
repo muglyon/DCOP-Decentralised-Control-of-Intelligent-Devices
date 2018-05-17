@@ -7,13 +7,14 @@
 # /!\ Pay specificly attention to the mocked DFS Generation results ! /!\
 # ----------------
 # Also, be aware that this is a basic setup that can be over written during specific setp_impl
-from helpers.constants import Constants
-from model.room import Room
-from unittest.mock import MagicMock
-from threads.dpop import Dpop
-
 import json
 import numpy
+
+from helpers import log
+from helpers.constants import Constants
+from model.monitoring_area import MonitoringArea
+from unittest.mock import MagicMock
+from threads.dpop import Dpop
 
 
 def before_scenario(context, scenario):
@@ -23,22 +24,24 @@ def before_scenario(context, scenario):
     context.util_2 = 'UTIL ' + json.dumps({"vars": [4, 1, 2], "data": numpy.zeros((17, 17), float).tolist()})
     context.value_2 = 'VALUES ' + json.dumps({"1": 0})
     
-    context.agent_1 = Room(1)
-    context.agent_2 = Room(2)
-    context.agent_3 = Room(3)
-    context.agent_4 = Room(4)
+    context.agent_1 = MonitoringArea(1)
+    context.agent_2 = MonitoringArea(2)
+    context.agent_3 = MonitoringArea(3)
+    context.agent_4 = MonitoringArea(4)
     
-    context.agent_1.set_left_neighbor(context.agent_2)
-    context.agent_1.set_right_neighbor(context.agent_3)
+    context.agent_1.left_neighbor = context.agent_2
+    context.agent_1.right_neighbor = context.agent_3
 
-    context.agent_2.set_left_neighbor(context.agent_4)
-    context.agent_2.set_right_neighbor(context.agent_1)
+    context.agent_2.left_neighbor = context.agent_4
+    context.agent_2.right_neighbor = context.agent_1
 
-    context.agent_3.set_left_neighbor(context.agent_4)
-    context.agent_3.set_right_neighbor(context.agent_1)
+    context.agent_3.left_neighbor = context.agent_4
+    context.agent_3.right_neighbor = context.agent_1
 
-    context.agent_4.set_right_neighbor(context.agent_2)
-    context.agent_4.set_left_neighbor(context.agent_3)
+    context.agent_4.right_neighbor = context.agent_2
+    context.agent_4.left_neighbor = context.agent_3
+
+    log.info = MagicMock()
     
     context.mock_clientMqtt_1 = MagicMock()
     context.mock_clientMqtt_1.util_msgs = []

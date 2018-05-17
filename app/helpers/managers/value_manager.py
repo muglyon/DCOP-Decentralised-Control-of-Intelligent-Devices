@@ -1,10 +1,12 @@
 from datetime import datetime
+
+import json
+import numpy
+
 from helpers.constants import Constants
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
-
-import numpy
-import json
+from helpers import log
 
 
 class ValueManager(DpopManager):
@@ -13,9 +15,9 @@ class ValueManager(DpopManager):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
-        print("\n---------- VALUE PROPAGATION ----------")
+        log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
-        values = {}
+        values = dict()
 
         if util_matrix is None:
             util_matrix = numpy.zeros(Constants.DIMENSION_SIZE, int)
@@ -30,8 +32,8 @@ class ValueManager(DpopManager):
 
         # Find best v
         index = self.get_index_of_best_value_with(values, matrix_dimensions_order, join_matrix)
-        self.dfs_structure.room.current_v = Constants.DIMENSION[index]
-        values[str(self.dfs_structure.room.id)] = index
+        self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
+        values[str(self.dfs_structure.monitored_area.id)] = index
 
         for child in self.dfs_structure.children_id:
             self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
@@ -57,7 +59,7 @@ class ValueManager(DpopManager):
             indices = [i for i, x in enumerate(join_matrix) if x == min(join_matrix)]
             return indices[len(indices) - 1]
 
-        if data is None or not type(data) is dict:
+        if data is None or not isinstance(data, dict):
             raise Exception("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)")
 
         best_value = Constants.INFINITY + 1

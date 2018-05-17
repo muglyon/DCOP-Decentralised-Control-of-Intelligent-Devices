@@ -19,19 +19,19 @@ def step_impl(context):
 @given('two AI in syringe pump in two separate rooms next to each other')
 def step_impl(context):
     context.dpop_to_test = context.dpop_4
-    assert_that(context.agent_4.leftNeighbor.id == context.agent_2.id
-                or context.agent_4.rightNeighbor.id == context.agent_2.id)
+    assert_that(context.agent_4.left_neighbor.id == context.agent_2.id
+                or context.agent_4.right_neighbor.id == context.agent_2.id)
 
 
 @then('AI in syringe pump should not call healthcare professionals')
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.room.current_v, equal_to(Constants.INFINITY))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(Constants.INFINITY))
 
 
 @then('AI in syringe pump should call healthcare professionals right now')
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.room.current_v, equal_to(0))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(0))

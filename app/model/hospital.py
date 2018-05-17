@@ -1,16 +1,16 @@
 #! python3
 # hospital.py - Implement the environment model for testing/configuring
 
-from model.room import Room
+from model.monitoring_area import MonitoringArea
 
 
 class Hospital(object):
 
     def __init__(self, size):
-        self.roomList = []
+        self.monitored_area_list = []
 
         for i in range(1, size + 1):
-            self.roomList.append(Room(i))
+            self.monitored_area_list.append(MonitoringArea(i))
 
         self.setup_neighbors()
 
@@ -19,9 +19,9 @@ class Hospital(object):
         Setup Neighbors on two lines (cf. Java Code)
         """
 
-        moitie_agent = int(len(self.roomList) / 2)
-        left_side = self.roomList[0:moitie_agent]
-        right_side = self.roomList[moitie_agent:len(self.roomList)]
+        moitie_agent = int(len(self.monitored_area_list) / 2)
+        left_side = self.monitored_area_list[0:moitie_agent]
+        right_side = self.monitored_area_list[moitie_agent:len(self.monitored_area_list)]
 
         for k in range(0, moitie_agent):
             
@@ -29,27 +29,27 @@ class Hospital(object):
             right_current = right_side[k]
 
             if k == 0:
-                left_current.set_left_neighbor(right_current)
-                right_current.set_left_neighbor(left_current)
+                left_current.left_neighbor = right_current
+                right_current.left_neighbor = left_current
 
             if k > 0:
-                left_current.set_left_neighbor(left_side[k - 1])
-                right_current.set_left_neighbor(right_side[k - 1])
+                left_current.left_neighbor = left_side[k - 1]
+                right_current.left_neighbor = right_side[k - 1]
 
             if k < moitie_agent - 1:
-                left_current.set_right_neighbor(left_side[k + 1])
-                right_current.set_right_neighbor(right_side[k + 1])
+                left_current.right_neighbor = left_side[k + 1]
+                right_current.right_neighbor = right_side[k + 1]
 
             if k == moitie_agent - 1:
-                left_current.set_right_neighbor(right_current)
-                right_current.set_right_neighbor(left_current)
+                left_current.right_neighbor = right_current
+                right_current.right_neighbor = left_current
 
-            if k > 0 and k < moitie_agent - 1:
-                left_current.set_front_neighbor(right_current)
-                right_current.set_front_neighbor(left_current)
+            if 0 < k < moitie_agent - 1:
+                left_current.front_neighbor = right_current
+                right_current.front_neighbor = left_current
 
     def to_string(self):
         string = ""
-        for room in self.roomList:
-            string += room.to_string()
+        for monitored_area in self.monitored_area_list:
+            string += monitored_area.to_json_format()
         return string

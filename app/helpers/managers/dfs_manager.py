@@ -1,24 +1,26 @@
 #! python3
+from helpers.constants import Constants
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
+from helpers import log
 from model.dfs_structure import DfsStructure
 
 
 class DfsManager(DpopManager):
 
-    def __init__(self, mqtt_manager, room):
-        DpopManager.__init__(self,mqtt_manager, DfsStructure(room))
+    def __init__(self, mqtt_manager, monitored_area):
+        DpopManager.__init__(self, mqtt_manager, DfsStructure(monitored_area))
 
     def generate_dfs(self):
 
-        print("\n---------- DFS GENERATION ----------")
+        log.info("Dfs Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         self.choose_root()
 
-        if self.dfs_structure.room.get_degree() > 0:
+        if self.dfs_structure.monitored_area.get_degree() > 0:
 
             if self.dfs_structure.is_root:
-                self.dfs_structure.open_neighbors_id = self.dfs_structure.room.get_neighbors_id_sorted()
+                self.dfs_structure.open_neighbors_id = self.dfs_structure.monitored_area.get_neighbors_id_sorted()
                 self.dfs_structure.children_id.append(self.dfs_structure.open_neighbors_id.pop(0))
                 self.mqtt_manager.publish_child_msg_to(self.dfs_structure.children_id[0])
 
@@ -38,7 +40,8 @@ class DfsManager(DpopManager):
 
                 if self.dfs_structure.open_neighbors_id is None:
                     # First time the agent is visited
-                    self.dfs_structure.open_neighbors_id = self.dfs_structure.room.get_neighbors_id_sorted_except(yi)
+                    self.dfs_structure.open_neighbors_id = \
+                        self.dfs_structure.monitored_area.get_neighbors_id_sorted_except(yi)
                     self.dfs_structure.parent_id = yi
 
                 elif MessageTypes.is_child(message_type) and yi in self.dfs_structure.open_neighbors_id:
@@ -66,7 +69,10 @@ class DfsManager(DpopManager):
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
-                    print(self.pseudo_tree_to_string())
+                    log.info(self.pseudo_tree_to_json_format(),
+                             self.dfs_structure.monitored_area.id,
+                             Constants.DFS)
+
                     continue_generation = False
 
     def choose_root(self):
@@ -80,23 +86,23 @@ class DfsManager(DpopManager):
         self.dfs_structure.is_root = self.am_i_the_elected_root()
 
     def am_i_the_elected_root(self):
-        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) == self.dfs_structure.room.id
+        return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) \
+               == self.dfs_structure.monitored_area.id
 
-    def pseudo_tree_to_string(self):
-        """
-        Convert PSEUDO-Tree in String Format
-        :return: pseudo-tree in string format
-        :rtype: string
-        """
-        string = str(self.dfs_structure.room.id) + "\n"
+    def pseudo_tree_to_json_format(self):
 
-        for childId in self.dfs_structure.children_id:
-            string += "| " + str(childId) + "\n"
+        data = {"id": self.dfs_structure.monitored_area.id,
+                "children": [],
+                "pseudo_parent": [],
+                "pseudo_children": []}
 
-        for pseudoId in self.dfs_structure.pseudo_parents_id:
-            string += "--> " + str(pseudoId) + "\n"
+        for child_id in self.dfs_structure.children_id:
+            data["children"].append(child_id)
 
-        for pseudoId in self.dfs_structure.pseudo_children_id:
-            string += "<-- " + str(pseudoId) + "\n"
+        for pseudo_id in self.dfs_structure.pseudo_parents_id:
+            data["pseudo_parent"].append(pseudo_id)
 
-        return string
+        for pseudo_id in self.dfs_structure.pseudo_children_id:
+            data["pseudo_children"].append(pseudo_id)
+
+        return data

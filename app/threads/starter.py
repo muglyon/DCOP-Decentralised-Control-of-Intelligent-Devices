@@ -1,14 +1,15 @@
 #! python3
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
-from helpers.constants import Constants
-from helpers.message_types import MessageTypes
-from mqtt.mqtt_manager import MQTTManager
-from threading import Thread
-
 import time
 import json
 import operator
+
+from threading import Thread
+from helpers.constants import Constants
+from helpers.message_types import MessageTypes
+from helpers import log
+from mqtt.mqtt_manager import MQTTManager
 
 
 class Starter(Thread):
@@ -30,10 +31,11 @@ class Starter(Thread):
 
         while 1:
 
-            print("--- START ALGORITHM ---")
+            log.info("Start", Constants.SERVER, Constants.INFO)
 
+            results = ""
             received_index = {}
-    
+
             for agent in self.agents:
                 self.mqtt_manager.publish_on_msg_to(agent.id)
 
@@ -45,23 +47,20 @@ class Starter(Thread):
                     # Wait for VALUES results
                     continue
 
-                print("---", self.mqtt_manager.client.list_msgs_waiting)
-
-                received_index.update(
-                    json.loads(self.mqtt_manager.client.list_msgs_waiting.pop(0).split(MessageTypes.VALUES.value + " ")[1])
-                )
+                msg_received = self.mqtt_manager.client.list_msgs_waiting.pop(0)
+                value_data = msg_received.split(MessageTypes.VALUES.value + " ")[1]
+                received_index.update(json.loads(value_data))
 
             self.manage_priorities(received_index)
 
-            print("--- RESULTS ---")
-
             sorted_priorities = sorted(self.priorities.items(), key=operator.itemgetter(1))
             for agent_id, priority in sorted_priorities:
-                print("Room ", agent_id,
-                      " need intervention in ", Constants.DIMENSION[received_index[agent_id]],
-                      " minutes. PRIORITY : ", priority)
+                results += "Room " + str(agent_id) + \
+                           " need intervention in " + str(Constants.DIMENSION[received_index[agent_id]]) + \
+                           " minutes. PRIORITY : " + str(priority) + " "
                 self.old_results_index[agent_id] = received_index[agent_id]
 
+            log.info(results, Constants.SERVER, Constants.RESULTS)
             time.sleep(Constants.TWO_MINUTS)
 
     def choose_root(self):

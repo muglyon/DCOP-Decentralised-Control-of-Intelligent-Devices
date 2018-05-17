@@ -1,5 +1,6 @@
 from datetime import datetime
-
+from helpers import log
+from helpers.constants import Constants
 from helpers.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from threads.dpop import Dpop
@@ -7,10 +8,10 @@ from threads.dpop import Dpop
 
 class AgentMQTT(CustomMQTTClass):
 
-    def __init__(self, room):
-        CustomMQTTClass.__init__(self, str(room.id) + "/#")
+    def __init__(self, monitored_area):
+        CustomMQTTClass.__init__(self, str(monitored_area.id) + "/#")
 
-        self.room = room
+        self.monitored_area = monitored_area
         self.counter = 0
         self.start_time = datetime.now()
 
@@ -18,21 +19,24 @@ class AgentMQTT(CustomMQTTClass):
         self.client.util_msgs = []
         self.client.value_msgs = []
 
-    def on_message(self, client, userdata, msg):
+    def on_message(self, client, obj, msg):
 
         str_msg = str(msg.payload.decode('utf-8'))
 
         if MessageTypes.is_on(str_msg):
 
-            print("---------- ITERATION ", self.counter, " --------")
+            log.info("Iteration " + str(self.counter), self.monitored_area.id, Constants.INFO)
 
             if self.counter > 0:
-                self.room.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
-                self.room.previous_v = self.room.current_v
+                self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
+                self.monitored_area.previous_v = self.monitored_area.current_v
                 self.start_time = datetime.now()
-                print("\n", self.room.to_string())
 
-            thread = Dpop(self.room, client)
+                log.info(self.monitored_area.to_json_format(),
+                         self.monitored_area.id,
+                         Constants.STATE)
+
+            thread = Dpop(self.monitored_area, client)
             thread.start()
             thread.join(timeout=10)
             self.counter += 1
@@ -46,4 +50,4 @@ class AgentMQTT(CustomMQTTClass):
         else:
             client.list_msgs_waiting.append(str_msg)
 
-        super().on_message(client, userdata, msg)
+        super().on_message(client, obj, msg)

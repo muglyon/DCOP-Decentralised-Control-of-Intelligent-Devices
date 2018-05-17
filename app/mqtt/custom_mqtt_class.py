@@ -1,5 +1,8 @@
 import paho.mqtt.client as mqtt
 
+from helpers import log
+from helpers.constants import Constants
+
 
 class CustomMQTTClass:
 
@@ -17,18 +20,23 @@ class CustomMQTTClass:
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
         self.client.list_msgs_waiting = []
+        self.client.avg_msg_size = 0
+        self.client.nb_msg_exchanged = 0
 
+        self.subtopic = subtopic
         self.topic_to_subscribe = self.client.DCOP_TOPIC + subtopic
 
     def on_connect(self, client, obj, flags, rc):
         self.client.subscribe(self.topic_to_subscribe)
-        print("Subscribe to ", self.topic_to_subscribe)
+        log.info("Subscribe", self.subtopic, Constants.INFO)
 
     def on_message(self, client, obj, msg):
-        print(msg.topic + " " + str(msg.payload))
+        self.client.avg_msg_size = sum([self.client.avg_msg_size, len(msg.payload)])
+        self.client.nb_msg_exchanged += 1
+        log.info(str(msg.payload.decode('utf-8')), msg.topic, Constants.INFO)
 
     def on_disconnect(self, client, userdata, rc=0):
-        print("Disconnected result code :", rc)
+        log.info("Disconnected", self.subtopic, Constants.INFO)
         client.loop_stop()
 
     def run(self):

@@ -13,3 +13,14 @@ class Constants(object):
 
     DATA = "data"
     VARS = "vars"
+
+    SERVER = "SERVER/"
+
+    # Log types
+    STATE = "State"
+    INFO = "Info"
+    DFS = "Dfs"
+    UTIL = "Util"
+    VALUE = "Value"
+    RESULTS = "Results"
+    LOG = "Log"

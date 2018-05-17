@@ -1,24 +1,23 @@
 #! python3
-# room.py - Modelisation of a room
-
-from model.device import Device
-from random import randint
-
+# monitoring_area.py - Modelisation of a room
 import random
 import operator
 
+from random import randint
+from model.device import Device
 
-class Room(object):
+
+class MonitoringArea(object):
 
     MIN_TAU_VALUE = 5
     MAX_NB_DEVICES = 6
     INFINITY = 241
 
-    def __init__(self, id_room):
-        self.id = id_room
-        self.frontNeighbor = None
-        self.rightNeighbor = None
-        self.leftNeighbor = None
+    def __init__(self, id_monitored_area):
+        self.id = id_monitored_area
+        self.front_neighbor = None
+        self.right_neighbor = None
+        self.left_neighbor = None
         self.current_v = 0
         self.previous_v = 0
         self.tau = randint(self.MIN_TAU_VALUE, self.INFINITY)
@@ -31,18 +30,6 @@ class Room(object):
         id_device = str(self.id) + str(device_id + 1)
         critic_state = random.random() < 0.05
         self.device_list.append(Device(int(id_device), randint(self.MIN_TAU_VALUE, self.INFINITY), critic_state))
-
-    def set_left_neighbor(self, neighbor):
-        self.leftNeighbor = neighbor
-
-    def set_right_neighbor(self, neighbor):
-        self.rightNeighbor = neighbor
-
-    def set_front_neighbor(self, neighbor):
-        self.frontNeighbor = neighbor
-
-    def set_devices(self, devices):
-        self.device_list = devices
 
     def increment_time(self, minutes):
         """
@@ -114,11 +101,11 @@ class Room(object):
         :rtype: integer
         """
         count = 0
-        if self.leftNeighbor is not None:
+        if self.left_neighbor is not None:
             count += 1
-        if self.rightNeighbor is not None:
+        if self.right_neighbor is not None:
             count += 1
-        if self.frontNeighbor is not None:
+        if self.front_neighbor is not None:
             count += 1
         return count
 
@@ -138,16 +125,16 @@ class Room(object):
         :return: neighbors id list sorted by degree
         :rtype: list
         """
-        neighbors = {}      
+        neighbors = {}
 
-        if self.leftNeighbor is not None and self.leftNeighbor.id != int(agent_id):
-            neighbors[str(self.leftNeighbor.id)] = self.leftNeighbor.get_degree()
+        if self.left_neighbor is not None and self.left_neighbor.id != int(agent_id):
+            neighbors[str(self.left_neighbor.id)] = self.left_neighbor.get_degree()
 
-        if self.rightNeighbor is not None and self.rightNeighbor.id != int(agent_id):
-            neighbors[str(self.rightNeighbor.id)] = self.rightNeighbor.get_degree()
+        if self.right_neighbor is not None and self.right_neighbor.id != int(agent_id):
+            neighbors[str(self.right_neighbor.id)] = self.right_neighbor.get_degree()
 
-        if self.frontNeighbor is not None and self.frontNeighbor.id != int(agent_id):
-            neighbors[str(self.frontNeighbor.id)] = self.frontNeighbor.get_degree()
+        if self.front_neighbor is not None and self.front_neighbor.id != int(agent_id):
+            neighbors[str(self.front_neighbor.id)] = self.front_neighbor.get_degree()
 
         neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
         return [int(x) for x, _ in neighbors]
@@ -178,23 +165,23 @@ class Room(object):
         :return: neighbors in string format
         :rtype: string
         """
-        string = "ROOM " + str(self.id) + " : \n"
+        string = "monitored_area " + str(self.id) + " : \n"
 
-        if self.leftNeighbor is not None:
-            string += " | LeftNeighbor : " + str(self.leftNeighbor.id) + "\n"
+        if self.left_neighbor is not None:
+            string += " | LeftNeighbor : " + str(self.left_neighbor.id) + "\n"
 
-        if self.rightNeighbor is not None:
-            string += " | RightNeighbor : " + str(self.rightNeighbor.id) + "\n"
+        if self.right_neighbor is not None:
+            string += " | RightNeighbor : " + str(self.right_neighbor.id) + "\n"
 
-        if self.frontNeighbor is not None:
-            string += " | FrontNeighbor : " + str(self.frontNeighbor.id) + "\n"
+        if self.front_neighbor is not None:
+            string += " | FrontNeighbor : " + str(self.front_neighbor.id) + "\n"
         return string
 
-    def to_string(self):
-        string = "ROOM " + str(self.id) + " : \n"
-        string += "Tau : " + str(self.tau) + "\n"
+    def to_json_format(self):
+
+        data = {"id": self.id, "tau": self.tau, "devices": []}
 
         for device in self.device_list:
-            string += device.to_string()
+            data["devices"].append(device.to_json_format())
 
-        return string
+        return data

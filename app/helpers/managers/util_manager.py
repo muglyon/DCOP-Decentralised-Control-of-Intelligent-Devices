@@ -1,11 +1,13 @@
 from datetime import datetime
+
+import json
+import numpy
+
 from helpers.constants import Constants
 from helpers.constraint_manager import ConstraintManager
 from helpers.managers.dpop_manager import DpopManager
 from helpers.message_types import MessageTypes
-
-import numpy
-import json
+from helpers import log
 
 
 class UtilManager(DpopManager):
@@ -15,11 +17,11 @@ class UtilManager(DpopManager):
 
         self.JOIN = None
         self.UTIL = None
-        self.constraint_manager = ConstraintManager(dfs_structure.room)
+        self.constraint_manager = ConstraintManager(dfs_structure.monitored_area)
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
-        print("\n---------- UTIL PROPAGATION ----------")
+        log.info("Util Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
@@ -109,7 +111,10 @@ class UtilManager(DpopManager):
                     tupl = tuple(numpy.concatenate((numpy.array(index1), numpy.delete(numpy.array(index2), 0, 0))))
                     final_matrix[tupl] = value1 + value2
 
-        print("SHAPE OF COMBINED MATRIX : " + str(final_matrix.shape))
+        log.info("Shape Combined matrix : " + str(final_matrix.shape),
+                 self.dfs_structure.monitored_area.id,
+                 Constants.UTIL)
+
         return final_matrix
 
     def add_my_utility_in(self, R):
@@ -132,7 +137,8 @@ class UtilManager(DpopManager):
 
         return R
 
-    def project(self, matrix):
+    @staticmethod
+    def project(matrix):
         """
         PROJECT me out of the matrix
         :param matrix: matrix to be projected out

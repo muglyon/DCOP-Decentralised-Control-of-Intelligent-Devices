@@ -169,5 +169,7 @@ venv.bak/
 
 # Specifique au projet :
 JavaSimulator/xmlFiles/problemGenerated.xml
-
 JavaSimulator/xmlFiles/problem_1904\.xml
+app/logs/server/*
+app/logs/agents/*
+app/.scanner*/*

@@ -13,12 +13,5 @@ class Device(object):
     def set_end_of_prog(self, ending_time):
         self.end_of_prog = ending_time if ending_time > 0 else 241
 
-    def to_string(self):
-        string = " > Device " + str(self.id) + " "
-
-        if self.is_in_critic_state:
-            string += "IN CRITICAL STATE !\n"
-        else:
-            string += "end it's program in " + str(self.end_of_prog) + "\n"
-
-        return string
+    def to_json_format(self):
+        return {"id": self.id, "critic_state": self.is_in_critic_state, "end_of_prog": self.end_of_prog}
