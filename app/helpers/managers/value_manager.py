@@ -62,19 +62,38 @@ class ValueManager(DpopManager):
         if data is None or not isinstance(data, dict):
             raise Exception("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)")
 
-        best_value = Constants.INFINITY + 1
-        best_index = 0
-        tupl = tuple()
+        tupl = self.extract_parent_values(data)
+        tupl = self.extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl)
 
+        return self.find_best_index(join_matrix, tupl)
+
+    def extract_parent_values(self, data):
+        # Check for parents values
         all_parents_id = self.dfs_structure.pseudo_parents_id
         all_parents_id.append(self.dfs_structure.parent_id)
+        tupl = tuple()
 
-        # Check for parents values
         for parent_id in all_parents_id:
             key = str(parent_id)
             if key in data:
                 tupl = tupl + (data[key],)
+        return tupl
 
+    @staticmethod
+    def find_best_index(join_matrix, tupl):
+
+        best_index = 0
+        best_value = Constants.INFINITY + 1
+
+        for index, value in numpy.ndenumerate(join_matrix):
+            if tupl == index[1:] and value <= best_value:
+                best_value = value
+                best_index = index[0]
+
+        return best_index
+
+    @staticmethod
+    def extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl):
         # Check for dependant non-neighbors values if needed
         for neighbor_id in matrix_dimensions_order:
 
@@ -84,12 +103,4 @@ class ValueManager(DpopManager):
             key = str(neighbor_id)
             if key in data:
                 tupl = tupl + (data[key],)
-
-        for index, value in numpy.ndenumerate(join_matrix):
-
-            if tupl == index[1:]:
-                if value <= best_value:
-                    best_value = value
-                    best_index = index[0]
-
-        return best_index
+        return tupl
