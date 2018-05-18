@@ -43,10 +43,7 @@ class ConstraintManager(object):
 
     def c5_nothing_to_report(self, vi):
 
-        if self.monitored_area.is_in_critical_state():
-            pass
-
-        else:
+        if not self.monitored_area.is_in_critical_state():
             if self.monitored_area.get_min_end_of_prog() > Constants.URGT_TIME \
                     and self.monitored_area.tau < Constants.THREE_HOURS \
                     and vi < Constants.INFINITY:

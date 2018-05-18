@@ -3,6 +3,8 @@ from helpers.message_types import MessageTypes
 
 class MQTTManager(object):
 
+    CRITICAL_STATE_COEF = 5
+
     def __init__(self, client, monitored_area=None):
         self.client = client
         self.monitored_area = monitored_area
@@ -20,6 +22,8 @@ class MQTTManager(object):
         return len(self.client.value_msgs) > 0
 
     def publish_root_value_msg(self):
+        # priority_value = self.monitored_area.get_degree()
+        # priority_value += self.CRITICAL_STATE_COEF if self.monitored_area.is_in_critical_state() else 0
         self.client.publish(self.client.ROOT_TOPIC, str(self.monitored_area.id) + ":" + str(self.monitored_area.get_degree()))
 
     def publish_child_msg_to(self, recipient_id):

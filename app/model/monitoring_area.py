@@ -154,9 +154,7 @@ class MonitoringArea(object):
                 is_device_exist = True
                 break
 
-        if is_device_exist:
-            pass
-        else:
+        if not is_device_exist:
             self.device_list.append(device)
 
     def to_string_neighbors(self):

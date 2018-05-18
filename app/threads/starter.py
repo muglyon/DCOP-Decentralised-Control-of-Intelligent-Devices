@@ -74,10 +74,12 @@ class Starter(Thread):
 
         for msg in self.mqtt_manager.client.list_msgs_waiting:
 
-            splited = msg.split(":")
-            if int(splited[1]) > best_value:
-                root = int(splited[0])
-                best_value = int(splited[1])
+            split_msg = msg.split(":")
+            value = int(split_msg[1]) + (2 * self.priorities[split_msg[0]])
+
+            if value > best_value:
+                root = int(split_msg[0])
+                best_value = value
 
         self.mqtt_manager.client.list_msgs_waiting = []
 

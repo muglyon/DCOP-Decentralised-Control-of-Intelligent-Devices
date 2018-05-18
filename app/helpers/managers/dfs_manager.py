@@ -63,9 +63,7 @@ class DfsManager(DpopManager):
                     self.mqtt_manager.publish_child_msg_to(yj)
                 else:
 
-                    if self.dfs_structure.is_root:
-                        pass
-                    else:
+                    if not self.dfs_structure.is_root:
                         # Backtrack
                         self.mqtt_manager.publish_child_msg_to(self.dfs_structure.parent_id)
 
