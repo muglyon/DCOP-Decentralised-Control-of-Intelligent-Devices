@@ -36,6 +36,7 @@ class AgentMQTT(CustomMQTTClass):
                          self.monitored_area.id,
                          Constants.STATE)
 
+            self.initialize_metrics()
             thread = Dpop(self.monitored_area, client)
             thread.start()
             thread.join(timeout=10)
@@ -51,3 +52,6 @@ class AgentMQTT(CustomMQTTClass):
             client.list_msgs_waiting.append(str_msg)
 
         super().on_message(client, obj, msg)
+
+    def initialize_metrics(self):
+        self.client.nb_msg_exchanged_current = 0

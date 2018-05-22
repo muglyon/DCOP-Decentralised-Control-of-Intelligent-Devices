@@ -44,11 +44,15 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
-        log.info("Nb msg RECEIVED : " + str(self.mqtt_manager.client.nb_msg_exchanged),
+        log.info("Nb msg RECEIVED for this it : " + str(self.mqtt_manager.client.nb_msg_exchanged_current),
                  self.monitored_area.id,
                  Constants.RESULTS)
 
-        log.info("Execution time (s) : " + str(time.time() - start_time),
+        log.info("Total Nb msg RECEIVED : " + str(self.mqtt_manager.client.nb_msg_exchanged_total),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Avg Execution time (s) : " + str(time.time() - start_time),
                  self.monitored_area.id,
                  Constants.RESULTS)
 
