@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     # FOR DEBUG : TO REMOVE !
     monitored_area = None
-    hospital = Hospital(6)
+    hospital = Hospital(Constants.NB_ROOMS)
 
     for r in hospital.monitored_area_list:
         if r.id == int(sys.argv[1]):

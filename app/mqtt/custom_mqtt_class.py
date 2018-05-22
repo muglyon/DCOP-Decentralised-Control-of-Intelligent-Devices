@@ -21,7 +21,8 @@ class CustomMQTTClass:
         self.client.on_disconnect = self.on_disconnect
         self.client.list_msgs_waiting = []
         self.client.avg_msg_size = 0
-        self.client.nb_msg_exchanged = 0
+        self.client.nb_msg_exchanged_total = 0
+        self.client.nb_msg_exchanged_current = 0
 
         self.subtopic = subtopic
         self.topic_to_subscribe = self.client.DCOP_TOPIC + subtopic
@@ -31,8 +32,10 @@ class CustomMQTTClass:
         log.info("Subscribe", self.subtopic, Constants.INFO)
 
     def on_message(self, client, obj, msg):
-        self.client.avg_msg_size = sum([self.client.avg_msg_size, len(msg.payload)])
-        self.client.nb_msg_exchanged += 1
+        data_to_avg = [self.client.avg_msg_size, len(msg.payload)]
+        self.client.avg_msg_size = (sum(data_to_avg)) / float(len(data_to_avg))
+        self.client.nb_msg_exchanged_total += 1
+        self.client.nb_msg_exchanged_current += 1
         log.info(str(msg.payload.decode('utf-8')), msg.topic, Constants.INFO)
 
     def on_disconnect(self, client, userdata, rc=0):

@@ -12,7 +12,7 @@ from datetime import datetime
 if __name__ == "__main__":
 
     # FOR DEBUG
-    nb_agents = 6
+    nb_agents = Constants.NB_ROOMS
     hospital = Hospital(nb_agents)
 
     log_file = "logs/server/log_server_" + datetime.now().strftime("%Y-%m-%d") + ".json"
