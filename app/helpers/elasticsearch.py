@@ -2,7 +2,7 @@ import requests
 
 from helpers.constants import Constants
 
-ROOT_URL = "http://localhost:9200/"
+ROOT_URL = "http://10.33.120.78:9200/"
 
 
 def save_data(payload):
@@ -15,11 +15,12 @@ def save_data(payload):
     if '"type": "' + Constants.DFS + '"' in payload:
         index = "dfs/dfs/"
 
-    response = requests.post(ROOT_URL + index,
-                             headers={"Content-Type": "application/json"},
-                             data=payload)
-
-    if b'error' in response.content:
-        print("\nUnable to save log in elasticsearch for " + index)
-        print(payload)
-        print(response.content, '\n')
+    # ROOT_URL not working on Rpi... ?
+    # response = requests.post(ROOT_URL + index,
+    #                          headers={"Content-Type": "application/json"},
+    #                          data=payload)
+    #
+    # if b'error' in response.content:
+    #     print("\nUnable to save log in elasticsearch for " + index)
+    #     print(payload)
+    #     print(response.content, '\n')
