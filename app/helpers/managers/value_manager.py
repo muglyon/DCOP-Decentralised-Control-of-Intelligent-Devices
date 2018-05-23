@@ -50,6 +50,8 @@ class ValueManager(DpopManager):
             if self.mqtt_manager.has_value_msg():
                 return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
 
+        return dict()
+
     def get_index_of_best_value_with(self, data, matrix_dimensions_order, join_matrix):
 
         if join_matrix is None:
