@@ -40,3 +40,16 @@ def info(msg, sender_id, msg_type):
     f_read = open(logger.handlers[0].baseFilename, "r")
     last_line = f_read.readlines()[-1]
     elasticsearch.save_data(last_line)
+
+
+def critical(msg, sender_id):
+
+    logger = logging.getLogger()
+    prefix = "" if "DCOP/" in str(sender_id) else "DCOP/"
+    payload = json.dumps(msg)
+
+    logger.critical(payload, extra={'topic': prefix + str(sender_id), 'type': 'CRITICAL'})
+
+    f_read = open(logger.handlers[0].baseFilename, "r")
+    last_line = f_read.readlines()[-1]
+    elasticsearch.save_data(last_line)

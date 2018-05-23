@@ -92,7 +92,9 @@ class UtilManager(DpopManager):
         """
 
         if matrix1 is None and matrix2 is None:
-            raise Exception("Matrices Null !")
+            log.critical("Matrices Null and should not be !",
+                         self.dfs_structure.monitored_area.id)
+            return numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         if matrix1 is None:
             return matrix2

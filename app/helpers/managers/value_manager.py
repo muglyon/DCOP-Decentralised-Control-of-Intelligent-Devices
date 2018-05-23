@@ -53,14 +53,18 @@ class ValueManager(DpopManager):
     def get_index_of_best_value_with(self, data, matrix_dimensions_order, join_matrix):
 
         if join_matrix is None:
-            raise Exception("Matrice NULL pour la méthode dpop.getIndexOfBestValueWith(...)")
+            log.critical("Matrice NULL pour la méthode dpop.getIndexOfBestValueWith(...)",
+                         self.dfs_structure.monitored_area.id)
+            return numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         if len(join_matrix.shape) == 1 or join_matrix.shape[1] == 1:
             indices = [i for i, x in enumerate(join_matrix) if x == min(join_matrix)]
             return indices[len(indices) - 1]
 
         if data is None or not isinstance(data, dict):
-            raise Exception("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)")
+            log.critical("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)",
+                         self.dfs_structure.monitored_area.id)
+            return numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         tupl = self.extract_parent_values(data)
         tupl = self.extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl)

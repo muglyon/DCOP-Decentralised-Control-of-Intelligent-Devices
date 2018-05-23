@@ -18,4 +18,4 @@ Feature: JOIN operator behavior
 	Scenario: Null matrix
 		Given two matrix
 		When one of them is Null
-		Then join operation should return the other matrix (or raise an exception if both are Null)
+		Then join operation should return the other matrix (or return if both are Null)
