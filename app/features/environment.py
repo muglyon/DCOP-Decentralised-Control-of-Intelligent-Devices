@@ -42,6 +42,7 @@ def before_scenario(context, scenario):
     context.agent_4.left_neighbor = context.agent_3
 
     log.info = MagicMock()
+    log.critical = MagicMock()
     
     context.mock_clientMqtt_1 = MagicMock()
     context.mock_clientMqtt_1.util_msgs = []
