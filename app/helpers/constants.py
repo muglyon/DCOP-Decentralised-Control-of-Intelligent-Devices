@@ -9,7 +9,7 @@ class Constants(object):
     T_SYNCHRO = 30
     TWO_MINUTS = 120
     THREE_HOURS = 180
-    TIMEOUT = 200  # Environ 4 minutes
+    TIMEOUT = 300  # 5 minutes
     INFINITY = 241
 
     DATA = "data"
