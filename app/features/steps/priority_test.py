@@ -41,7 +41,9 @@ def step_impl(context):
 
 @when("the server choose the root")
 def step_impl(context):
-    context.server_thread.choose_root()
+    context.server_thread.update_and_get_priorities = MagicMock()
+    context.server_thread.get_values = MagicMock()
+    context.server_thread.do_one_iteration()
 
 
 @then("server should choose the high-priority syringe as root")

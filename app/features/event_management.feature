@@ -14,7 +14,7 @@ Feature: Events Management
     Then AI in syringe pump should send urgent message to server
 
   Scenario: Server send "ON" messages with specific root on urgent demands
-    Given a server interacting with AI agents in syringe pump
+    Given an mqtt server interacting with AI agents in syringe pump
     When receive an 'URGT' message from AI in syringe pump
     Then server should send 'ON' messages to every AI in syringe pump
     And should choose the sender of the 'URGT' message as root
