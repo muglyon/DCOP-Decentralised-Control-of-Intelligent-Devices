@@ -4,6 +4,8 @@ import random
 import operator
 
 from random import randint
+
+from helpers.constants import Constants
 from model.device import Device
 
 
@@ -42,10 +44,7 @@ class MonitoringArea(object):
         self.previous_v -= minutes
 
         for device in self.device_list:
-            if device.is_in_critic_state:
-                self.randomly_pop_or_reprogram_device(device)
-            else:
-                device.set_end_of_prog(device.end_of_prog - minutes)
+            device.end_of_prog -= minutes
 
             if device.end_of_prog == self.INFINITY:
                 self.tau = 0
@@ -53,12 +52,14 @@ class MonitoringArea(object):
         if random.random() < 0.5:
             self.add_new_device(len(self.device_list))
 
-    def randomly_pop_or_reprogram_device(self, device):
-        if random.random() < 0.5:
-            self.device_list.pop(self.device_list.index(device))
-        else:
-            device.is_in_critic_state = False
-            device.set_end_of_prog(241)
+    def healthcare_pro_take_care_of_critical_devices(self):
+        for device in self.device_list:
+            if device.is_in_critic_state:
+                if random.random() < 0.4:
+                    self.device_list.pop(self.device_list.index(device))
+                elif random.random() < 0.4:
+                    device.is_in_critic_state = False
+                    device.end_of_prog = Constants.INFINITY
 
     def has_no_devices(self):
         return len(self.device_list) == 0
@@ -183,3 +184,7 @@ class MonitoringArea(object):
             data["devices"].append(device.to_json_format())
 
         return data
+
+    def attach_observer(self, observer):
+        for device in self.device_list:
+            device.observer = observer

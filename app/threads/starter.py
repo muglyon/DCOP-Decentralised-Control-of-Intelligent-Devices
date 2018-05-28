@@ -5,6 +5,7 @@ import time
 import json
 import operator
 
+from datetime import datetime
 from threading import Thread
 from helpers.constants import Constants
 from helpers.message_types import MessageTypes
@@ -22,6 +23,9 @@ class Starter(Thread):
         self.priorities = {}
         self.old_results_index = {}
         self.mqtt_manager = MQTTManager(mqtt_client)
+        self.stop = False
+
+        self.critical_root_chosen = 0
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
@@ -30,63 +34,68 @@ class Starter(Thread):
     def run(self):
 
         while 1:
+            self.do_one_iteration()
+            #time.sleep(Constants.TWO_MINUTS)
 
-            log.info("Start", Constants.SERVER, Constants.INFO)
+            start_time = datetime.now()
 
-            results = ""
-            received_index = {}
+            while (datetime.now() - start_time).total_seconds() < Constants.TWO_MINUTS:
+                # Sleep or manage urgent msgs
 
-            for agent in self.agents:
-                self.mqtt_manager.publish_on_msg_to(agent.id)
+                if len(self.mqtt_manager.client.urgent_msg_list) > 0:
+                    self.manage_urgent_msg()
+                    start_time = datetime.now()
 
-            self.choose_root()
+    def do_one_iteration(self):
+        log.info("Start", Constants.SERVER, Constants.INFO)
 
-            while len(received_index) < len(self.agents):
+        for agent in self.agents:
+            self.mqtt_manager.publish_on_msg_to(agent.id)
 
-                if self.mqtt_manager.has_no_msg():
-                    # Wait for VALUES results
-                    continue
+        self.choose_root()
 
-                msg_received = self.mqtt_manager.client.list_msgs_waiting.pop(0)
-                value_data = msg_received.split(MessageTypes.VALUES.value + " ")[1]
-                received_index.update(json.loads(value_data))
+        received_index = self.get_values()
 
-            self.manage_priorities(received_index)
+        sorted_priorities = self.update_and_get_priorities(received_index)
+        results = ""
 
-            sorted_priorities = sorted(self.priorities.items(), key=operator.itemgetter(1))
-            for agent_id, priority in sorted_priorities:
-                results += "Room " + str(agent_id) + \
-                           " need intervention in " + str(Constants.DIMENSION[received_index[agent_id]]) + \
-                           " minutes. PRIORITY : " + str(priority) + " "
-                self.old_results_index[agent_id] = received_index[agent_id]
+        for agent_id, priority in sorted_priorities:
 
-            log.info(results, Constants.SERVER, Constants.RESULTS)
-            time.sleep(Constants.TWO_MINUTS)
+            results += "Room " + str(agent_id) + \
+                       " need intervention in " + str(Constants.DIMENSION[received_index[agent_id]]) + \
+                       " minutes. PRIORITY : " + str(priority) + " "
+            self.old_results_index[agent_id] = received_index[agent_id]
+
+        log.info(results, Constants.SERVER, Constants.RESULTS)
 
     def choose_root(self):
-
         root = 0
         best_value = 0
 
-        while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
-            # Wait for ROOTs messages
-            pass
+        if self.critical_root_chosen > 0:
+            root = self.critical_root_chosen
+            self.critical_root_chosen = 0
 
-        for msg in self.mqtt_manager.client.list_msgs_waiting:
+        else:
+            while len(self.mqtt_manager.client.list_msgs_waiting) < len(self.agents):
+                # Wait for ROOTs messages
+                pass
 
-            split_msg = msg.split(":")
-            value = int(split_msg[1]) + (2 * self.priorities[split_msg[0]])
+            for msg in self.mqtt_manager.client.list_msgs_waiting:
 
-            if value > best_value:
-                root = int(split_msg[0])
-                best_value = value
+                split_msg = msg.split(":")
+                value = int(split_msg[1]) + (2 * self.priorities[split_msg[0]])
 
-        self.mqtt_manager.client.list_msgs_waiting = []
+                if value > best_value:
+                    root = int(split_msg[0])
+                    best_value = value
+
+            self.mqtt_manager.client.list_msgs_waiting = []
 
         for agent in self.agents:
             self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
 
-    def manage_priorities(self, data_received):
+    def update_and_get_priorities(self, data_received):
 
         for key in data_received:
 
@@ -95,3 +104,26 @@ class Starter(Thread):
                 self.priorities[key] += 1
             else:
                 self.priorities[key] = 0
+
+        return sorted(self.priorities.items(), key=operator.itemgetter(1))
+
+    def get_values(self):
+        received_index = {}
+        while len(received_index) < len(self.agents):
+
+            if not self.mqtt_manager.has_value_msg():
+                # Wait for VALUES results
+                continue
+
+            msg_received = self.mqtt_manager.client.value_msgs.pop(0)
+            print(msg_received)
+            value_data = msg_received.split(MessageTypes.VALUES.value + " ")[1]
+            received_index.update(json.loads(value_data))
+        return received_index
+
+    def manage_urgent_msg(self):
+        log.info("Start on demand", Constants.SERVER, Constants.INFO)
+        msg_received = self.mqtt_manager.client.urgent_msg_list.pop(0)
+        self.critical_root_chosen = int(msg_received.split(MessageTypes.URGT.value + "_")[1])
+        self.do_one_iteration()
+

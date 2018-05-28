@@ -22,21 +22,27 @@ class MQTTManager(object):
         return len(self.client.value_msgs) > 0
 
     def publish_root_value_msg(self):
-        self.client.publish(self.client.ROOT_TOPIC, str(self.monitored_area.id) + ":" + str(self.monitored_area.get_degree()))
+        self.client.publish(
+            self.client.ROOT_TOPIC,
+            str(self.monitored_area.id) + ":" + str(self.monitored_area.get_degree())
+        )
 
     def publish_child_msg_to(self, recipient_id):
         self.client.publish(
-            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.CHILD.value + " " + str(self.monitored_area.id)
+            self.client.DCOP_TOPIC + str(recipient_id),
+            MessageTypes.CHILD.value + " " + str(self.monitored_area.id)
         )
 
     def publish_pseudo_msg_to(self, recipient_id):
         self.client.publish(
-            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.PSEUDO.value + " " + str(self.monitored_area.id)
+            self.client.DCOP_TOPIC + str(recipient_id),
+            MessageTypes.PSEUDO.value + " " + str(self.monitored_area.id)
         )
 
     def publish_value_msg_to(self, recipient_id, values):
         self.client.publish(
-            self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.VALUES.value + " " + values
+            self.client.DCOP_TOPIC + str(recipient_id),
+            MessageTypes.VALUES.value + " " + values
         )
 
     def publish_value_msg_to_server(self, values):
@@ -50,3 +56,6 @@ class MQTTManager(object):
 
     def publish_elected_root_msg_to(self, recipient_id, root):
         self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.ROOT.value + "_" + str(root))
+
+    def publish_urgent_msg_to_server(self, sender_id):
+        self.client.publish(self.client.SERVER_TOPIC, MessageTypes.URGT.value + "_" + str(sender_id))

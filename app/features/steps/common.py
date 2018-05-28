@@ -3,7 +3,17 @@
 
 from behave import *
 from hamcrest import *
+from unittest.mock import *
 from helpers.constants import Constants
+from threads.starter import Starter
+
+
+@given("a server interacting with AI agents in syringe pump")
+def step_impl(context):
+    context.server_thread = Starter([context.room_1,
+                                     context.room_2,
+                                     context.room_3],
+                                    MagicMock())
 
 
 @given('an AI in syringe pump')
@@ -19,8 +29,8 @@ def step_impl(context):
 @given('two AI in syringe pump in two separate rooms next to each other')
 def step_impl(context):
     context.dpop_to_test = context.dpop_4
-    assert_that(context.agent_4.left_neighbor.id == context.agent_2.id
-                or context.agent_4.right_neighbor.id == context.agent_2.id)
+    assert_that(context.room_4.left_neighbor.id == context.room_2.id
+                or context.room_4.right_neighbor.id == context.room_2.id)
 
 
 @then('AI in syringe pump should not call healthcare professionals')
