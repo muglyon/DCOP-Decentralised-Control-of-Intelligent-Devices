@@ -19,7 +19,7 @@ class Event(Thread):
             if random() < 0.05:
                 self.generate_random_event()
 
-            time.sleep(Constants.FIVE_SECONDS)
+            time.sleep(Constants.THIRTY_SECONDS)
 
     def generate_random_event(self):
 
