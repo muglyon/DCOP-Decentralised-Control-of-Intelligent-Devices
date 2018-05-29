@@ -17,7 +17,7 @@ class Event(Thread):
 
         while 1:
 
-            if random() < 0.1:
+            if random() < 0.05:
                 self.generate_random_event()
 
             time.sleep(Constants.FIVE_SECONDS)

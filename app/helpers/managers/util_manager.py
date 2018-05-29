@@ -134,7 +134,7 @@ class UtilManager(DpopManager):
         for index, value in numpy.ndenumerate(R):
             R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
 
-            if R[index] == Constants.INFINITY:
+            if R[index] > Constants.INFINITY:
                 R[index] = Constants.INFINITY
 
         return R

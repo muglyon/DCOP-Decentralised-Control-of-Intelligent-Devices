@@ -11,6 +11,7 @@ from model.device import Device
 from model.hospital import Hospital
 from mqtt.server_mqtt import ServerMQTT
 from threads.dpop import Dpop
+from threads.starter import Starter
 from threads.urgt_starter import UrgentStarter
 
 
@@ -45,7 +46,10 @@ def step_impl(context):
 
 @given("an mqtt server interacting with AI agents in syringe pump")
 def step_impl(context):
-    context.server_mqtt = ServerMQTT(Hospital(4))
+    context.server_mqtt = ServerMQTT(Hospital(3))
+    context.server_mqtt.starter = context.server_thread
+    context.server_mqtt.starter.start = MagicMock()
+    context.server_mqtt.starter.start()
 
 
 @when("receive an 'URGT' message from AI in syringe pump")
@@ -64,7 +68,7 @@ def step_impl(context):
             context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
             context.urgt_thread.join(timeout=10)
             assert_that(context.urgt_thread, instance_of(UrgentStarter))
-            assert_that(context.urgt_thread.mqtt_manager.publish_on_msg_to.call_count, equal_to(4))
+            assert_that(context.urgt_thread.mqtt_manager.publish_on_msg_to.call_count, equal_to(3))
 
 
 @then("should choose the sender of the 'URGT' message as root")
@@ -73,10 +77,18 @@ def step_impl(context):
         with mock.patch('threads.urgt_starter.UrgentStarter.get_values'):
             context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
             context.urgt_thread.join(timeout=10)
-            assert_that(context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.call_count, equal_to(4))
+            assert_that(context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.call_count, equal_to(3))
             context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.assert_any_call(1, 3)
             context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.assert_any_call(2, 3)
             context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.assert_any_call(3, 3)
-            context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.assert_any_call(4, 3)
 
 
+@then("server should give biggest priority to urgent agent and set next passage in 0 mins")
+def step_impl(context):
+    assert_that(context.server_mqtt.starter.priorities, equal_to({'1': 0, '2': 0, '3': 0}))
+
+    with mock.patch('mqtt.mqtt_manager.MQTTManager.publish_elected_root_msg_to'):
+        with mock.patch('threads.urgt_starter.UrgentStarter.get_values'):
+            context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
+            context.urgt_thread.join(timeout=10)
+            assert_that(context.server_mqtt.starter.priorities, equal_to({'1': 0, '2': 0, '3': 2}))

@@ -35,6 +35,7 @@ class Starter(Thread):
             time.sleep(Constants.TWO_MINUTS)
 
     def do_one_iteration(self):
+
         log.info("Start", Constants.SERVER, Constants.INFO)
 
         for agent in self.agents:
@@ -78,17 +79,17 @@ class Starter(Thread):
         self.mqtt_manager.client.list_msgs_waiting = []
         return root
 
-    def update_and_get_priorities(self, data_received):
+    def update_and_get_priorities(self, received_index):
 
-        for key in data_received:
+        for key in received_index:
 
-            if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME \
-                    and Constants.DIMENSION[data_received[key]] < Constants.URGT_TIME:
-                self.priorities[key] += 1
+            if Constants.DIMENSION[received_index[key]] < Constants.URGT_TIME:
+                if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME:
+                    self.priorities[key] += 1
             else:
                 self.priorities[key] = 0
 
-        return sorted(self.priorities.items(), key=operator.itemgetter(1))
+        return sorted(self.priorities.items(), key=operator.itemgetter(1), reverse=True)
 
     def get_values(self):
         received_index = {}
