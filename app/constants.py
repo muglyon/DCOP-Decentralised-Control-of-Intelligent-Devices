@@ -4,10 +4,10 @@ class Constants(object):
     DIMENSION_SIZE = len(DIMENSION)
 
     NB_ROOMS = 10
-    FIVE_SECONDS = 5
     INFINITY_IDX = 16
     URGT_TIME = 30
     T_SYNCHRO = 30
+    THIRTY_SECONDS = 30
     TWO_MINUTS = 120
     THREE_HOURS = 180
     TIMEOUT = 300  # 5 minutes
