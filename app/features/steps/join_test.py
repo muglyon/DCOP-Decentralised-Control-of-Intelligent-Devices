@@ -6,7 +6,7 @@ from hamcrest import *
 
 import numpy
 
-from helpers.constants import Constants
+from constants import Constants
 
 
 @given('two matrix')

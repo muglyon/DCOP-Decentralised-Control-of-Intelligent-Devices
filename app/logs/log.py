@@ -2,7 +2,7 @@ import logging
 import json
 
 from pythonjsonlogger import jsonlogger
-from helpers import elasticsearch
+from logs import elasticsearch
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 FORMAT_STR = '{"asctime": "%(asctime)s", ' \

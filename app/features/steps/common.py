@@ -4,8 +4,8 @@
 from behave import *
 from hamcrest import *
 from unittest.mock import *
-from helpers.constants import Constants
-from threads.starter import Starter
+from constants import Constants
+from dcop_server.starter import Starter
 
 
 @given("a server interacting with AI agents in syringe pump")

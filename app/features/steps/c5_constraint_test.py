@@ -4,7 +4,7 @@
 from behave import *
 from hamcrest import *
 from model.device import Device
-from threads.dpop import Dpop
+from dcop_engine.dpop import Dpop
 
 
 @when('there is nothing to report')

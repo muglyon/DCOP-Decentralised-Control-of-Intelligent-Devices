@@ -6,9 +6,9 @@ import time
 import operator
 
 from threading import Thread
-from helpers.constants import Constants
-from helpers.message_types import MessageTypes
-from helpers import log
+from constants import Constants
+from logs.message_types import MessageTypes
+from logs import log
 from mqtt.mqtt_manager import MQTTManager
 
 

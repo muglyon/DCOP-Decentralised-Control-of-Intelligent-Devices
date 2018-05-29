@@ -1,4 +1,4 @@
-from threads.starter import Starter
+from dcop_server.starter import Starter
 
 
 class UrgentStarter(Starter):

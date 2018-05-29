@@ -1,8 +1,8 @@
 #! python3
-from helpers.constants import Constants
-from helpers.managers.dpop_manager import DpopManager
-from helpers.message_types import MessageTypes
-from helpers import log
+from constants import Constants
+from dcop_engine.managers.dpop_manager import DpopManager
+from logs.message_types import MessageTypes
+from logs import log
 from model.dfs_structure import DfsStructure
 
 

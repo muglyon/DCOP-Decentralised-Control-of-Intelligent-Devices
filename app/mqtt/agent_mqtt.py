@@ -1,9 +1,9 @@
 from datetime import datetime
-from helpers import log
-from helpers.constants import Constants
-from helpers.message_types import MessageTypes
+from logs import log
+from constants import Constants
+from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
-from threads.dpop import dpop_launch
+from dcop_engine.dpop import dpop_launch
 
 
 class AgentMQTT(CustomMQTTClass):

@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
-from helpers import log
-from helpers.constants import Constants
+from logs import log
+from constants import Constants
 
 
 class CustomMQTTClass:

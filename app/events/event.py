@@ -2,7 +2,7 @@ import time
 
 from random import random
 from threading import Thread
-from helpers.constants import Constants
+from constants import Constants
 
 
 class Event(Thread):

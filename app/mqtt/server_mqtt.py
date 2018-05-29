@@ -1,7 +1,7 @@
-from helpers.message_types import MessageTypes
+from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
-from threads.starter import Starter
-from threads.urgt_starter import UrgentStarter
+from dcop_server.starter import Starter
+from dcop_server.urgt_starter import UrgentStarter
 
 
 class ServerMQTT(CustomMQTTClass):

@@ -1,6 +1,4 @@
-import requests
-
-from helpers.constants import Constants
+from constants import Constants
 
 ROOT_URL = "http://10.33.120.78:9200/"
 

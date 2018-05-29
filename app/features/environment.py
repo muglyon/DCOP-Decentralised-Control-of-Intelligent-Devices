@@ -10,12 +10,11 @@
 import json
 import numpy
 
-from helpers import log
-from helpers.constants import Constants
-from helpers.event_observer import EventObserver
+from logs import log
+from constants import Constants
 from model.monitoring_area import MonitoringArea
 from unittest.mock import MagicMock
-from threads.dpop import Dpop
+from dcop_engine.dpop import Dpop
 
 
 def before_scenario(context, scenario):

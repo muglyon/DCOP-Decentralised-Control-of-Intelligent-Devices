@@ -9,12 +9,12 @@ import time
 
 from copy import copy
 from threading import Thread
-from helpers import log
-from helpers.constants import Constants
-from helpers.constraint_manager import ConstraintManager
-from helpers.managers.dfs_manager import DfsManager
-from helpers.managers.value_manager import ValueManager
-from helpers.managers.util_manager import UtilManager
+from logs import log
+from constants import Constants
+from dcop_engine.constraint_manager import ConstraintManager
+from dcop_engine.managers.dfs_manager import DfsManager
+from dcop_engine.managers.value_manager import ValueManager
+from dcop_engine.managers.util_manager import UtilManager
 from mqtt.mqtt_manager import MQTTManager
 
 
@@ -30,7 +30,7 @@ class Dpop(Thread):
         Thread.__init__(self)
 
         self.original_monitored_area = monitored_area  # Original
-        self.monitored_area = copy(monitored_area)  # Copy to avoid multiple threads access in the same time
+        self.monitored_area = copy(monitored_area)  # Copy to avoid multiple dcop_server access in the same time
 
         self.mqtt_manager = MQTTManager(mqtt_client, self.monitored_area)
         self.dfs_manager = DfsManager(self.mqtt_manager, self.monitored_area)

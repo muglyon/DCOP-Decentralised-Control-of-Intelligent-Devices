@@ -2,8 +2,8 @@
 # server_main.py - Run the server for the DCOP system in the hospital
 # It will do nothing if agents are not listening/running for the server signal !
 # Usage: py.exe server_main.py - Run the server
-from helpers import log
-from helpers.constants import Constants
+from logs import log
+from constants import Constants
 from model.hospital import Hospital
 from mqtt.server_mqtt import ServerMQTT
 from datetime import datetime

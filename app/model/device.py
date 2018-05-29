@@ -1,7 +1,6 @@
 #! python3
 # device.py - Implement the device model
 # Usefull for testing !
-from helpers.constants import Constants
 
 
 class Device(object):

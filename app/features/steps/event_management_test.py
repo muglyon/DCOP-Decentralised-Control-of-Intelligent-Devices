@@ -4,15 +4,14 @@ from unittest.mock import MagicMock
 from behave import *
 from hamcrest import *
 
-from helpers.constants import Constants
-from helpers.event_observer import EventObserver
-from helpers.message_types import MessageTypes
+from constants import Constants
+from events.event_observer import EventObserver
+from logs.message_types import MessageTypes
 from model.device import Device
 from model.hospital import Hospital
 from mqtt.server_mqtt import ServerMQTT
-from threads.dpop import Dpop
-from threads.starter import Starter
-from threads.urgt_starter import UrgentStarter
+from dcop_engine.dpop import Dpop
+from dcop_server.urgt_starter import UrgentStarter
 
 
 @given("the event manager")
@@ -64,7 +63,7 @@ def step_impl(context):
 @then("server should send 'ON' messages to every AI in syringe pump")
 def step_impl(context):
     with mock.patch('mqtt.mqtt_manager.MQTTManager.publish_on_msg_to'):
-        with mock.patch('threads.urgt_starter.UrgentStarter.get_values'):
+        with mock.patch('dcop_server.urgt_starter.UrgentStarter.get_values'):
             context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
             context.urgt_thread.join(timeout=10)
             assert_that(context.urgt_thread, instance_of(UrgentStarter))
@@ -74,7 +73,7 @@ def step_impl(context):
 @then("should choose the sender of the 'URGT' message as root")
 def step_impl(context):
     with mock.patch('mqtt.mqtt_manager.MQTTManager.publish_elected_root_msg_to'):
-        with mock.patch('threads.urgt_starter.UrgentStarter.get_values'):
+        with mock.patch('dcop_server.urgt_starter.UrgentStarter.get_values'):
             context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
             context.urgt_thread.join(timeout=10)
             assert_that(context.urgt_thread.mqtt_manager.publish_elected_root_msg_to.call_count, equal_to(3))
@@ -88,7 +87,15 @@ def step_impl(context):
     assert_that(context.server_mqtt.starter.priorities, equal_to({'1': 0, '2': 0, '3': 0}))
 
     with mock.patch('mqtt.mqtt_manager.MQTTManager.publish_elected_root_msg_to'):
-        with mock.patch('threads.urgt_starter.UrgentStarter.get_values'):
+        with mock.patch('dcop_server.urgt_starter.UrgentStarter.get_values'):
             context.urgt_thread = context.server_mqtt.on_message(MagicMock(), MagicMock(), context.msg)
             context.urgt_thread.join(timeout=10)
-            assert_that(context.server_mqtt.starter.priorities, equal_to({'1': 0, '2': 0, '3': 2}))
+
+            biggest_prio = 0
+            ai_prio = 1
+            for key in context.server_mqtt.starter.priorities:
+                if context.server_mqtt.starter.priorities[key] > biggest_prio:
+                    biggest_prio = context.server_mqtt.starter.priorities[key]
+                    ai_prio = key
+
+            assert_that(ai_prio, equal_to(str(3)))

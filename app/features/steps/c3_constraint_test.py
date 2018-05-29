@@ -4,7 +4,7 @@
 from behave import *
 from hamcrest import *
 from unittest.mock import MagicMock
-from helpers.constants import Constants
+from constants import Constants
 
 
 @when('both AI call healthcare professionals in almost the same time t1 and t2 with t1 > t2')

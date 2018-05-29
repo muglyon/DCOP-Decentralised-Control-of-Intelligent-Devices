@@ -1,4 +1,4 @@
-from helpers.message_types import MessageTypes
+from logs.message_types import MessageTypes
 
 
 class MQTTManager(object):

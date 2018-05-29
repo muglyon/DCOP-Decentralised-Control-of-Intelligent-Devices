@@ -4,8 +4,8 @@
 import operator
 
 from random import randint, random
-from helpers import log
-from helpers.constants import Constants
+from logs import log
+from constants import Constants
 from model.device import Device
 
 

@@ -1,4 +1,4 @@
-from helpers.constants import Constants
+from constants import Constants
 
 
 class ConstraintManager(object):
