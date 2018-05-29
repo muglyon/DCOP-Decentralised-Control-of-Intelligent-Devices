@@ -1,9 +1,9 @@
 from datetime import datetime
-from helpers import log
-from helpers.constants import Constants
-from helpers.message_types import MessageTypes
+from logs import log
+from constants import Constants
+from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
-from threads.dpop import Dpop
+from dcop_engine.dpop import dpop_launch
 
 
 class AgentMQTT(CustomMQTTClass):
@@ -17,7 +17,6 @@ class AgentMQTT(CustomMQTTClass):
 
         self.client.child_msgs = []
         self.client.util_msgs = []
-        self.client.value_msgs = []
 
     def on_message(self, client, obj, msg):
 
@@ -28,8 +27,8 @@ class AgentMQTT(CustomMQTTClass):
             log.info("Iteration " + str(self.counter), self.monitored_area.id, Constants.INFO)
 
             if self.counter > 0:
-                self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.monitored_area.previous_v = self.monitored_area.current_v
+                self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.start_time = datetime.now()
 
                 log.info(self.monitored_area.to_json_format(),
@@ -37,10 +36,9 @@ class AgentMQTT(CustomMQTTClass):
                          Constants.STATE)
 
             self.initialize_metrics()
-            thread = Dpop(self.monitored_area, client)
-            thread.start()
-            thread.join(timeout=10)
             self.counter += 1
+
+            dpop_launch(self.monitored_area, client)
 
         elif MessageTypes.CHILD.value in str_msg or MessageTypes.PSEUDO.value in str_msg:
             client.child_msgs.append(str_msg)

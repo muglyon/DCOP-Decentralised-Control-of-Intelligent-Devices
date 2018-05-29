@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
-from helpers import log
-from helpers.constants import Constants
+from logs import log
+from constants import Constants
 
 
 class CustomMQTTClass:
@@ -19,7 +19,10 @@ class CustomMQTTClass:
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
+
         self.client.list_msgs_waiting = []
+        self.client.value_msgs = []
+
         self.client.avg_msg_size = 0
         self.client.nb_msg_exchanged_total = 0
         self.client.nb_msg_exchanged_current = 0

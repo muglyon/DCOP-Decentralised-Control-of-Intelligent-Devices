@@ -9,6 +9,7 @@ class MessageTypes(Enum):
     PSEUDO = "PSEUDO"
     UTIL = "UTIL"
     VALUES = "VALUES"
+    URGT = "URGT"
 
     @staticmethod
     def is_child(msg_type):

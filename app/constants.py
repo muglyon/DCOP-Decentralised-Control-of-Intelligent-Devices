@@ -4,6 +4,7 @@ class Constants(object):
     DIMENSION_SIZE = len(DIMENSION)
 
     NB_ROOMS = 10
+    FIVE_SECONDS = 5
     INFINITY_IDX = 16
     URGT_TIME = 30
     T_SYNCHRO = 30
@@ -25,3 +26,4 @@ class Constants(object):
     VALUE = "Value"
     RESULTS = "Results"
     LOG = "Log"
+    EVENT = "Event"

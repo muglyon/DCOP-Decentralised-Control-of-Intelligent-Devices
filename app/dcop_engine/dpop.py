@@ -7,21 +7,31 @@
 
 import time
 
+from copy import copy
 from threading import Thread
-from helpers import log
-from helpers.constants import Constants
-from helpers.constraint_manager import ConstraintManager
-from helpers.managers.dfs_manager import DfsManager
-from helpers.managers.value_manager import ValueManager
-from helpers.managers.util_manager import UtilManager
+from logs import log
+from constants import Constants
+from dcop_engine.constraint_manager import ConstraintManager
+from dcop_engine.managers.dfs_manager import DfsManager
+from dcop_engine.managers.value_manager import ValueManager
+from dcop_engine.managers.util_manager import UtilManager
 from mqtt.mqtt_manager import MQTTManager
+
+
+def dpop_launch(monitored_area, client):
+    thread = Dpop(monitored_area, client)
+    thread.start()
+    thread.join(timeout=10)
 
 
 class Dpop(Thread):
 
     def __init__(self, monitored_area, mqtt_client):
         Thread.__init__(self)
-        self.monitored_area = monitored_area
+
+        self.original_monitored_area = monitored_area  # Original
+        self.monitored_area = copy(monitored_area)  # Copy to avoid multiple dcop_server access in the same time
+
         self.mqtt_manager = MQTTManager(mqtt_client, self.monitored_area)
         self.dfs_manager = DfsManager(self.mqtt_manager, self.monitored_area)
         self.util_manager = UtilManager(self.mqtt_manager, self.dfs_manager.dfs_structure)
@@ -39,6 +49,8 @@ class Dpop(Thread):
         self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
+
+        self.original_monitored_area.current_v = self.monitored_area.current_v
 
         log.info("Avg size of msg RECEIVED (bytes) : " + str(self.mqtt_manager.client.avg_msg_size),
                  self.monitored_area.id,
