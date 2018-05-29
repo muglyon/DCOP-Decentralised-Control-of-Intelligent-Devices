@@ -1,5 +1,3 @@
-import functools
-
 from helpers.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from threads.starter import Starter
