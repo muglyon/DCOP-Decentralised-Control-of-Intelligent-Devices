@@ -1,6 +1,7 @@
 #! python3
 # device.py - Implement the device model
 # Usefull for testing !
+from helpers.constants import Constants
 
 
 class Device(object):
@@ -19,8 +20,11 @@ class Device(object):
     def is_in_critic_state(self, new_value):
         self.__is_in_critic_state = new_value
 
-        if self.__is_in_critic_state and self.observer is not None:
-            self.observer.notify()
+        if self.observer is not None:
+            if self.__is_in_critic_state:
+                self.observer.notify_emergency()
+            else:
+                self.observer.notify_intervention_detected()
 
     @property
     def end_of_prog(self):
@@ -28,7 +32,11 @@ class Device(object):
 
     @end_of_prog.setter
     def end_of_prog(self, ending_time):
-        self.__end_of_prog = ending_time if ending_time > 0 else 241
+
+        if self.__end_of_prog < ending_time and self.observer is not None:
+            self.observer.notify_intervention_detected()
+
+        self.__end_of_prog = ending_time if ending_time > 0 else 0
 
     def to_json_format(self):
         return {"id": self.id, "critic_state": self.is_in_critic_state, "end_of_prog": self.end_of_prog}

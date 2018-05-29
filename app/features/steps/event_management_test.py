@@ -5,7 +5,7 @@ from behave import *
 from hamcrest import *
 
 from helpers.constants import Constants
-from helpers.event_manager import EventManager
+from helpers.event_observer import EventObserver
 from helpers.message_types import MessageTypes
 from model.device import Device
 from model.hospital import Hospital
@@ -19,7 +19,7 @@ from threads.urgt_starter import UrgentStarter
 def step_impl(context):
     context.room_2.device_list = [Device(21, Constants.INFINITY, False)]
 
-    context.event_manager = EventManager(context.room_2, context.mock_clientMqtt_2)
+    context.event_manager = EventObserver(context.room_2, context.mock_clientMqtt_2)
     context.event_manager.mqtt_manager.publish_urgent_msg_to_server = MagicMock()
 
     context.room_2.attach_observer(context.event_manager)

@@ -12,7 +12,7 @@ import numpy
 
 from helpers import log
 from helpers.constants import Constants
-from helpers.event_manager import EventManager
+from helpers.event_observer import EventObserver
 from model.monitoring_area import MonitoringArea
 from unittest.mock import MagicMock
 from threads.dpop import Dpop

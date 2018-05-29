@@ -6,6 +6,9 @@ class UrgentStarter(Starter):
     def __init__(self, main_server_thread, mqtt_client, critical_root_chosen=0):
         Starter.__init__(self, main_server_thread.agents, mqtt_client)
 
+        self.priorities = main_server_thread.priorities
+        self.old_results_index = main_server_thread.old_results_index
+
         self.critical_root_chosen = critical_root_chosen
         self.main_server_thread = main_server_thread
 

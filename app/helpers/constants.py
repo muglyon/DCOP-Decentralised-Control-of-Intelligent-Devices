@@ -26,3 +26,4 @@ class Constants(object):
     VALUE = "Value"
     RESULTS = "Results"
     LOG = "Log"
+    EVENT = "Event"

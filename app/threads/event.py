@@ -3,7 +3,6 @@ import time
 from random import random
 from threading import Thread
 from helpers.constants import Constants
-from helpers import log
 
 
 class Event(Thread):
@@ -28,6 +27,9 @@ class Event(Thread):
 
         if random_prob < 0.2 and not self.monitored_area.has_no_devices():
             self.monitored_area.device_list[0].is_in_critic_state = True
+
         elif random_prob < 0.4:
-            log.info("nurse take care of devices", self.monitored_area.id, Constants.INFO)
-            self.monitored_area.healthcare_pro_take_care_of_critical_devices()
+            self.monitored_area.pop_or_reprogram_critical_devices()
+
+        elif random_prob < 0.6:
+            self.monitored_area.add_or_update_device(len(self.monitored_area.device_list))

@@ -1,10 +1,10 @@
 #! python3
 # monitoring_area.py - Modelisation of a room
-import random
+
 import operator
 
-from random import randint
-
+from random import randint, random
+from helpers import log
 from helpers.constants import Constants
 from model.device import Device
 
@@ -26,40 +26,39 @@ class MonitoringArea(object):
         self.device_list = []
 
         for device_id in range(0, randint(0, self.MAX_NB_DEVICES)):
-            self.add_new_device(device_id)
+            self.add_or_update_device(device_id)
 
-    def add_new_device(self, device_id):
+    def add_or_update_device(self, device_id):
         id_device = str(self.id) + str(device_id + 1)
-        critic_state = random.random() < 0.05
+        critic_state = random() < 0.05
         self.device_list.append(Device(int(id_device), randint(self.MIN_TAU_VALUE, self.INFINITY), critic_state))
 
     def increment_time(self, minutes):
-        """
-        Set + <minutes> to all devices
-        (Also, simulate a health workers intervention)
-        :param minutes: number of minutes to add
-        :type minutes: integer
-        """
         self.tau += minutes
         self.previous_v -= minutes
 
         for device in self.device_list:
             device.end_of_prog -= minutes
 
-            if device.end_of_prog == self.INFINITY:
-                self.tau = 0
-
-        if random.random() < 0.5:
-            self.add_new_device(len(self.device_list))
-
-    def healthcare_pro_take_care_of_critical_devices(self):
+    def pop_or_reprogram_critical_devices(self):
         for device in self.device_list:
+
             if device.is_in_critic_state:
-                if random.random() < 0.4:
+
+                random_number = random()
+
+                if random_number < 0.2:
+                    log.info("healthcare pro pop critical devices", self.id, Constants.EVENT)
                     self.device_list.pop(self.device_list.index(device))
-                elif random.random() < 0.4:
+
+                elif random_number < 0.4:
+                    log.info("healthcare pro stabilize critical devices", self.id, Constants.EVENT)
                     device.is_in_critic_state = False
                     device.end_of_prog = Constants.INFINITY
+
+                elif random_number < 0.6:
+                    log.info("healthcare pro add new device", self.id, Constants.EVENT)
+                    self.add_or_update_device(len(self.device_list))
 
     def has_no_devices(self):
         return len(self.device_list) == 0
