@@ -43,16 +43,17 @@ class MonitoringArea(object):
     def pop_or_reprogram_critical_devices(self):
         for device in self.device_list:
 
-            if device.is_in_critic_state:
+            random_number = random()
 
-                random_number = random()
+            if device.is_in_critic_state:
 
                 if random_number < 0.2:
                     log.info("healthcare pro pop critical devices", self.id, Constants.EVENT)
                     self.device_list.pop(self.device_list.index(device))
 
-                elif random_number < 0.4:
-                    log.info("healthcare pro stabilize critical devices", self.id, Constants.EVENT)
+            else:
+                if random_number < 0.4:
+                    log.info("healthcare pro reboot devices", self.id, Constants.EVENT)
                     device.is_in_critic_state = False
                     device.end_of_prog = Constants.INFINITY
 
