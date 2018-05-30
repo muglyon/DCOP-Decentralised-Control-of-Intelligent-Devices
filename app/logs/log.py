@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 
 from pythonjsonlogger import jsonlogger
 from logs import elasticsearch
@@ -10,6 +11,8 @@ FORMAT_STR = '{"asctime": "%(asctime)s", ' \
              '"type": "%(type)s", ' \
              '"content": %(message)s, ' \
              '"level": "%(levelname)s"}'
+
+execution_time = 0
 
 
 def setup_custom_logger(file_name):
@@ -31,6 +34,8 @@ def setup_custom_logger(file_name):
 
 def info(msg, sender_id, msg_type):
 
+    start_time = time.time()
+
     logger = logging.getLogger()
     prefix = "" if "DCOP/" in str(sender_id) else "DCOP/"
     payload = json.dumps(msg)
@@ -41,8 +46,13 @@ def info(msg, sender_id, msg_type):
     last_line = f_read.readlines()[-1]
     elasticsearch.save_data(last_line)
 
+    global execution_time
+    execution_time += time.time() - start_time
+
 
 def critical(msg, sender_id):
+
+    start_time = time.time()
 
     logger = logging.getLogger()
     prefix = "" if "DCOP/" in str(sender_id) else "DCOP/"
@@ -53,3 +63,7 @@ def critical(msg, sender_id):
     f_read = open(logger.handlers[0].baseFilename, "r")
     last_line = f_read.readlines()[-1]
     elasticsearch.save_data(last_line)
+
+    global execution_time
+    execution_time += time.time() - start_time
+

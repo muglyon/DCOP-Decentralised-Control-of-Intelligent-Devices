@@ -1,4 +1,6 @@
 #! python3
+import time
+
 from constants import Constants
 from dcop_engine.managers.dpop_manager import DpopManager
 from logs.message_types import MessageTypes
@@ -10,6 +12,8 @@ class DfsManager(DpopManager):
 
     def __init__(self, mqtt_manager, monitored_area):
         DpopManager.__init__(self, mqtt_manager, DfsStructure(monitored_area))
+
+        self.choose_root_execution_time = 0
 
     def generate_dfs(self):
 
@@ -75,6 +79,7 @@ class DfsManager(DpopManager):
 
     def choose_root(self):
 
+        start_time = time.time()
         self.mqtt_manager.publish_root_value_msg()
 
         while self.mqtt_manager.has_no_msg():
@@ -82,6 +87,7 @@ class DfsManager(DpopManager):
             pass
 
         self.dfs_structure.is_root = self.am_i_the_elected_root()
+        self.choose_root_execution_time = time.time() - start_time
 
     def am_i_the_elected_root(self):
         return int(self.mqtt_manager.client.list_msgs_waiting.pop(0).split("_")[1]) \

@@ -4,11 +4,13 @@
 #
 # /!\ WARNING /!\
 # The objective in this case is to MINIMIZE all constraints.
-
 import time
 
 from copy import copy
 from threading import Thread
+
+from dcop_engine import execution_time
+from dcop_engine.execution_time import *
 from logs import log
 from constants import Constants
 from dcop_engine.constraint_manager import ConstraintManager
@@ -41,16 +43,22 @@ class Dpop(Thread):
         """
         Do the DPOP Algorithm
         """
-
         start_time = time.time()
 
-        self.dfs_manager.generate_dfs()
-        self.util_manager.do_util_propagation()
+        self.dfs_manager.generate_dfs(),
+        self.util_manager.do_util_propagation(),
         self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
 
+        exec_time = time.time() - start_time
+
         self.original_monitored_area.current_v = self.monitored_area.current_v
+
+        execution_time.total.append(exec_time)
+        execution_time.for_dpop.append(
+            exec_time - log.execution_time - self.dfs_manager.choose_root_execution_time
+        )
 
         log.info("Avg size of msg RECEIVED (bytes) : " + str(self.mqtt_manager.client.avg_msg_size),
                  self.monitored_area.id,
@@ -64,7 +72,19 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
-        log.info("Avg Execution time (s) : " + str(time.time() - start_time),
+        log.info("Avg Execution time TOTAL (s) : " + str(average(execution_time.total)),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Avg Execution time dpop (s) : " + str(average(execution_time.for_dpop)),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Interval de conf total 95% (s) : " + str(confidence_interval(execution_time.total)),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("Interval de conf dpop 95% (s) : " + str(confidence_interval(execution_time.for_dpop)),
                  self.monitored_area.id,
                  Constants.RESULTS)
 
