@@ -40,7 +40,7 @@ class MonitoringArea(object):
         for device in self.device_list:
             device.end_of_prog -= minutes
 
-    def pop_or_reprogram_critical_devices(self):
+    def pop_or_reprogram_devices(self):
         for device in self.device_list:
 
             random_number = random()
@@ -50,16 +50,20 @@ class MonitoringArea(object):
                 if random_number < 0.2:
                     log.info("healthcare pro pop critical devices", self.id, Constants.EVENT)
                     self.device_list.pop(self.device_list.index(device))
+                else:
+                    self.reboot_device(device)
 
             else:
                 if random_number < 0.4:
-                    log.info("healthcare pro reboot devices", self.id, Constants.EVENT)
-                    device.is_in_critic_state = False
-                    device.end_of_prog = Constants.INFINITY
-
-                elif random_number < 0.6:
                     log.info("healthcare pro add new device", self.id, Constants.EVENT)
                     self.add_or_update_device(len(self.device_list))
+                else:
+                    self.reboot_device(device)
+
+    def reboot_device(self, device):
+        log.info("healthcare pro reboot devices", self.id, Constants.EVENT)
+        device.is_in_critic_state = False
+        device.end_of_prog = Constants.INFINITY
 
     def has_no_devices(self):
         return len(self.device_list) == 0

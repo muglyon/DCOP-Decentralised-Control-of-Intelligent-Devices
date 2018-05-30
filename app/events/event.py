@@ -29,7 +29,8 @@ class Event(Thread):
             self.monitored_area.device_list[0].is_in_critic_state = True
 
         elif random_prob < 0.4:
-            self.monitored_area.pop_or_reprogram_critical_devices()
-
-        elif random_prob < 0.6:
             self.monitored_area.add_or_update_device(len(self.monitored_area.device_list))
+
+        else:
+            self.monitored_area.pop_or_reprogram_devices()
+
