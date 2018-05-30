@@ -13,8 +13,13 @@ class UrgentStarter(Starter):
         self.main_server_thread = main_server_thread
 
     def run(self):
+
+        self.main_server_thread.pause = True
+
         self.do_one_iteration()
         self.callback_update_main_thread()
+
+        self.main_server_thread.pause = False
 
     def choose_root(self):
 

@@ -14,5 +14,4 @@ class EventObserver(object):
         self.mqtt_manager.publish_urgent_msg_to_server(self.monitored_area.id)
 
     def notify_intervention_detected(self):
-        log.info("intervention detected (device reprog)", self.monitored_area.id, Constants.EVENT)
         self.monitored_area.tau = 0

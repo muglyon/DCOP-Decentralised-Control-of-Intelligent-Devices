@@ -22,6 +22,7 @@ class Starter(Thread):
         self.priorities = {}
         self.old_results_index = {}
         self.mqtt_manager = MQTTManager(mqtt_client)
+        self.pause = False
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
@@ -33,6 +34,9 @@ class Starter(Thread):
 
             self.do_one_iteration()
             time.sleep(Constants.TWO_MINUTS)
+
+            while self.pause:
+                time.sleep(Constants.TWO_MINUTS)
 
     def do_one_iteration(self):
 
