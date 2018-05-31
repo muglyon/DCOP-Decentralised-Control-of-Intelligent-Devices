@@ -8,7 +8,6 @@ import time
 
 from copy import copy
 from threading import Thread
-from pympler.tracker import SummaryTracker
 
 from dcop_engine import execution_time
 from dcop_engine.execution_time import *
