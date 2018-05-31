@@ -8,6 +8,7 @@ import time
 
 from copy import copy
 from threading import Thread
+from pympler.tracker import SummaryTracker
 
 from dcop_engine import execution_time
 from dcop_engine.execution_time import *
@@ -46,11 +47,17 @@ class Dpop(Thread):
         start_time = time.time()
 
         self.dfs_manager.generate_dfs(),
+
+        t1 = time.time()
         self.util_manager.do_util_propagation(),
+        print("UTIL_phase ", time.time() - t1)
+
+        t1 = time.time()
         self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
                                                 self.util_manager.JOIN,
                                                 self.util_manager.UTIL)
 
+        print("Value_phase ", time.time() - t1)
         exec_time = time.time() - start_time
 
         self.original_monitored_area.current_v = self.monitored_area.current_v

@@ -1,3 +1,5 @@
+import time
+
 from datetime import datetime
 from logs import log
 from constants import Constants
@@ -12,7 +14,7 @@ class AgentMQTT(CustomMQTTClass):
         CustomMQTTClass.__init__(self, str(monitored_area.id) + "/#")
 
         self.monitored_area = monitored_area
-        self.counter = 0
+        self.nb_iterations = 0
         self.start_time = datetime.now()
 
         self.client.child_msgs = []
@@ -21,12 +23,13 @@ class AgentMQTT(CustomMQTTClass):
     def on_message(self, client, obj, msg):
 
         str_msg = str(msg.payload.decode('utf-8'))
+        #print("Receive", datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3], str_msg)
 
         if MessageTypes.is_on(str_msg):
 
-            log.info("Iteration " + str(self.counter), self.monitored_area.id, Constants.INFO)
+            log.info("Iteration " + str(self.nb_iterations), self.monitored_area.id, Constants.INFO)
 
-            if self.counter > 0:
+            if self.nb_iterations > 0:
                 self.monitored_area.previous_v = self.monitored_area.current_v
                 self.monitored_area.increment_time(int((datetime.now() - self.start_time).total_seconds() / 60))
                 self.start_time = datetime.now()
@@ -36,7 +39,7 @@ class AgentMQTT(CustomMQTTClass):
                          Constants.STATE)
 
             self.initialize_metrics()
-            self.counter += 1
+            self.nb_iterations += 1
 
             dpop_launch(self.monitored_area, client)
 

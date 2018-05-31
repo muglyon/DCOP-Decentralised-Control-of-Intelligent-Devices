@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import time
 import json
 import numpy
 
@@ -43,10 +44,11 @@ class ValueManager(DpopManager):
 
     def get_values_from_parents(self):
 
-        start_time = datetime.now()
+        # start_time = datetime.now()
+        start_time = time.time()
 
         # MQTT wait for incoming message of type VALUE from parent
-        while (datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
+        while (time.time() - start_time) < Constants.TIMEOUT:
             if self.mqtt_manager.has_value_msg():
                 return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
 

@@ -9,7 +9,7 @@ class ConstraintManager(object):
     @staticmethod
     def c3_neighbors_sync(vi, vj):
         diff = abs(vi - vj)
-        if diff <= Constants.T_SYNCHRO and diff != 0:
+        if 0 < diff <= Constants.T_SYNCHRO:
             return 1
         return 0
 
