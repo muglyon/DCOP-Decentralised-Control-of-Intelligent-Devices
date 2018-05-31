@@ -14,7 +14,6 @@ from events.event import Event
 
 if __name__ == "__main__":
 
-    # FOR DEBUG : TO REMOVE !
     monitored_area = None
     hospital = Hospital(Constants.NB_ROOMS)
 

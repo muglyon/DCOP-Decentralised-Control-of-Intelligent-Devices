@@ -1,6 +1,8 @@
 #! python3
 import time
 
+from pympler.tracker import SummaryTracker
+
 from constants import Constants
 from dcop_engine.managers.dpop_manager import DpopManager
 from logs.message_types import MessageTypes

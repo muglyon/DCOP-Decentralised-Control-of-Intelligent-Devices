@@ -1,3 +1,5 @@
+import time
+
 from logs.message_types import MessageTypes
 
 
@@ -49,7 +51,9 @@ class MQTTManager(object):
         self.client.publish(self.client.SERVER_TOPIC, MessageTypes.VALUES.value + " " + values)
 
     def publish_util_msg_to(self, recipient_id, data):
+        start_time = time.time()
         self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.UTIL.value + " " + data)
+        print("UTIL publish: ", time.time() - start_time)
 
     def publish_on_msg_to(self, recipient_id):
         self.client.publish(self.client.DCOP_TOPIC + str(recipient_id), MessageTypes.ON.value)
