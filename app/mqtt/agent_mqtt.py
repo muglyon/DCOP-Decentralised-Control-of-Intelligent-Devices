@@ -1,5 +1,3 @@
-import time
-
 from datetime import datetime
 from logs import log
 from constants import Constants
@@ -23,7 +21,6 @@ class AgentMQTT(CustomMQTTClass):
     def on_message(self, client, obj, msg):
 
         str_msg = str(msg.payload.decode('utf-8'))
-        #print("Receive", datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3], str_msg)
 
         if MessageTypes.is_on(str_msg):
 
