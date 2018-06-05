@@ -22,7 +22,9 @@ class Starter(Thread):
         self.priorities = {}
         self.old_results_index = {}
         self.mqtt_manager = MQTTManager(mqtt_client)
+
         self.pause = False
+        self.is_running = False
 
         for agent in self.agents:
             self.priorities[str(agent.id)] = 0
@@ -41,6 +43,7 @@ class Starter(Thread):
     def do_one_iteration(self):
 
         log.info("Start", Constants.SERVER, Constants.INFO)
+        self.is_running = True
 
         for agent in self.agents:
             self.mqtt_manager.publish_on_msg_to(agent.id)
@@ -61,6 +64,7 @@ class Starter(Thread):
                        " minutes. PRIORITY : " + str(priority) + " "
             self.old_results_index[agent_id] = received_index[agent_id]
 
+        self.is_running = False
         log.info(results, Constants.SERVER, Constants.RESULTS)
 
     def choose_root(self):

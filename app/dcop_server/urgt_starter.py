@@ -14,6 +14,10 @@ class UrgentStarter(Starter):
 
     def run(self):
 
+        while self.main_server_thread.is_running:
+            # Wait for the main thread to sleep
+            continue
+
         self.main_server_thread.pause = True
 
         self.do_one_iteration()
