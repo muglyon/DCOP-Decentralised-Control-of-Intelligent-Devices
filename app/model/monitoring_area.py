@@ -46,12 +46,10 @@ class MonitoringArea(object):
 
             random_number = random()
 
-            if device.is_in_critic_state:
-
-                if random_number < 0.2:
-                    log.info("healthcare pro pop critical devices", self.id, Constants.EVENT)
-                    self.device_list.pop(self.device_list.index(device))
-                    continue
+            if device.is_in_critic_state and random_number < 0.2:
+                log.info("healthcare pro pop critical devices", self.id, Constants.EVENT)
+                self.device_list.pop(self.device_list.index(device))
+                continue
 
             log.info("healthcare pro reboot devices", self.id, Constants.EVENT)
             device.is_in_critic_state = False

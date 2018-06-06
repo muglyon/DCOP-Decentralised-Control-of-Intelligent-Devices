@@ -10,7 +10,7 @@ class Constants(object):
     THIRTY_SECONDS = 30
     TWO_MINUTS = 120
     THREE_HOURS = 180
-    TIMEOUT = 300  # 5 minutes
+    TIMEOUT = 60  # 1 min
     INFINITY = 241
 
     DATA = "data"
