@@ -44,7 +44,6 @@ class ValueManager(DpopManager):
 
     def get_values_from_parents(self):
 
-        # start_time = datetime.now()
         start_time = time.time()
 
         # MQTT wait for incoming message of type VALUE from parent
