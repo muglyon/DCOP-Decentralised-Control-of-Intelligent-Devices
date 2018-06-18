@@ -11,15 +11,23 @@ namespace ComputerVisionModule
     using System.Threading.Tasks;
     using Microsoft.Azure.Devices.Client;
     using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+    using System.Net.Http;
+    using Newtonsoft.Json.Linq;
+    using OpenCvSharp;
 
     class Program
     {
-        static int counter;
+        // public static String FILENAME = @"temp.bmp";
+        public static String FILENAME = @"temp.bmp";
+        public static String EMOTION_API = "http://127.0.0.1/image";
+
+        // static int counter;
 
         static void Main(string[] args)
         {
             // The Edge runtime gives us the connection string we need -- it is injected as an environment variable
-            string connectionString = Environment.GetEnvironmentVariable("EdgeHubConnectionString");
+            string connectionString = "HostName=slh-iot-hub.azure-devices.net;GatewayHostName=inv010825.viseo.net;DeviceId=camera;ModuleId=computervisionmodule;SharedAccessKey=6zR3jQslASSaWwSXnxZAZl1uw3RA2DJ8RVHn1GlEXSk=";
+            //string connectionString = Environment.GetEnvironmentVariable("EdgeHubConnectionString");
 
             // Cert verification is not yet fully functional when using Windows OS for the container
             bool bypassCertVerification = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
@@ -91,68 +99,48 @@ namespace ComputerVisionModule
             Console.WriteLine("IoT Hub module client initialized.");
 
             // Register callback to be called when a message is received by the module
-            //await ioTHubModuleClient.SetInputMessageHandlerAsync("input1", PipeMessage, ioTHubModuleClient);
             await SendDeviceToCloudMessagesAsync(ioTHubModuleClient);
-        }
-
-        /// <summary>
-        /// This method is called whenever the module is sent a message from the EdgeHub. 
-        /// It just pipe the messages without any change.
-        /// It prints all the incoming messages.
-        /// </summary>
-        static async Task<MessageResponse> PipeMessage(Message message, object userContext)
-        {
-            int counterValue = Interlocked.Increment(ref counter);
-
-            var deviceClient = userContext as DeviceClient;
-            if (deviceClient == null)
-            {
-                throw new InvalidOperationException("UserContext doesn't contain " + "expected values");
-            }
-
-            byte[] messageBytes = message.GetBytes();
-            string messageString = Encoding.UTF8.GetString(messageBytes);
-            Console.WriteLine($"Received message: {counterValue}, Body: [{messageString}]");
-
-            if (!string.IsNullOrEmpty(messageString))
-            {
-                var pipeMessage = new Message(messageBytes);
-                foreach (var prop in message.Properties)
-                {
-                    pipeMessage.Properties.Add(prop.Key, prop.Value);
-                }
-                await deviceClient.SendEventAsync("output1", pipeMessage);
-                Console.WriteLine("Received message sent");
-            }
-            return MessageResponse.Completed;
         }
 
         static async Task<MessageResponse> SendDeviceToCloudMessagesAsync(DeviceClient userContext)
         {
 
-            Random rand = new Random();
+            // Random rand = new Random();
 
-            DeviceClient deviceClient = (DeviceClient)userContext;
+            DeviceClient deviceClient = (DeviceClient) userContext;
 
             while (true)
-            {                
-                double currentBatteryVoltage = rand.Next(20, 40);
-                double currentResponseTime = rand.Next(2, 6); 
-                double currentAmbientTemperature = rand.Next(10, 30);
-                double currentHumidity = rand.Next(5, 80);
+            {
+                // double currentBatteryVoltage = rand.Next(20, 40);
+                // double currentResponseTime = rand.Next(2, 6); 
+                // double currentAmbientTemperature = rand.Next(10, 30);
+                // double currentHumidity = rand.Next(5, 80);
+
+                VideoCapture capture = new VideoCapture();
+                capture.Open(0);
+
+                using (Mat image = new Mat()) 
+                {
+                    capture.Read(image);
+                    image.SaveImage(FILENAME);
+                }
 
                 MessageBody messageBody = new MessageBody();
-                
-                Machine drone = new Machine();
-                drone.batteryVoltage = currentBatteryVoltage;
-                drone.responseTime = currentResponseTime;
+                messageBody.happyProbability = 0.0;
+                messageBody.sadProbability = 0.0;
 
-                Ambient ambient = new Ambient();
-                ambient.temperature = currentAmbientTemperature;
-                ambient.humidity = currentHumidity;
+                submitToModelAsync(messageBody).Wait();
 
-                messageBody.ambient = ambient;
-                messageBody.drone = drone;
+                // Machine drone = new Machine();
+                // drone.batteryVoltage = currentBatteryVoltage;
+                // drone.responseTime = currentResponseTime;
+
+                // Ambient ambient = new Ambient();
+                // ambient.temperature = currentAmbientTemperature;
+                // ambient.humidity = currentHumidity;
+
+                // messageBody.ambient = ambient;
+                // messageBody.drone = drone;
 
                 var messageString = JsonConvert.SerializeObject(messageBody);
                 var message = new Message(Encoding.ASCII.GetBytes(messageString));
@@ -160,6 +148,41 @@ namespace ComputerVisionModule
                 await deviceClient.SendEventAsync("output1", message);
 
                 await Task.Delay(1000);
+            }
+        }
+
+        static async Task submitToModelAsync(MessageBody messageBody)
+        {
+            var client = new HttpClient();
+            byte[] byteFile = new byte[1024];
+
+            using (System.IO.FileStream fs = File.Open(FILENAME, FileMode.Open))
+            {
+                byteFile = new byte[(int)fs.Length];
+                fs.Read(byteFile, 0, (int)fs.Length);
+            }
+
+            // Get the response.
+            HttpResponseMessage response = await client.PostAsync(
+                EMOTION_API,
+                new ByteArrayContent(byteFile));
+            
+            using (var reader = new StreamReader(await response.Content.ReadAsStreamAsync()))
+            {
+                var result = await reader.ReadToEndAsync();
+                JObject jsonResult = JObject.Parse(result);
+
+                foreach (var prediction in jsonResult["predictions"])
+                {
+                    if(prediction["tagName"].ToString().Equals("happy")){
+                        messageBody.happyProbability = (double) prediction["probability"];
+                    }
+
+                    if (prediction["tagName"].ToString().Equals("sad"))
+                    {
+                        messageBody.sadProbability = (double) prediction["probability"];
+                    }
+                }
             }
         }
     }
