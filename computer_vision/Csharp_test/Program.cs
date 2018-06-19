@@ -105,39 +105,39 @@ namespace ComputerVisionModule
         static async Task<MessageResponse> SendDeviceToCloudMessagesAsync(DeviceClient userContext)
         {
 
-            // Random rand = new Random();
+            Random rand = new Random();
 
             DeviceClient deviceClient = (DeviceClient) userContext;
 
             while (true)
             {
-                // double currentBatteryVoltage = rand.Next(20, 40);
-                // double currentResponseTime = rand.Next(2, 6); 
-                // double currentAmbientTemperature = rand.Next(10, 30);
-                // double currentHumidity = rand.Next(5, 80);
+                double currentBatteryVoltage = rand.Next(20, 40);
+                double currentResponseTime = rand.Next(2, 6); 
+                double currentAmbientTemperature = rand.Next(10, 30);
+                double currentHumidity = rand.Next(5, 80);
 
-                VideoCapture capture = new VideoCapture();
-                capture.Open(0);
+                // VideoCapture capture = new VideoCapture();
+                // capture.Open(0);
 
-                using (Mat image = new Mat()) 
-                {
-                    capture.Read(image);
-                    image.SaveImage(FILENAME);
-                }
+                // using (Mat image = new Mat()) 
+                // {
+                //     capture.Read(image);
+                //     image.SaveImage(FILENAME);
+                // }
 
                 MessageBody messageBody = new MessageBody();
-                messageBody.happyProbability = 0.0;
-                messageBody.sadProbability = 0.0;
+                // messageBody.happyProbability = 0.0;
+                // messageBody.sadProbability = 0.0;
 
-                submitToModelAsync(messageBody).Wait();
+                // submitToModelAsync(messageBody).Wait();
 
-                // Machine drone = new Machine();
-                // drone.batteryVoltage = currentBatteryVoltage;
-                // drone.responseTime = currentResponseTime;
+                Machine drone = new Machine();
+                drone.batteryVoltage = currentBatteryVoltage;
+                drone.responseTime = currentResponseTime;
 
-                // Ambient ambient = new Ambient();
-                // ambient.temperature = currentAmbientTemperature;
-                // ambient.humidity = currentHumidity;
+                Ambient ambient = new Ambient();
+                ambient.temperature = currentAmbientTemperature;
+                ambient.humidity = currentHumidity;
 
                 // messageBody.ambient = ambient;
                 // messageBody.drone = drone;
