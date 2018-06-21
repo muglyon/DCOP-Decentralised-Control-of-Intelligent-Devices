@@ -12,7 +12,7 @@ from iothub_client import IoTHubMessage
 class CameraCapture(Thread):
 
     IMG_NAME = './data/temp.png'
-    EMOTION_API = "http://127.0.0.1/image"
+    EMOTION_API = "http://emotion-recognition-module:80/image"
 
     def __init__(self, user_context):
         Thread.__init__(self)
@@ -39,7 +39,7 @@ class CameraCapture(Thread):
             headers = {'content-type': 'application/octet-stream'}
             r = requests.post(self.EMOTION_API, data=open(self.IMG_NAME, 'rb').read(), headers=headers)
 
-            predictions = json.loads(r.content.decode("utf-8"))['predictions']
+            predictions = r.content.decode("utf-8")['predictions']
 
-            self.user_context.forward_event_to_output("output1", predictions, 0)
+            self.user_context.forward_event_to_output("output1", json.loads(predictions), 0)
             time.sleep(1)
