@@ -11,7 +11,7 @@ import iothub_client
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider
 from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubError
 from multiprocessing import Pool
-from custom_thread import MyThread
+from camera_capture import CameraCapture
 
 # messageTimeout - the maximum time in milliseconds until a message times out.
 # The timeout period starts at IoTHubClient.send_event_async.
@@ -90,14 +90,8 @@ class HubManager(object):
         # some embedded platforms need certificate information
         self.set_certificates()
         
-        # sets the callback when a message arrives on "input1" queue.  Messages sent to 
-        # other inputs or to the default will be silently discarded.
-        #self.client.set_message_callback("input1", receive_message_callback, self)
-        custom_Thread = MyThread(self)
+        custom_Thread = CameraCapture(self)
         custom_Thread.run()
-
-        # sets the callback when a twin's desired properties are updated.
-        #self.client.set_device_twin_callback(device_twin_callback, self)
 
     def set_certificates(self):
         isWindows = sys.platform.lower() in ['windows', 'win32']
