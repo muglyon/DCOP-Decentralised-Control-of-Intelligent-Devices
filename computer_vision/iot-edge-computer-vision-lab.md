@@ -1,6 +1,7 @@
 # IoT Edge Computer Vision Lab
 
 *Auteure : Sacha LHOPITAL*
+
 *Sous la direction de : Vincent THAVONEKHAM*
 
 Le présent LAB est un exercice pour mettre en place un système de Computer Vision avec de l'IoT Edge. Ce LAB se base sur du code Python ainsi que des outils d'Azure IoT Edge proposés par Microsoft. 
@@ -23,7 +24,7 @@ Le présent LAB est un exercice pour mettre en place un système de Computer Vis
 
 Le lab précédent décrit la configuration d'un IoT Edge Runtime sur notre machine. Ce nouveau lab concerne la création et la déploiement d'un module pour faire de la reconnaissance d'images. 
 
-**Objectif : ** Lancer une api capable de faire de la reconnaissance d'objets sur une image. Cette api dialoguera ensuite avec nos autres modules. 
+**Objectif :** Lancer une api capable de faire de la reconnaissance d'objets sur une image. Cette api dialoguera ensuite avec nos autres modules. 
 
 // Voir tuto de Sacha computervision.ai OU alors on skip cette partie ???
 
@@ -31,7 +32,7 @@ Le lab précédent décrit la configuration d'un IoT Edge Runtime sur notre mach
 
 Le lab précédent nous a permis de mettre en place un module pour faire de la reconnaissance d'images. Ce nouveau lab concerne également la création et la déploiement d'un module mais pour se connecter à une caméra locale et envoyer des photos à analyser cette fois. 
 
-**Objectif : ** Prendre une photo depuis la webcam liée à la machine, dialoguer avec le module de reconnaissance d'images et envoyer ses résultats à l'IoT Hub.
+**Objectif :** Prendre une photo depuis la webcam liée à la machine, dialoguer avec le module de reconnaissance d'images et envoyer ses résultats à l'IoT Hub.
 
 1. Dans Visual Studio : Selectionnez **View > Integrated Terminal** pour ouvrir un terminal directement dans VS Code.
 
@@ -121,17 +122,16 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
 
 8. Dans la méthode `main` de **main.py**, après la création du HubManager, on remplace la boucle infinie par l'execution du thread. Remplacez ce code : 
 
-```python
-while True:
-      time.sleep(1000)
-```
+    ```python
+    while True:
+        time.sleep(1000)
+    ```
+    par le lancement du thread
 
-     par le lancement du thread
-
-```python
-camera_capture = CameraCapture(hub_manager)
-camera_capture.run()
-```
+    ```python
+    camera_capture = CameraCapture(hub_manager)
+    camera_capture.run()
+    ```
 
 9. Dans le terminal intégré, enregistrez-vous sur Docker : 
 
@@ -243,6 +243,8 @@ docker login -u <username> -p <password> <your container repository address>
 16. En bas de la page, cliquez sur **Next**. Ne modifiez pas les routes et cliquez à nouveau sur **Next** puis **Submit**.
 
 ## Lab 6 - Execution du Device
+
+**Objectif :** Executer le Edge Runtime et vérifier que les modules fonctionnent bien. 
 
 1. Ajoutez les identifiants de votre Container Registry à votre Edge Runtime sur l'ordinateur où vous lancez le Edge Device. Ces identifiants donne au runtime un accès pour pull les containers précédemment crées : 
 
