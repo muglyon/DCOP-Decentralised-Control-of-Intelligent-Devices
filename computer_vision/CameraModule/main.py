@@ -21,8 +21,6 @@ MESSAGE_TIMEOUT = 10000
 # global counters
 RECEIVE_CALLBACKS = 0
 SEND_CALLBACKS = 0
-# TEMPERATURE_THRESHOLD = 25
-# TWIN_CALLBACKS = RECEIVE_CALLBACKS = 0
 
 # Choose HTTP, AMQP or MQTT as transport protocol.  Currently only MQTT is supported.
 PROTOCOL = IoTHubTransportProvider.MQTT
@@ -40,42 +38,6 @@ def send_confirmation_callback(message, result, user_context):
     print ( "    Properties: %s" % key_value_pair )
     SEND_CALLBACKS += 1
     print ( "    Total calls confirmed: %d" % SEND_CALLBACKS )
-
-
-# receive_message_callback is invoked when an incoming message arrives on the specified 
-# input queue (in the case of this sample, "input1").  Because this is a filter module, 
-# we will forward this message onto the "output1" queue.
-# def receive_message_callback(message, hubManager):
-#     global RECEIVE_CALLBACKS
-#     global TEMPERATURE_THRESHOLD
-#     message_buffer = message.get_bytearray()
-#     size = len(message_buffer)
-#     message_text = message_buffer[:size].decode('utf-8')
-#     print("    Data: <<<{}>>> & Size={:d}".format(message_text, size))
-#     map_properties = message.properties()
-#     key_value_pair = map_properties.get_internals()
-#     print("    Properties: {}".format(key_value_pair))
-#     RECEIVE_CALLBACKS += 1
-#     print("    Total calls received: {:d}".format(RECEIVE_CALLBACKS))
-#     data = json.loads(message_text)
-#     if "machine" in data and "temperature" in data["machine"] and data["machine"]["temperature"] > TEMPERATURE_THRESHOLD:
-#         map_properties.add("MessageType", "Alert")
-#         print("Machine temperature {} exceeds threshold {}".format(data["machine"]["temperature"], TEMPERATURE_THRESHOLD))
-#     hubManager.forward_event_to_output("output1", message, 0)
-#     return IoTHubMessageDispositionResult.ACCEPTED
-
-# device_twin_callback is invoked when twin's desired properties are updated.
-# def device_twin_callback(update_state, payload, user_context):
-    # global TWIN_CALLBACKS
-    # global TEMPERATURE_THRESHOLD
-    # print("\nTwin callback called with:\nupdateStatus = {}\npayload = {}\ncontext = {}".format(update_state, payload, user_context))
-    # data = json.loads(payload)
-    # if "desired" in data and "TemperatureThreshold" in data["desired"]:
-    #     TEMPERATURE_THRESHOLD = data["desired"]["TemperatureThreshold"]
-    # if "TemperatureThreshold" in data:
-    #     TEMPERATURE_THRESHOLD = data["TemperatureThreshold"]
-    # TWIN_CALLBACKS += 1
-    # print("Total calls confirmed: {:d}\n".format(TWIN_CALLBACKS))
 
 class HubManager(object):
 
