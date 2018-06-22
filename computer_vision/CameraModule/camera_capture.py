@@ -16,11 +16,16 @@ class CameraCapture(Thread):
 
     def __init__(self, user_context):
         Thread.__init__(self)
+
         self.user_context = user_context
+        self.counter = 0
 
     def run(self):
 
         while 1:
+
+            self.counter += 1
+            print('--- ITERATION --- ', self.counter)
 
             cam = cv2.VideoCapture('/dev/video0')
 
@@ -37,9 +42,17 @@ class CameraCapture(Thread):
             cv2.destroyAllWindows()
 
             headers = {'content-type': 'application/octet-stream'}
-            r = requests.post(self.EMOTION_API, data=open(self.IMG_NAME, 'rb').read(), headers=headers)
 
-            predictions = r.content.decode("utf-8")['predictions']
+            try: 
 
-            self.user_context.forward_event_to_output("output1", json.loads(predictions), 0)
+                r = requests.post(self.EMOTION_API, data=open(self.IMG_NAME, 'rb').read(), headers=headers)
+
+                predictions = json.dumps(r.json())
+                message = IoTHubMessage(bytearray(predictions, 'utf-8'))
+
+                self.user_context.forward_event_to_output("output1", message, 0)
+
+            except Exception as e:
+                print('[ERR] ', e.message)
+
             time.sleep(1)

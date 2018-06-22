@@ -89,9 +89,6 @@ class HubManager(object):
         self.client.set_option("messageTimeout", MESSAGE_TIMEOUT)
         # some embedded platforms need certificate information
         self.set_certificates()
-        
-        custom_Thread = CameraCapture(self)
-        custom_Thread.run()
 
     def set_certificates(self):
         isWindows = sys.platform.lower() in ['windows', 'win32']
@@ -126,6 +123,8 @@ def main(connection_string):
 
         # while True:
         #     time.sleep(1000)
+        custom_Thread = CameraCapture(hub_manager)
+        custom_Thread.run()
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )
