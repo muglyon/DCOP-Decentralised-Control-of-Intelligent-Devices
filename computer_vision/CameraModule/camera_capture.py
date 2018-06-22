@@ -11,23 +11,22 @@ from iothub_client import IoTHubMessage
 
 class CameraCapture(Thread):
 
-    IMG_NAME = './data/temp.png'
-    EMOTION_API = "http://emotion-recognition-module:80/image"
+    IMG_PATH = './data/temp.png'
+    AI_MODEL_MODULE_API = "http://emotion-recognition-module:80/image"
+    CAMERA_PATH = '/dev/video0'
 
     def __init__(self, user_context):
         Thread.__init__(self)
 
         self.user_context = user_context
-        self.counter = 0
 
     def run(self):
 
+        headers = {'content-type': 'application/octet-stream'}
+
         while 1:
 
-            self.counter += 1
-            print('--- ITERATION --- ', self.counter)
-
-            cam = cv2.VideoCapture('/dev/video0')
+            cam = cv2.VideoCapture(self.CAMERA_PATH)
 
             if not cam.isOpened():
                 print("[ERR] Cannot open the camera...")
@@ -35,17 +34,14 @@ class CameraCapture(Thread):
                 print("[INF] Camera open !")
 
             ret, frame = cam.read()
-
-            print("[INF] Write the file ", self.IMG_NAME, " : ", cv2.imwrite(self.IMG_NAME, frame))
+            print("[INF] Write the file ", self.IMG_PATH, " : ", cv2.imwrite(self.IMG_PATH, frame))
 
             cam.release()
             cv2.destroyAllWindows()
 
-            headers = {'content-type': 'application/octet-stream'}
-
             try: 
 
-                r = requests.post(self.EMOTION_API, data=open(self.IMG_NAME, 'rb').read(), headers=headers)
+                r = requests.post(self.AI_MODEL_MODULE_API, data=open(self.IMG_PATH, 'rb').read(), headers=headers)
 
                 predictions = json.dumps(r.json())
                 message = IoTHubMessage(bytearray(predictions, 'utf-8'))
