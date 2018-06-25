@@ -1,8 +1,6 @@
 # IoT Edge Computer Vision Lab
 
-*Auteure : Sacha LHOPITAL*
-
-*Sous la direction de : Vincent THAVONEKHAM*
+*Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM*
 
 Le présent LAB est un exercice pour mettre en place un système de Computer Vision avec de l'IoT Edge. Ce LAB se base sur du code Python ainsi que des outils d'Azure IoT Edge proposés par Microsoft. 
 
@@ -135,9 +133,9 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
 
 9. Dans le terminal intégré, enregistrez-vous sur Docker : 
 
-```sh
-docker login -u <username> -p <password> <your container repository address>
-```
+    ```sh
+    docker login -u <username> -p <password> <your container repository address>
+    ```
 
 10. Editez le **Dockerfile** pour inclure la librairie **opencv** nécéssaire pour manipuler la webcam. Le fichier final est donné ci-dessous : 
 

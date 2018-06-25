@@ -8,17 +8,30 @@ Ce répertoire Git contient l'ensemble du projet DCOP :
 - Des programmes permettant de simuler l'environnement en Java ou en Python (Hôpital, chambres, machines) 
 - Le code Python à déployer sur chaque agent (i.e : chaque Raspberry Pi) pour résoudre le DCOP.
 - Le code Python du serveur qui surveille les communications MQTT et qui donne le top départ aux agents. 
-- Des Tests Unitaires BDD Python.
+- Des Tests Unitaires BDD Python
 - Quelques fichiers backups/logs de sauvegarde.
+- Le code Computer-Vision réalisé en IoT Edge avec Azure et en Python (cf. Labs MS Experiences 2018)
 
-L'objectif est déployer des algorithmes d'IA DCOP dans des devices médicaux pour faciliter le travail du personnel médical et utiliser les données de ces dispositifs pour améliorer leurs conditions de travail. 
+L'objectif est de déployer des algorithmes d'IA DCOP dans des devices médicaux pour faciliter le travail du personnel médical et utiliser les données de ces dispositifs pour améliorer leurs conditions de travail. 
 
 # Getting Started
 
+## app
+
+Contient le code python permettant de lancer l'algorithme DCOP (en faisant appel aux IA via MQTT). Tourne avec Python 3.    
+
+Pour faire fonctionner la communication MQTT, installez paho-mqtt pour python : 
+`pip3 install paho-mqtt python-etcd`.
+
+Pour en savoir plus, consultez la documentation de [Paho pour Python](https://pypi.python.org/pypi/paho-mqtt).
+
 ## Backups
 
-Contiens quelques fichiers .txt d'executions des algorithmes. Les fichiers sont enregistrés au format suivant : *log_jjmmAA.txt* pour un fichier agent et *log_serv_jjmmAA.txt* pour un fichier serveur. 
-Contiens également une sauvegarde du fichier *upload_script.python* (cf. Deployment).
+Contient une sauvegarde du fichier *upload_script.py* (cf. Deployment).
+
+## computer_vision
+
+Contient le code python pour déployer un système de computer vision avec Azure IoT Edge (cf. [Iot Edge Computer Vision Lab](./computer_vision/iot-edge-computer-vision-lab.md) pour les détails).
 
 ## Java Simulator
 
@@ -35,22 +48,13 @@ Pour faire fonctionner la communication MQTT, on utilise paho-mqtt et Gson pour 
 
 Pour en savoir plus, consultez la documentation de [Frodo](https://frodo-ai.tech/), de [Paho](https://www.eclipse.org/paho/) ou de [Gson](https://github.com/google/gson).
 
-## app
-
-Le serveur python a pour fonction de lancer l'algorithme DCOP (en faisant appel aux IA via MQTT). Il tourne avec Python 3.
-
-Pour faire fonctionner la communication MQTT, installez paho-mqtt pour python : 
-`pip3 install paho-mqtt python-etcd`.
-
-Pour en savoir plus, consultez la documentation de [Paho pour Python](https://pypi.python.org/pypi/paho-mqtt).
-
 ## Communication
 
 Les programmes Python et Java utilisent la communication MQTT. Le serveur utilisé pour les tests est un serveur MQTT Mosquitto. 
 
 # Build and Tests
 
-Pour faire tourner l'application Python : 
+Pour faire tourner l'application DCOP Python (*app/*): 
 
 1. Lancez le serveur mosquitto (`mosquitto`)
 2. Lancez le code de chaque agent avec en paramètre l'identifiant de l'agent `python3 agent_main.py <id_agent>`
@@ -64,7 +68,7 @@ Pour lancer les tests en local, installez les frameworks :
 - `pip3 install pyhamcrest`
 - `pip3 install coverage`
 
-Les commandes suivantes permettent de lancer les tests depuis le répertoire *PythonApp/* 
+Les commandes suivantes permettent de lancer les tests depuis le répertoire *app/* 
 - `behave` : lance les tests BDD
 - `coverage run <program> <arg1> ... <argn>` : lance le code coverage en même temps que l'algorithme. 
 Exemple : `coverage run agent_main.py 1`, lance le code coverage en même temps que de lancer un agent. 
