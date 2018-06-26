@@ -256,3 +256,40 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
     - Dans la pop-up qui apparait, saisissez votre **Connection string - Primary Key** que vous trouverez sur le portail Azure, dans les options de votre **IoT Hub**.
     - Cliquez ensuite sur **Start monitoring D2C message**. 
     - Vérifiez les données dans la sortie de Visual Studio Code. 
+
+## Erreurs rencontrées (avec Linux)
+
+1. Lorsque l'on lance `iotedgectl start`, plusieurs modules ne se lancent pas (les logs de `$edgeAgent` montrent des restart à l'infini). **Solution** : `iotedgectl stop` et attendre une 5 bonnes minutes (en étant connecté à internet) avant de le relancer.
+
+2. La caméra ne réponds plus. **Solution** : Reboot la gateway.
+
+3. `iotedgectl` était très instable sur Linux au moment de la réalisation de ce lab. En cas d'autres problèmes, ne pas hésiter à désinstaller et réinstaller la librairie : 
+
+    ```sh
+    sudo pip3 uninstall azure-iot-edge-runtime-ctl
+    sudo pip3 install azure-iot-edge-runtime-ctl
+    ```
+
+    Puis reconfigurer l'utilitaire : 
+
+    ```sh
+    iotedgectl setup --connection-string "<device connection string>" --auto-cert-gen-force-no-passwords
+
+    iotedgectl login --address <your container registry address> --username <username> --password <password>
+    ```
+
+4. Docker refuse de pull les images depuis le repository azure. **Solution 1** : vérifiez que vous être bien connecté à docker avec votre repository : 
+
+    ```sh
+    docker login -u <username> -p <password> <your container repository address>
+    ```
+
+    **Solution 2** : réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).
+
+5. Le status de déploiement de mon module est *Pending Deployment*. **Solution** : entrez à nouveau vos identifiants azure-iot-edge-runtime-ctl pour forcer la mise à jour :
+
+    ```sh
+    iotedgectl login --address <your container registry address> --username <username> --password <password>
+    ```
+
+    Si suite à cette manipulation, le module n'est toujours pas déployé, réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).

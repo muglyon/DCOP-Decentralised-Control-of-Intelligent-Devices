@@ -1,5 +1,7 @@
 # Introduction 
 
+*Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM*
+
 Projet IoT et IA en milieu médical. 
 
 Ce répertoire Git contient l'ensemble du projet DCOP : 
