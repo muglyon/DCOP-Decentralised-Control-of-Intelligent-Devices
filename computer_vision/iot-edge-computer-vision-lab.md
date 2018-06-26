@@ -293,3 +293,5 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
     ```
 
     Si suite à cette manipulation, le module n'est toujours pas déployé, réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).
+
+6. Les photos prises par la caméra sont saturés de lumières. **Solution** : Installez skype pour qu'il reconnaisse la webcam et la configure automatiquement. 
