@@ -12,7 +12,7 @@ from iothub_client import IoTHubMessage
 class CameraCapture(Thread):
 
     IMG_PATH = './data/temp.png'
-    AI_MODEL_MODULE_API = "http://emotion-recognition-module:80/image"
+    AI_MODEL_MODULE_API = "http://dog-cat-recognition-module:80/image"
     CAMERA_PATH = '/dev/video0'
 
     def __init__(self, user_context):
