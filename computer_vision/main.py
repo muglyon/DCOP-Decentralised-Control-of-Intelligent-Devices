@@ -17,11 +17,11 @@ cv2.destroyAllWindows()
 
 ### Calling the API
 
-# url = 'http://127.0.0.1/image'
-# headers = {'content-type': 'application/octet-stream'}
-# r = requests.post(url, data=open(IMG_NAME, 'rb').read(), headers=headers)
+url = 'http://127.0.0.1/image'
+headers = {'content-type': 'application/octet-stream'}
+r = requests.post(url, data=open(IMG_NAME, 'rb').read(), headers=headers)
 
-# predictions = json.loads(r.content.decode("utf-8"))['predictions']
+predictions = json.loads(r.content.decode("utf-8"))['predictions']
 
-# for prediction in predictions:
-# print(prediction['tagName'], ' : ', prediction['probability'])
+for prediction in predictions:
+print(prediction['tagName'], ' : ', prediction['probability'])

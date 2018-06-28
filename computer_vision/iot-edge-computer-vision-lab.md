@@ -257,11 +257,17 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
     - Cliquez ensuite sur **Start monitoring D2C message**. 
     - Vérifiez les données dans la sortie de Visual Studio Code. 
 
-## Erreurs rencontrées (avec Linux)
+## Erreurs rencontrées
 
-1. Lorsque l'on lance `iotedgectl start`, plusieurs modules ne se lancent pas (les logs de `$edgeAgent` montrent des restart à l'infini). **Solution** : `iotedgectl stop` et attendre une 5 bonnes minutes (en étant connecté à internet) avant de le relancer.
+### Problème avec les modules iot edge (sous Linux) : 
 
-2. La caméra ne réponds plus. **Solution** : Reboot la gateway.
+1. Lorsque l'on lance `iotedgectl start`, plusieurs modules ne se lancent pas (les logs de `$edgeAgent` montrent des restart à l'infini). 
+
+    **Solution** : `iotedgectl stop` et attendre une 5 bonnes minutes (en étant connecté à internet) avant de le relancer.
+
+2. L'erreur `[ERR] - Error refreshing edge agent configuration from twin.` apparait dans les logs du `$edgeAgent`. 
+
+    **Solution** : Vérifiez que vous êtes bien dans le répertoire où se trouvent vos modules. Ce n'est normalement pas un pré-requis pour lancer `iotedgectl start`, mais cela peu faciliter le rafraichissement de la configuration. 
 
 3. `iotedgectl` était très instable sur Linux au moment de la réalisation de ce lab. En cas d'autres problèmes, ne pas hésiter à désinstaller et réinstaller la librairie : 
 
@@ -278,7 +284,9 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
     iotedgectl login --address <your container registry address> --username <username> --password <password>
     ```
 
-4. Docker refuse de pull les images depuis le repository azure. **Solution 1** : vérifiez que vous être bien connecté à docker avec votre repository : 
+4. Docker refuse de pull les images depuis le repository azure. 
+
+    **Solution 1** : vérifiez que vous être bien connecté à docker avec votre repository : 
 
     ```sh
     docker login -u <username> -p <password> <your container repository address>
@@ -286,7 +294,9 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
 
     **Solution 2** : réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).
 
-5. Le status de déploiement de mon module est *Pending Deployment*. **Solution** : entrez à nouveau vos identifiants azure-iot-edge-runtime-ctl pour forcer la mise à jour :
+5. Le status de déploiement de mon module est *Pending Deployment*. 
+
+    **Solution** : entrez à nouveau vos identifiants azure-iot-edge-runtime-ctl pour forcer la mise à jour :
 
     ```sh
     iotedgectl login --address <your container registry address> --username <username> --password <password>
@@ -294,4 +304,12 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
 
     Si suite à cette manipulation, le module n'est toujours pas déployé, réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).
 
-6. Les photos prises par la caméra sont saturés de lumières. **Solution** : Installez skype pour qu'il reconnaisse la webcam et la configure automatiquement. 
+### Problème avec la caméra : 
+
+1. Les photos prises par la caméra sont saturées de lumières. 
+
+    **Solution** : Installez skype pour qu'il reconnaisse la webcam et la configure automatiquement. 
+
+2. La caméra ne répond plus. 
+
+    **Solution** : Reboot la gateway.
