@@ -304,6 +304,15 @@ Le lab précédent nous a permis de mettre en place un module pour faire de la r
 
     Si suite à cette manipulation, le module n'est toujours pas déployé, réinstallez azure-iot-edge-runtime-ctl (cf. problème 4).
 
+6. Le module affiche une erreur de communication Mqtt : 
+
+    ```sh
+    Error: Time:Thu Jun 28 10:17:14 2018 File:/usr/sdk/src/c/iothub_client/src/iothub_client_ll.c Func:invoke_message_callback Line:1552 Invalid workflow - not currently set up to accept messages
+    Error: Time:Thu Jun 28 10:17:14 2018 File:/usr/sdk/src/c/iothub_client/src/iothubtransport_mqtt_common.c Func:mqtt_notification_callback Line:1372 IoTHubClient_LL_MessageCallback returnedfalse
+    ```
+
+    **Solution** : Cette erreur signifie généralement que le module à reçu une donnée dans un input qu'on ne lui a pas demandé de traiter. Pour chaque route du format `"From [...] INTO BrokeredEndpoint(\"/modules/<nom-module>/inputs/<queue>")"`, vérifiez qu'une fonction callback est bien affecté à la queue pour traiter les messages entrant : `self.client.set_message_callback("<queue>", <fonction-callback>, self)` (cf. `__init__` de la classe `HubManager`).
+
 ### Problème avec la caméra : 
 
 1. Les photos prises par la caméra sont saturées de lumières. 
