@@ -8,9 +8,11 @@ import random
 import time
 import sys
 import iothub_client
+import pymongo
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider
 from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubError
 from multiprocessing import Pool
+from pymongo import MongoClient
 
 # messageTimeout - the maximum time in milliseconds until a message times out.
 # The timeout period starts at IoTHubClient.send_event_async.
@@ -28,11 +30,15 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>;ModuleId=<module_id>;GatewayHostName=<gateway>"
 CONNECTION_STRING = "[Device Connection String]"
 
+EDGE_DB = MongoClient('mongodb://127.0.0.1:27017/').test.EDGE_DATABASE
+
 # receive_message_callback is invoked when an incoming message arrives on the specified 
 # input queue (in the case of this sample, "input1").  Because this is a filter module, 
 # we will forward this message onto the "output1" queue.
 def receive_message_callback(message, hubManager):
     
+    global EDGE_DB
+
     message_buffer = message.get_bytearray()
     size = len(message_buffer)
     message_text = message_buffer[:size].decode('utf-8')
@@ -44,20 +50,23 @@ def receive_message_callback(message, hubManager):
 
     print("    Properties: {}".format(key_value_pair))
     
-    data = json.loads(message_text)
+    data = json.loads(message_text)[0]
     
     if "predictions" in data:
-        best_prediction = data.predictions[0]
+        best_prediction = data["predictions"][0]
 
-        for prediction in data.predictions:
+        for prediction in data["predictions"]:
 
-            if prediction.probability > best_prediction.probability:
+            if prediction["probability"] > best_prediction["probability"]:
                 best_prediction = prediction
 
-    post = {"created": data.created,
+    post = {"created": data["created"],
             "prediction": best_prediction}
 
-    if EDGE_DB.insert_one(post).inserted_id > 0:
+    r = EDGE_DB.insert_one(post).inserted_id
+    print(r)
+
+    if r > 0:
         hubManager.forward_event_to_output("output", "[INF] Data saved in database", 0)
     else:
         hubManager.forward_event_to_output("output", "[ERR] Data not saved in database", 0)
