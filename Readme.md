@@ -27,15 +27,15 @@ Pour faire fonctionner la communication MQTT, installez paho-mqtt pour python :
 
 Pour en savoir plus, consultez la documentation de [Paho pour Python](https://pypi.python.org/pypi/paho-mqtt).
 
-## Backups
+## backups
 
 Contient une sauvegarde du fichier *upload_script.py* (cf. Deployment).
 
-## computer_vision
+## edgeModules
 
-Contient le code python pour déployer un système de computer vision avec Azure IoT Edge (cf. [Iot Edge Computer Vision Lab](./computer_vision/iot-edge-computer-vision-lab.md) pour les détails).
+Contient le code python pour déployer un système de computer vision et le DCOP avec Azure IoT Edge (cf. [Iot Edge Computer Vision Lab](./computer_vision/iot-edge-computer-vision-lab.md) pour les détails du computer vision).
 
-## Java Simulator
+## javaSimulator
 
 Le programme JavaSimulator tourne avec Java 8. 
 

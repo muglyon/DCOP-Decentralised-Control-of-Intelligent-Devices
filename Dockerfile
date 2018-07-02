@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER Azure App Service Container Images <appsvc-images@microsoft.com>
+MAINTAINER Sacha LHOPITAL <sacha.lhopital@viseo.com>
 
 # Python Environment
 RUN apt-get update \

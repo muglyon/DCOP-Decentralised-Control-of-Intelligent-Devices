@@ -1,4 +1,5 @@
 FROM ubuntu:xenial
+MAINTAINER Sacha LHOPITAL <sacha.lhopital@viseo.com>
 
 WORKDIR /app
 
