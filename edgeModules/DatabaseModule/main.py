@@ -8,11 +8,9 @@ import random
 import time
 import sys
 import iothub_client
-import pymongo
 from iothub_client import IoTHubClient, IoTHubClientError, IoTHubTransportProvider
 from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubError
 from multiprocessing import Pool
-from pymongo import MongoClient
 
 # messageTimeout - the maximum time in milliseconds until a message times out.
 # The timeout period starts at IoTHubClient.send_event_async.
@@ -30,14 +28,24 @@ PROTOCOL = IoTHubTransportProvider.MQTT
 # "HostName=<host_name>;DeviceId=<device_id>;SharedAccessKey=<device_key>;ModuleId=<module_id>;GatewayHostName=<gateway>"
 CONNECTION_STRING = "[Device Connection String]"
 
-EDGE_DB = MongoClient('mongodb://127.0.0.1:27017/').test.EDGE_DATABASE
+LOG_FILE = "./logs/log.txt"
+
+# Callback received when the message that we're forwarding is processed.
+def send_confirmation_callback(message, result, user_context):
+    global SEND_CALLBACKS
+    print ( "Confirmation[%d] received for message with result = %s" % (user_context, result) )
+    map_properties = message.properties()
+    key_value_pair = map_properties.get_internals()
+    print ( "    Properties: %s" % key_value_pair )
+    SEND_CALLBACKS += 1
+    print ( "    Total calls confirmed: %d" % SEND_CALLBACKS )
 
 # receive_message_callback is invoked when an incoming message arrives on the specified 
 # input queue (in the case of this sample, "input1").  Because this is a filter module, 
 # we will forward this message onto the "output1" queue.
 def receive_message_callback(message, hubManager):
-    
-    global EDGE_DB
+
+    global LOG_FILE
 
     message_buffer = message.get_bytearray()
     size = len(message_buffer)
@@ -63,13 +71,11 @@ def receive_message_callback(message, hubManager):
     post = {"created": data["created"],
             "prediction": best_prediction}
 
-    r = EDGE_DB.insert_one(post).inserted_id
-    print(r)
+    log_file  = open(LOG_FILE, "w") 
+    log_file.write("\n" + str(post))
 
-    if r > 0:
-        hubManager.forward_event_to_output("output", "[INF] Data saved in database", 0)
-    else:
-        hubManager.forward_event_to_output("output", "[ERR] Data not saved in database", 0)
+    message = IoTHubMessage(bytearray(json.dumps(post), 'utf-8'))
+    hubManager.forward_event_to_output("output", message, 0)
 
     return IoTHubMessageDispositionResult.ACCEPTED
 
@@ -105,6 +111,11 @@ class HubManager(object):
                 print ( "set_option TrustedCerts failed (%s)" % iothub_client_error )
 
             file.close()
+    
+    # Forwards the message received onto the next stage in the process.
+    def forward_event_to_output(self, outputQueueName, event, send_context):
+        self.client.send_event_async(
+            outputQueueName, event, send_confirmation_callback, send_context)
 
 def main(connection_string):
     try:
