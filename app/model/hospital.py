@@ -2,17 +2,35 @@
 # hospital.py - Implement the environment model for testing/configuring
 
 from model.monitoring_area import MonitoringArea
+from model.zone import Zone
 
 
 class Hospital(object):
 
-    def __init__(self, size):
+    def __init__(self, nb_zones, nb_rooms):
         self.monitored_area_list = []
+        self.zones = []
 
-        for i in range(1, size + 1):
+        for i in range(1, nb_rooms + 1):
             self.monitored_area_list.append(MonitoringArea(i))
 
         self.setup_neighbors()
+
+        for k in range(1, nb_zones + 1):
+            self.zones.append(Zone(k))
+
+        count = 0
+        zone_num = 0
+        for j in range(0, len(self.monitored_area_list)):
+
+            if count == 4:
+                count = 0
+                zone_num += 1
+
+            self.zones[zone_num].add_room(self.monitored_area_list[j])
+            count += 1
+
+        self.setup_zone_neighbors()
 
     def setup_neighbors(self):
         """
@@ -48,8 +66,39 @@ class Hospital(object):
                 left_current.front_neighbor = right_current
                 right_current.front_neighbor = left_current
 
+    def setup_zone_neighbors(self):
+
+        moitie_zone = int(len(self.zones) / 2)
+        left_side = self.zones[0:moitie_zone]
+        right_side = self.zones[moitie_zone:len(self.zones)]
+
+        for k in range(0, moitie_zone):
+
+            left_current = left_side[k]
+            right_current = right_side[k]
+
+            if k == 0:
+                left_current.left_neighbor = right_current
+                right_current.left_neighbor = left_current
+
+            if k > 0:
+                left_current.left_neighbor = left_side[k - 1]
+                right_current.left_neighbor = right_side[k - 1]
+
+            if k < moitie_zone - 1:
+                left_current.right_neighbor = left_side[k + 1]
+                right_current.right_neighbor = right_side[k + 1]
+
+            if k == moitie_zone - 1:
+                left_current.right_neighbor = right_current
+                right_current.right_neighbor = left_current
+
+            if 0 < k < moitie_zone - 1:
+                left_current.front_neighbor = right_current
+                right_current.front_neighbor = left_current
+
     def to_string(self):
         string = ""
-        for monitored_area in self.monitored_area_list:
-            string += monitored_area.to_json_format()
+        for zone in self.zones:
+            string += zone.to_json_format()
         return string

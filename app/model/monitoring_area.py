@@ -89,21 +89,6 @@ class MonitoringArea(object):
                 minimum = device.end_of_prog
         return minimum
 
-    def get_degree(self):
-        """
-        Get number of neighbors
-        :return: the degree of the room
-        :rtype: integer
-        """
-        count = 0
-        if self.left_neighbor is not None:
-            count += 1
-        if self.right_neighbor is not None:
-            count += 1
-        if self.front_neighbor is not None:
-            count += 1
-        return count
-
     def get_neighbors_id_sorted(self):
         """
         Get all neighbors id of the agent sorted by degree (decreasing)
@@ -133,6 +118,16 @@ class MonitoringArea(object):
 
         neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
         return [int(x) for x, _ in neighbors]
+
+    def get_degree(self):
+        count = 0
+        if self.left_neighbor is not None:
+            count += 1
+        if self.right_neighbor is not None:
+            count += 1
+        if self.front_neighbor is not None:
+            count += 1
+        return count
 
     def update_device(self, device):
         """
