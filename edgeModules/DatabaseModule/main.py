@@ -71,7 +71,7 @@ def receive_message_callback(message, hubManager):
     post = {"created": data["created"],
             "prediction": best_prediction}
 
-    log_file  = open(LOG_FILE, "w") 
+    log_file  = open(LOG_FILE, "a") 
     log_file.write("\n" + str(post))
 
     message = IoTHubMessage(bytearray(json.dumps(post), 'utf-8'))
