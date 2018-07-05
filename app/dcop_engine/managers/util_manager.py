@@ -29,10 +29,12 @@ class UtilManager(DpopManager):
         if not self.dfs_structure.is_root:
 
             # Also join all relations with parent/pseudo_parent
-            self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_structure.parent_id), self.JOIN)
+            # self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_structure.parent_id), self.JOIN)
+            self.JOIN = self.combine(self.get_utility_matrix_for_zone(self.dfs_structure.parent_id), self.JOIN)
 
             for pseudo_parent in self.dfs_structure.pseudo_parents_id:
-                self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
+                # self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
+                self.JOIN = self.combine(self.get_utility_matrix_for_zone(pseudo_parent), self.JOIN)
 
         # Add to `self` constraint values
         self.JOIN = self.add_my_utility_in(self.JOIN)
@@ -82,6 +84,44 @@ class UtilManager(DpopManager):
         self.matrix_dimensions_order.append(parent_id)
         return R
 
+    def get_utility_matrix_for_zone(self, parent_id):
+
+        if parent_id in self.matrix_dimensions_order:
+            # Parent was already take in account by one of my children
+            return None
+
+        # constraint_matrix = []
+        # for room in self.dfs_structure.monitored_area.monitored_area_list:
+        #     for other_room in self.dfs_structure.monitored_area.monitored_area_list:
+        #         if room.id == other_room.id:
+        #             continue
+        #         else:
+        #             constraint_matrix.append(self.constraint_manager.get_cost_of_room(room)
+        #                                      + self.constraint_manager.get_cost_of_room(other_room))
+        #
+        # if len(constraint_matrix) == 0:
+        #     constraint_matrix = self.constraint_manager.get_cost_of_room(
+        #         self.dfs_structure.monitored_area.monitored_area_list[0]
+        #     )
+        #
+        # print(constraint_matrix)
+        # print(len(constraint_matrix))
+
+        # R = numpy.zeros((len(constraint_matrix), len(constraint_matrix)), int)
+        R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
+
+        for i in range(0, Constants.DIMENSION_SIZE):
+            for j in range(0, Constants.DIMENSION_SIZE):
+                R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
+                for room in self.dfs_structure.monitored_area.monitored_area_list:
+                    cm = ConstraintManager(room)
+                    R[i][j] += cm.get_cost_of_private_constraints_for_value(i)
+
+        print(R)
+
+        self.matrix_dimensions_order.append(parent_id)
+        return R
+
     def combine(self, matrix1, matrix2):
         """
         JOIN/COMBINE two matrix
@@ -120,14 +160,7 @@ class UtilManager(DpopManager):
         return final_matrix
 
     def add_my_utility_in(self, R):
-        """
-        Add my utility in the matrix.
-        This is needed because I am the only one to know those constraints
-        :param R: the matrix that will receive my utilities values
-        :type R: numpy.ndarray
-        :return: the new matrix
-        :rtype: numpy.ndarray
-        """
+
         if R is None:
             R = numpy.zeros(Constants.DIMENSION_SIZE, int)
 

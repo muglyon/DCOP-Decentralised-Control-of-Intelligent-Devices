@@ -40,9 +40,7 @@ class Dpop(Thread):
         self.value_manager = ValueManager(self.mqtt_manager, self.dfs_manager.dfs_structure)
 
     def run(self):
-        """
-        Do the DPOP Algorithm
-        """
+
         log.execution_time = 0
         start_time = time.time()
 
@@ -93,8 +91,18 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
+        # log.info("const vals : " +
+        #          str(ConstraintManager(self.monitored_area)
+        #              .get_cost_of_private_constraints_for_value(self.monitored_area.current_v)),
+        #          self.monitored_area.id,
+        #          Constants.RESULTS)
+
+        value = 0
+        cm = ConstraintManager(self.monitored_area)
+        for room in self.monitored_area.monitored_area_list:
+            value += ConstraintManager(room).get_cost_of_private_constraints_for_value(self.monitored_area.current_v)
+
         log.info("const vals : " +
-                 str(ConstraintManager(self.monitored_area)
-                     .get_cost_of_private_constraints_for_value(self.monitored_area.current_v)),
+                 str(value),
                  self.monitored_area.id,
                  Constants.RESULTS)

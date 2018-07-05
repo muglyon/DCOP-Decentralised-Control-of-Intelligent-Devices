@@ -36,6 +36,9 @@ class ValueManager(DpopManager):
         self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
         values[str(self.dfs_structure.monitored_area.id)] = index
 
+        print("JOIN :\n", join_matrix)
+        print("INDEX : ", index)
+
         for child in self.dfs_structure.children_id:
             self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
 

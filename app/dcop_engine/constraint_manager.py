@@ -19,6 +19,18 @@ class ConstraintManager(object):
                + self.c4_last_intervention(value) \
                + self.c5_nothing_to_report(value)
 
+    # def get_cost_of_room(self, room):
+    #     cm_room = ConstraintManager(room)
+    #     cost = 0
+    #
+    #     for value in Constants.DIMENSION:
+    #         cost.append(cm_room.c1_no_devices(value)
+    #                     + cm_room.c2_device_status(value)
+    #                     + cm_room.c4_last_intervention(value)
+    #                     + cm_room.c5_nothing_to_report(value))
+    #
+    #     return cost
+
     def c1_no_devices(self, vi):
         if self.monitored_area.has_no_devices() and vi < Constants.INFINITY:
             return Constants.INFINITY

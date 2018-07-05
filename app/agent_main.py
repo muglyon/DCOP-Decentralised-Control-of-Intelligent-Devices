@@ -17,8 +17,6 @@ if __name__ == "__main__":
     monitored_area = None
     hospital = Hospital(Constants.NB_ZONES, Constants.NB_ROOMS)
 
-    print(hospital.zones)
-
     for r in hospital.zones:
         if r.id == int(sys.argv[1]):
             monitored_area = r
