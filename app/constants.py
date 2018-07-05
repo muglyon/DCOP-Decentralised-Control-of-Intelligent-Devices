@@ -4,7 +4,7 @@ class Constants(object):
     DIMENSION_SIZE = len(DIMENSION)
 
     NB_ZONES = 4
-    NB_ROOMS = 4
+    NB_ROOMS = 6
     INFINITY_IDX = 16
     URGT_TIME = 30
     T_SYNCHRO = 30

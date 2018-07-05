@@ -101,8 +101,6 @@ class Dpop(Thread):
         cm = ConstraintManager(self.monitored_area)
         for room in self.monitored_area.monitored_area_list:
             value += ConstraintManager(room).get_cost_of_private_constraints_for_value(self.monitored_area.current_v)
-
-        log.info("const vals : " +
-                 str(value),
-                 self.monitored_area.id,
-                 Constants.RESULTS)
+            log.info("const val for room : " + str(value) + " " + str(room.to_json_format()),
+                     self.monitored_area.id,
+                     Constants.RESULTS)

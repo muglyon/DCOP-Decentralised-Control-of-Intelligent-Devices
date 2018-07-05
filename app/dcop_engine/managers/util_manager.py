@@ -90,32 +90,22 @@ class UtilManager(DpopManager):
             # Parent was already take in account by one of my children
             return None
 
-        # constraint_matrix = []
-        # for room in self.dfs_structure.monitored_area.monitored_area_list:
-        #     for other_room in self.dfs_structure.monitored_area.monitored_area_list:
-        #         if room.id == other_room.id:
-        #             continue
-        #         else:
-        #             constraint_matrix.append(self.constraint_manager.get_cost_of_room(room)
-        #                                      + self.constraint_manager.get_cost_of_room(other_room))
-        #
-        # if len(constraint_matrix) == 0:
-        #     constraint_matrix = self.constraint_manager.get_cost_of_room(
-        #         self.dfs_structure.monitored_area.monitored_area_list[0]
-        #     )
-        #
-        # print(constraint_matrix)
-        # print(len(constraint_matrix))
-
-        # R = numpy.zeros((len(constraint_matrix), len(constraint_matrix)), int)
         R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
 
         for i in range(0, Constants.DIMENSION_SIZE):
             for j in range(0, Constants.DIMENSION_SIZE):
+
                 R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
+
                 for room in self.dfs_structure.monitored_area.monitored_area_list:
+
                     cm = ConstraintManager(room)
-                    R[i][j] += cm.get_cost_of_private_constraints_for_value(i)
+                    cost = cm.get_cost_of_private_constraints_for_value(i)
+
+                    if cost == Constants.INFINITY:
+                        R[i][j] = min(cost, R[i][j])
+                    else:
+                        R[i][j] += cost
 
         print(R)
 
@@ -165,10 +155,12 @@ class UtilManager(DpopManager):
             R = numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         for index, value in numpy.ndenumerate(R):
-            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
+            cost = self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
 
             if R[index] > Constants.INFINITY:
                 R[index] = Constants.INFINITY
+
+        print(R)
 
         return R
 

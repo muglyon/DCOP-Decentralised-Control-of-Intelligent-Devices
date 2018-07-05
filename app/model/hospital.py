@@ -1,6 +1,7 @@
 #! python3
 # hospital.py - Implement the environment model for testing/configuring
 
+from math import *
 from model.monitoring_area import MonitoringArea
 from model.zone import Zone
 
@@ -19,7 +20,7 @@ class Hospital(object):
         for k in range(1, nb_zones + 1):
             self.zones.append(Zone(k))
 
-        nb_rooms_by_zone = int(nb_rooms/nb_zones)
+        nb_rooms_by_zone = ceil(nb_rooms/nb_zones)
         count = 0
         zone_num = 0
         for j in range(0, len(self.monitored_area_list)):
