@@ -97,15 +97,18 @@ class UtilManager(DpopManager):
 
                 R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
 
-                for room in self.dfs_structure.monitored_area.monitored_area_list:
-
-                    cm = ConstraintManager(room)
-                    cost = cm.get_cost_of_private_constraints_for_value(i)
-
-                    if cost == Constants.INFINITY:
-                        R[i][j] = min(cost, R[i][j])
-                    else:
-                        R[i][j] += cost
+                # for room in self.dfs_structure.monitored_area.monitored_area_list:
+                #
+                #     cm = ConstraintManager(room)
+                #     cost = cm.get_cost_of_private_constraints_for_value(i)
+                #
+                #     if i > Constants.DIMENSION_SIZE / 2:
+                #         R[i][j] = cost
+                #     elif i <= Constants.DIMENSION_SIZE / 2:
+                #         if cost == Constants.INFINITY:
+                #             R[i][j] = cost
+                #         else:
+                #             R[i][j] = min(cost, R[i][j])
 
         print(R)
 
@@ -154,8 +157,52 @@ class UtilManager(DpopManager):
         if R is None:
             R = numpy.zeros(Constants.DIMENSION_SIZE, int)
 
+        cost_c1 = 0
+        cost_c2 = 0
+        cost_c4 = 0
+        cost_c5 = 0
+        room_in_critic_state = False
+
         for index, value in numpy.ndenumerate(R):
-            cost = self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
+            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_zone(Constants.DIMENSION[index[0]])
+
+            # for room in self.dfs_structure.monitored_area.monitored_area_list:
+            #
+            #     if room.is_in_critical_state():
+            #         room_in_critic_state = True
+            #         break
+            #
+            #     cm = ConstraintManager(room)
+            #     cost_c1 += cm.c1_no_devices(Constants.DIMENSION[index[0]])
+            #     cost_c2 += cm.c2_device_status(Constants.DIMENSION[index[0]])
+            #     cost_c4 += cm.c4_last_intervention(Constants.DIMENSION[index[0]])
+            #     cost_c5 += cm.c5_nothing_to_report(Constants.DIMENSION[index[0]])
+            #
+            # if room_in_critic_state and Constants.DIMENSION[index[0]] > 0:
+            #     # Critical State for at least one room
+            #     R[index] = Constants.INFINITY
+            #
+            # elif room_in_critic_state and Constants.DIMENSION[index[0]] == 0:
+            #     R[index] = 0
+            #
+            # elif cost_c4 > Constants.INFINITY:
+            #     # Tau too high for at least one room
+            #     R[index] = Constants.INFINITY
+            #
+            # elif cost_c1 > Constants.INFINITY:
+            #     # No device in a room, but others are okey
+            #     R[index] = Constants.INFINITY
+            #
+            # else:
+            #     R[index] = cost_c1 + cost_c2 + cost_c4 + cost_c5
+
+                # if i > Constants.DIMENSION_SIZE / 2:
+                #     R[i][j] = cost
+                # elif i <= Constants.DIMENSION_SIZE / 2:
+                #     if cost == Constants.INFINITY:
+                #         R[i][j] = cost
+                #     else:
+                #         R[i][j] = min(cost, R[i][j])
 
             if R[index] > Constants.INFINITY:
                 R[index] = Constants.INFINITY
