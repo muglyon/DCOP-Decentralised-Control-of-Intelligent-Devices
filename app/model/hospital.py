@@ -2,20 +2,21 @@
 # hospital.py - Implement the environment model for testing/configuring
 
 from math import *
-from model.monitoring_area import MonitoringArea
+from model.room import Room
 from model.zone import Zone
 
 
 class Hospital(object):
 
     def __init__(self, nb_zones, nb_rooms):
-        self.monitored_area_list = []
+        # self.monitored_area_list = []
         self.zones = []
 
-        for i in range(1, nb_rooms + 1):
-            self.monitored_area_list.append(MonitoringArea(i))
+        # for i in range(1, nb_rooms + 1):
+            # self.monitored_area_list.append(MonitoringArea(i))
 
-        self.setup_neighbors()
+        # Todo : pas besoin de ça ???
+        # self.setup_neighbors()
 
         for k in range(1, nb_zones + 1):
             self.zones.append(Zone(k))
@@ -23,13 +24,13 @@ class Hospital(object):
         nb_rooms_by_zone = ceil(nb_rooms/nb_zones)
         count = 0
         zone_num = 0
-        for j in range(0, len(self.monitored_area_list)):
+        for j in range(0, nb_rooms):
 
             if count == nb_rooms_by_zone:
                 count = 0
                 zone_num += 1
 
-            self.zones[zone_num].add_room(self.monitored_area_list[j])
+            self.zones[zone_num].add_room(Room(j))
             count += 1
 
         self.setup_zone_neighbors()
