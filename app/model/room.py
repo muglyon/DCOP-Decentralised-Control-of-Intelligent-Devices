@@ -12,13 +12,28 @@ class Room(MonitoringArea):
 
         self.device_list = []
 
-        for device_id in range(0, randint(0, self.MAX_NB_DEVICES)):
+        for device_id in range(0, randint(0, Constants.MAX_NB_DEVICES)):
             self.add_or_update_device(device_id)
 
     def add_or_update_device(self, device_id):
         id_device = str(self.id) + str(device_id + 1)
         critic_state = random() < 0.05
-        self.device_list.append(Device(int(id_device), randint(self.MIN_TAU_VALUE, self.INFINITY), critic_state))
+        self.device_list.append(Device(int(id_device), randint(Constants.MIN_TAU_VALUE, Constants.INFINITY), critic_state))
+
+    def increment_time(self, minutes):
+        self.tau += minutes
+        self.previous_v -= minutes
+
+        for device in self.device_list:
+            device.end_of_prog -= minutes
+
+    def is_tau_too_high(self):
+        """
+        Check if the last passage was too long ago
+        :return: True if the last passage was too long ago, False otherwise
+        :rtype: boolean
+        """
+        return (len(self.device_list) > 5 and self.tau > 180) or (len(self.device_list) >= 1 and self.tau > 210)
 
     def pop_or_reprogram_devices(self):
 
@@ -37,6 +52,17 @@ class Room(MonitoringArea):
 
     def has_no_devices(self):
         return len(self.device_list) == 0
+
+    def is_in_critical_state(self):
+        """
+        Check if the room is in critical state
+        :return: True if the room has at least one device in critical state, False otherwise
+        :rtype: boolean
+        """
+        for device in self.device_list:
+            if device.is_in_critic_state:
+                return True
+        return False
 
     def get_min_end_of_prog(self):
         """

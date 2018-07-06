@@ -49,14 +49,14 @@ class ConstraintManager(object):
 
     def get_cost_of_private_constraints_for_value(self, value):
         if type(self.monitored_area) is Zone:
-            return self.__get_cost_of_private_constraints_for_zone(value)
+            return self.__get_cost_for_zone(value)
 
         return self.c1_no_devices(value) \
                + self.c2_device_status(value) \
                + self.c4_last_intervention(value) \
                + self.c5_nothing_to_report(value)
 
-    def __get_cost_of_private_constraints_for_zone(self, value):
+    def __get_cost_for_zone(self, value):
 
         cost = 0
 
@@ -70,5 +70,6 @@ class ConstraintManager(object):
 
             cost += cm.c4_last_intervention(value)
             cost += cm.c2_device_status(value)
+            cost += cm.c5_nothing_to_report(value)
 
         return cost if cost < Constants.INFINITY else Constants.INFINITY
