@@ -13,12 +13,14 @@ class Room(MonitoringArea):
         self.device_list = []
 
         for device_id in range(0, randint(0, Constants.MAX_NB_DEVICES)):
-            self.add_or_update_device(device_id)
+            self.add_or_update_device()
 
-    def add_or_update_device(self, device_id):
-        id_device = str(self.id) + str(device_id + 1)
+    def add_or_update_device(self):
+        id_device = str(self.id) + str(len(self.device_list) + 1)
         critic_state = random() < 0.05
-        self.device_list.append(Device(int(id_device), randint(Constants.MIN_TAU_VALUE, Constants.INFINITY), critic_state))
+        self.device_list.append(
+            Device(int(id_device), randint(Constants.MIN_TAU_VALUE, Constants.INFINITY), critic_state)
+        )
 
     def increment_time(self, minutes):
         self.tau += minutes

@@ -1,5 +1,6 @@
 from model.monitoring_area import MonitoringArea
 from constants import Constants
+from random import randint
 
 
 class Zone(MonitoringArea):
@@ -10,6 +11,19 @@ class Zone(MonitoringArea):
 
     def add_room(self, room):
         self.rooms.append(room)
+
+    def increment_time(self, minutes):
+        self.tau += minutes
+        self.previous_v -= minutes
+
+        for room in self.rooms:
+            room.increment_time(minutes)
+
+    def has_no_devices(self):
+        for room in self.rooms:
+            if room.has_no_devices():
+                return True
+        return False
 
     def get_room_who_need_intervention(self):
         r = []
@@ -24,11 +38,11 @@ class Zone(MonitoringArea):
         for room in self.rooms:
             room.attach_observer(observer)
 
-    def add_or_update_device(self, device_id):
-        room_id = str(device_id)[0]
+    def add_or_update_device(self):
+        room_id = randint(1, len(self.rooms))
         for room in self.rooms:
             if room.id == room_id:
-                room.add_or_update_device(device_id)
+                room.add_or_update_device()
 
     def pop_or_reprogram_devices(self):
         for room in self.rooms:

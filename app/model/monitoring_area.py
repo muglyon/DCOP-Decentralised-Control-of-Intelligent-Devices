@@ -88,14 +88,24 @@ class MonitoringArea(object):
 
         return data
 
+
+
     @abc.abstractmethod
     def attach_observer(self, observer):
         return
 
     @abc.abstractmethod
-    def add_or_update_device(self, device_id):
+    def add_or_update_device(self):
         return
 
     @abc.abstractmethod
     def pop_or_reprogram_devices(self):
+        return
+
+    @abc.abstractmethod
+    def increment_time(self, minutes):
+        return
+
+    @abc.abstractmethod
+    def has_no_devices(self):
         return
