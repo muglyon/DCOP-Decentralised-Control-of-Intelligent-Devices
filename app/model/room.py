@@ -99,3 +99,6 @@ class Room(MonitoringArea):
     def attach_observer(self, observer):
         for device in self.device_list:
             device.observer = observer
+
+    def set_device_in_critic(self):
+        self.device_list[0].is_in_critic_state = True

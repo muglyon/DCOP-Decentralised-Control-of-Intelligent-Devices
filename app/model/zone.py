@@ -39,7 +39,7 @@ class Zone(MonitoringArea):
             room.attach_observer(observer)
 
     def add_or_update_device(self):
-        room_id = randint(1, len(self.rooms))
+        room_id = randint(0, len(self.rooms))
         for room in self.rooms:
             if room.id == room_id:
                 room.add_or_update_device()
@@ -55,3 +55,11 @@ class Zone(MonitoringArea):
             data["rooms"].append(room.to_json_format())
 
         return data
+
+    def set_device_in_critic(self):
+        random_room = randint(0, len(self.rooms))
+        for room in self.rooms:
+            if room.id == random_room:
+                room.set_device_in_critic()
+                return
+

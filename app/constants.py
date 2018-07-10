@@ -5,8 +5,8 @@ class Constants(object):
 
     MIN_TAU_VALUE = 5
     MAX_NB_DEVICES = 6
-    NB_ZONES = 8
-    NB_ROOMS = 32
+    NB_ZONES = 6
+    NB_ROOMS = 16
     INFINITY_IDX = 16
     URGT_TIME = 30
     T_SYNCHRO = 30

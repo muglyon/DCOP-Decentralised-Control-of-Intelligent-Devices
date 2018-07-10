@@ -109,3 +109,7 @@ class MonitoringArea(object):
     @abc.abstractmethod
     def has_no_devices(self):
         return
+
+    @abc.abstractmethod
+    def set_device_in_critic(self):
+        return
