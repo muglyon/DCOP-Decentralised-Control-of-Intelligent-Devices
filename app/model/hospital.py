@@ -9,14 +9,14 @@ from model.zone import Zone
 class Hospital(object):
 
     def __init__(self, nb_zones, nb_rooms):
-        # self.monitored_area_list = []
+
         self.zones = []
 
-        # for i in range(1, nb_rooms + 1):
-            # self.monitored_area_list.append(MonitoringArea(i))
-
-        # Todo : pas besoin de ça ???
-        # self.setup_neighbors()
+        # Version par chambre ?...
+        self.monitored_area_list = []
+        for i in range(0, nb_rooms):
+            self.monitored_area_list.append(Room(i))
+        self.setup_neighbors()
 
         for k in range(1, nb_zones + 1):
             self.zones.append(Zone(k))

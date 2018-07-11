@@ -17,10 +17,17 @@ if __name__ == "__main__":
     monitored_area = None
     hospital = Hospital(Constants.NB_ZONES, Constants.NB_ROOMS)
 
+    # /!\ Zones /!\
     for r in hospital.zones:
         if r.id == int(sys.argv[1]):
             monitored_area = r
             break
+
+    # /!\ Rooms /!\
+    # for r in hospital.monitored_area_list:
+    #     if r.id == int(sys.argv[1]):
+    #         monitored_area = r
+    #         break
 
     print(monitored_area.to_json_format())
 

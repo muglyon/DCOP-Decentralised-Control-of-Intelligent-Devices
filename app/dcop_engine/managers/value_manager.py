@@ -72,6 +72,9 @@ class ValueManager(DpopManager):
         tupl = self.extract_parent_values(data)
         tupl = self.extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl)
 
+        print(join_matrix)
+        print(tupl)
+
         return self.find_best_index(join_matrix, tupl)
 
     def extract_parent_values(self, data):

@@ -98,7 +98,7 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
-        log.info("rooms affected :"
-                 + str(self.monitored_area.get_room_who_need_intervention()),
-                 self.monitored_area.id,
-                 Constants.RESULTS)
+        # log.info("rooms affected :"
+        #          + str(self.monitored_area.get_room_who_need_intervention()),
+        #          self.monitored_area.id,
+        #          Constants.RESULTS)
