@@ -30,6 +30,7 @@ class Starter(Thread):
             self.priorities[str(agent.id)] = 0
             self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
 
+
     def run(self):
 
         while 1:

@@ -15,32 +15,32 @@ class ValueManager(DpopManager):
     def __init__(self, mqtt_manager, dfs_structure):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
-    def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_list):
+    def do_value_propagation(self, join_matrix, util_list):
         log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         values = dict()
 
         if util_list is None:
-            util_list = numpy.zeros(Constants.DIMENSION_SIZE, int)
+            util_list = []
 
         if not self.dfs_structure.is_root:
             self.mqtt_manager.publish_util_msg_to(
                 self.dfs_structure.parent_id,
-                json.dumps({Constants.VARS: matrix_dimensions_order, Constants.DATA: util_list})
+                json.dumps({Constants.VARS: "nothing here", Constants.DATA: util_list})
             )
 
             values = self.get_values_from_parents()
 
         # Find best v
-        index = self.get_index_of_best_value_with(values, matrix_dimensions_order, join_matrix)
-        self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
-        values[str(self.dfs_structure.monitored_area.id)] = index
-
-        for child in self.dfs_structure.children_id:
-            self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
-
-        if self.dfs_structure.is_leaf():
-            self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
+        index = self.get_index_of_best_value_with(values, join_matrix)
+        # self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
+        # values[str(self.dfs_structure.monitored_area.id)] = index
+        #
+        # for child in self.dfs_structure.children_id:
+        #     self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
+        #
+        # if self.dfs_structure.is_leaf():
+        #     self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
 
     def get_values_from_parents(self):
 
@@ -53,7 +53,7 @@ class ValueManager(DpopManager):
 
         return dict()
 
-    def get_index_of_best_value_with(self, data, matrix_dimensions_order, join_list):
+    def get_index_of_best_value_with(self, data, join_list):
 
         if join_list is None:
             log.critical("List NULL pour la méthode dpop.getIndexOfBestValueWith(...)",
@@ -69,10 +69,10 @@ class ValueManager(DpopManager):
                          self.dfs_structure.monitored_area.id)
             return Constants.INFINITY_IDX
 
-        tup = self.extract_parent_values(data)
-        tup = self.extract_dependant_non_neighbors_values(data, join_list, matrix_dimensions_order, tup)
+        # tup = self.extract_parent_values(data)
+        # tup = self.extract_dependant_non_neighbors_values(data, join_list, tup)
 
-        return self.find_best_index(join_list, tup)
+        return self.find_best_index(join_list, data)
 
     def extract_parent_values(self, data):
         # Check for parents values
@@ -86,23 +86,50 @@ class ValueManager(DpopManager):
                 tupl = tupl + (data[key],)
         return tupl
 
-    @staticmethod
-    def find_best_index(join_matrix, tupl):
+    def find_best_index(self, join_matrix, tup):
 
-        best_index = 0
+        best_index = []
         best_value = Constants.INFINITY + 1
+        nb_rooms = len(self.dfs_structure.monitored_area.rooms)
 
-        for index, value in numpy.ndenumerate(join_matrix):
-            if tupl == index[1:] and value <= best_value:
-                best_value = value
-                best_index = index[0]
+        # for index, value in numpy.ndenumerate(join_matrix):
+        #     if tup == index[1:] and value <= best_value:
+        #         best_value = value
+        #         best_index = index[0]
 
+        print(join_matrix)
+        print("TUP ", tup)
+
+        for elements in join_matrix:
+            cost = 0
+            bool = True
+
+            print("elem : ", elements)
+
+            for sub_element in elements[:-1]:
+
+                print("sub : ", sub_element)
+
+                if tup in elements and sub_element[1][0:2] in tup:
+                    cost += sub_element[-1][2]
+                else:
+                    bool = False
+                    break
+
+            if cost <= best_value:
+                best_index = elements
+                best_value = cost
+
+        print("Value chosen : ", best_index)
         return best_index
 
     @staticmethod
-    def extract_dependant_non_neighbors_values(data, join_list, matrix_dimensions_order, tup):
+    def extract_dependant_non_neighbors_values(data, join_list, tup):
         # Check for dependant non-neighbors values if needed
-        for neighbor_id in matrix_dimensions_order:
+
+        # Todo : check that
+        # for neighbor_id in matrix_dimensions_order:
+        for neighbor_id in join_list:
 
             if len(join_list) - 1 == len(tup):
                 break

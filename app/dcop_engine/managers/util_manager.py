@@ -9,19 +9,19 @@ from dcop_engine.constraint_manager import ConstraintManager
 from dcop_engine.managers.dpop_manager import DpopManager
 from logs.message_types import MessageTypes
 from logs import log
-from itertools import groupby
+
 
 class UtilManager(DpopManager):
 
     def __init__(self, mqtt_manager, dfs_structure):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
-        self.JOIN = None
-        self.UTIL = None
+        self.JOIN = []
+        self.UTIL = []
         self.constraint_manager = ConstraintManager()
 
         # Todo : no need for that ?
-        self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
+        # self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
         log.info("Util Start", self.dfs_structure.monitored_area.id, Constants.INFO)
@@ -37,11 +37,16 @@ class UtilManager(DpopManager):
             for pseudo_parent in self.dfs_structure.pseudo_parents_id:
                 self.JOIN = self.combine(self.get_utility_matrix_for(pseudo_parent), self.JOIN)
 
-        # Add to `self` constraint values
-        self.JOIN = self.add_my_utility_in(self.JOIN)
+        else:
+            # Add to `self` constraint values
+            self.JOIN = self.add_my_utility_in(self.JOIN)
+
+        print("JOIN before projection :", self.JOIN)
 
         # Use projection to eliminate self out of message parent
         self.UTIL = self.project(self.JOIN)
+
+        print("UTIL after projection :", self.UTIL)
 
     def get_util_matrix_from_childen(self):
         count = 0
@@ -58,11 +63,12 @@ class UtilManager(DpopManager):
                 )
 
                 matrix_data = data_received[Constants.DATA]
-                self.matrix_dimensions_order.extend(data_received[Constants.VARS])
+                # Todo : no need for that ?
+                # self.matrix_dimensions_order.extend(data_received[Constants.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
-
-                self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
+                #
+                # self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
 
     def get_utility_matrix_for(self, parent_id):
         """
@@ -72,19 +78,12 @@ class UtilManager(DpopManager):
         :return: the utility matrix R
         :rtype: list
         """
-        if parent_id in self.matrix_dimensions_order:
+
+        if 'Z' + str(parent_id) in self.JOIN:
             # Parent was already take in account by one of my children
             return None
 
-        R = self.get_carthesian_product_list()
-
-        print("step 0 ", R)
-
-        arrangement_list = R[0]
-        for i in range(1, len(R)):
-            arrangement_list = [list(t) for t in itertools.product(arrangement_list, R[i])]
-
-        print("step 1 ", arrangement_list)
+        R, arrangement_list = self.get_carthesian_product_list()
 
         # Todo : rajouter la contrainte de voisinage inter-chambre ?
         # Adding the parent zone values (neighborhood)
@@ -105,7 +104,7 @@ class UtilManager(DpopManager):
         R.append(r_list_2)
         print("step 2 ", r_list_2)
 
-        self.matrix_dimensions_order.append(parent_id)
+        # self.matrix_dimensions_order.append(parent_id)
 
         return r_list_2
 
@@ -125,7 +124,15 @@ class UtilManager(DpopManager):
 
             R.append(r_list_1)
 
-        return R
+        print("step 0 ", R)
+
+        arrangement_list = R[0]
+        for i in range(1, len(R)):
+            arrangement_list = [list(t) for t in itertools.product(arrangement_list, R[i])]
+
+        print("step 1 ", arrangement_list)
+
+        return R, arrangement_list
 
     def combine(self, tuple_list_1, tuple_list_2):
         """
@@ -138,22 +145,25 @@ class UtilManager(DpopManager):
 
         final_list = []
 
-        if tuple_list_1 is None and tuple_list_2 is None:
+        print("list 1 : ", tuple_list_1)
+        print("list 2 : ", tuple_list_2)
+
+        if not tuple_list_1 and not tuple_list_2:
             log.critical("List Null and should not be !",
                          self.dfs_structure.monitored_area.id)
             return []
 
-        if tuple_list_1 is None:
+        if not tuple_list_1:
             return tuple_list_2
 
-        if tuple_list_2 is None:
+        if not tuple_list_2:
             return tuple_list_1
 
         for element in tuple_list_1:
             for second_element in tuple_list_2:
 
-                print(element[:-1])
-                print(second_element[:-1])
+                print("e1 ",  element[:-1])
+                print("e2 ", second_element[:-1])
 
                 if element[:-1] == second_element[:-1]:
                     final_list.append(
@@ -198,7 +208,7 @@ class UtilManager(DpopManager):
         """
 
         new_list = []
-        print(list)
+        print("LIST : ", list)
 
         if 'Z' in list:
             return list
@@ -206,13 +216,16 @@ class UtilManager(DpopManager):
         nb_rooms = len(self.dfs_structure.monitored_area.rooms)
 
         for element in list:
-            print(element)
-            print(element[-nb_rooms:])
 
-            # new_list.append(tuple([
-            #     element[len(element) - 1][0],
-            #     element[-nb_rooms:][1],
-            #     element[-nb_rooms:][2] + [x[2] for x in element[:-1]]]
-            # )
+            size = len(element[-nb_rooms:])
+            new_list.append(element[-nb_rooms:])
 
-        return numpy.amin(list, axis=0) if 'Z' in list else list
+            print(new_list[len(new_list) - 1])
+            print(new_list[len(new_list) - 1][0])
+            print(new_list[len(new_list) - 1][0][2])
+            print(sum([e[2] for e in element[:-size]]))
+
+            new_list[len(new_list) - 1][0][2] += sum([e[2] for e in element[:-size]])
+
+        return new_list
+

@@ -46,9 +46,7 @@ class Dpop(Thread):
 
         self.dfs_manager.generate_dfs(),
         self.util_manager.do_util_propagation(),
-        self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
-                                                self.util_manager.JOIN,
-                                                self.util_manager.UTIL)
+        self.value_manager.do_value_propagation(self.util_manager.JOIN, self.util_manager.UTIL)
 
         exec_time = time.time() - start_time
 
@@ -98,6 +96,11 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
+        log.info("v rooms :"
+                 + str([tuple([room.id, room.current_v]) for room in self.monitored_area.rooms]),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+        #
         # log.info("rooms affected :"
         #          + str(self.monitored_area.get_room_who_need_intervention()),
         #          self.monitored_area.id,
