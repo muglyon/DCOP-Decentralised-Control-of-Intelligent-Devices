@@ -2,13 +2,14 @@ from datetime import datetime
 
 import json
 import numpy
+import itertools
 
 from constants import Constants
 from dcop_engine.constraint_manager import ConstraintManager
 from dcop_engine.managers.dpop_manager import DpopManager
 from logs.message_types import MessageTypes
 from logs import log
-
+from itertools import groupby
 
 class UtilManager(DpopManager):
 
@@ -17,7 +18,9 @@ class UtilManager(DpopManager):
 
         self.JOIN = None
         self.UTIL = None
-        self.constraint_manager = ConstraintManager(dfs_structure.monitored_area)
+        self.constraint_manager = ConstraintManager()
+
+        # Todo : no need for that ?
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
@@ -54,7 +57,7 @@ class UtilManager(DpopManager):
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
-                matrix_data = numpy.asarray(data_received[Constants.DATA])
+                matrix_data = data_received[Constants.DATA]
                 self.matrix_dimensions_order.extend(data_received[Constants.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
@@ -67,94 +70,149 @@ class UtilManager(DpopManager):
         :param parent_id: id of my parent
         :type parent_id: integer
         :return: the utility matrix R
-        :rtype: numpy.ndarray
+        :rtype: list
         """
-        R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
-
         if parent_id in self.matrix_dimensions_order:
             # Parent was already take in account by one of my children
             return None
 
-        for i in range(0, Constants.DIMENSION_SIZE):
-            for j in range(0, Constants.DIMENSION_SIZE):
-                R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
+        R = self.get_carthesian_product_list()
+
+        print("step 0 ", R)
+
+        arrangement_list = R[0]
+        for i in range(1, len(R)):
+            arrangement_list = [list(t) for t in itertools.product(arrangement_list, R[i])]
+
+        print("step 1 ", arrangement_list)
+
+        # Todo : rajouter la contrainte de voisinage inter-chambre ?
+        # Adding the parent zone values (neighborhood)
+
+        temp_list = [list(t) for t in itertools.product(["Z" + str(parent_id)], Constants.DIMENSION)]
+        r_list_2 = []
+
+        for t in temp_list:
+            for element in arrangement_list:
+
+                value = 0
+
+                for sub_element in element:
+                    value += self.constraint_manager.c3_neighbors_sync(sub_element[1], t[1])
+
+                r_list_2.append(element + [t + [value]])
+
+        R.append(r_list_2)
+        print("step 2 ", r_list_2)
 
         self.matrix_dimensions_order.append(parent_id)
+
+        return r_list_2
+
+    def get_carthesian_product_list(self):
+        # Get all arrangements values for all room X all dimensions of the current zone ( = pow(nb_dim, nb_rooms))
+        R = []
+
+        for r in self.dfs_structure.monitored_area.rooms:
+
+            temp_list = [list(t) for t in itertools.product(str(r.id), Constants.DIMENSION)]
+            r_list_1 = []
+
+            print("step -1 ", temp_list)
+
+            for t in temp_list:
+                r_list_1.append(t + [self.constraint_manager.get_cost_of_private_constraints_for_value(r, t[1])])
+
+            R.append(r_list_1)
+
         return R
 
-    # def get_utility_matrix_for_zone(self, parent_id):
-    #
-    #     if parent_id in self.matrix_dimensions_order:
-    #         # Parent was already take in account by one of my children
-    #         return None
-    #
-    #     R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
-    #
-    #     for i in range(0, Constants.DIMENSION_SIZE):
-    #         for j in range(0, Constants.DIMENSION_SIZE):
-    #
-    #             R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
-    #
-    #     self.matrix_dimensions_order.append(parent_id)
-    #     return R
-
-    def combine(self, matrix1, matrix2):
+    def combine(self, tuple_list_1, tuple_list_2):
         """
-        JOIN/COMBINE two matrix
-        :type matrix1: numpy.ndarray
-        :type matrix2: numpy.ndarray
-        :return: combined matrix
-        :rtype: numpy.ndarray
+        JOIN/COMBINE two tuple list
+        :type tuple_list_1: list
+        :type tuple_list_2: list
+        :return: combined list
+        :rtype: list
         """
 
-        if matrix1 is None and matrix2 is None:
-            log.critical("Matrices Null and should not be !",
+        final_list = []
+
+        if tuple_list_1 is None and tuple_list_2 is None:
+            log.critical("List Null and should not be !",
                          self.dfs_structure.monitored_area.id)
-            return numpy.zeros(Constants.DIMENSION_SIZE, int)
+            return []
 
-        if matrix1 is None:
-            return matrix2
+        if tuple_list_1 is None:
+            return tuple_list_2
 
-        if matrix2 is None:
-            return matrix1
+        if tuple_list_2 is None:
+            return tuple_list_1
 
-        if matrix1.size > matrix2.size:
-            final_matrix = numpy.zeros(matrix1.shape + (matrix1.shape[0],), int)
-        else:
-            final_matrix = numpy.zeros(matrix2.shape + (matrix2.shape[0],), int)
+        for element in tuple_list_1:
+            for second_element in tuple_list_2:
 
-        for index1, value1 in numpy.ndenumerate(matrix1):
-            for index2, value2 in numpy.ndenumerate(matrix2):
-                if index1[0] == index2[0]:
-                    tupl = tuple(numpy.concatenate((numpy.array(index1), numpy.delete(numpy.array(index2), 0, 0))))
-                    final_matrix[tupl] = value1 + value2
+                print(element[:-1])
+                print(second_element[:-1])
 
-        log.info("Shape Combined matrix : " + str(final_matrix.shape),
+                if element[:-1] == second_element[:-1]:
+                    final_list.append(
+                        element[:-1]
+                        + [element[len(element) - 1]]
+                        + [second_element[len(second_element) - 1]]
+                    )
+
+        print("Combined list ", final_list)
+
+        log.info("Shape Combined list : "
+                 + str(len(final_list))
+                 + " And expected : "
+                 + str(pow(Constants.DIMENSION_SIZE, len(self.dfs_structure.monitored_area.rooms) + 2)),
                  self.dfs_structure.monitored_area.id,
                  Constants.UTIL)
 
-        return final_matrix
+        return final_list
+
 
     def add_my_utility_in(self, R):
+        # Todo : remove ?
+        # if R is None:
+        #     R = numpy.zeros(Constants.DIMENSION_SIZE, int)
+        #
+        # for index, value in numpy.ndenumerate(R):
+        #     R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
+        #
+        #     if R[index] > Constants.INFINITY:
+        #         R[index] = Constants.INFINITY
+        #
+        # return R
+        return self.get_carthesian_product_list()
 
-        if R is None:
-            R = numpy.zeros(Constants.DIMENSION_SIZE, int)
-
-        for index, value in numpy.ndenumerate(R):
-            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
-
-            if R[index] > Constants.INFINITY:
-                R[index] = Constants.INFINITY
-
-        return R
-
-    @staticmethod
-    def project(matrix):
+    def project(self, list):
         """
-        PROJECT me out of the matrix
-        :param matrix: matrix to be projected out
-        :type matrix: numpy.ndarray
+        PROJECT me out of the list
+        :param list: list to be projected out
+        :type list: list
         :return: a matrix with one less dimension
-        :rtype: numpy.ndarray
+        :rtype: list
         """
-        return numpy.amin(matrix, axis=0) if len(matrix.shape) > 1 else matrix
+
+        new_list = []
+        print(list)
+
+        if 'Z' in list:
+            return list
+
+        nb_rooms = len(self.dfs_structure.monitored_area.rooms)
+
+        for element in list:
+            print(element)
+            print(element[-nb_rooms:])
+
+            # new_list.append(tuple([
+            #     element[len(element) - 1][0],
+            #     element[-nb_rooms:][1],
+            #     element[-nb_rooms:][2] + [x[2] for x in element[:-1]]]
+            # )
+
+        return numpy.amin(list, axis=0) if 'Z' in list else list

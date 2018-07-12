@@ -15,18 +15,18 @@ class ValueManager(DpopManager):
     def __init__(self, mqtt_manager, dfs_structure):
         DpopManager.__init__(self, mqtt_manager, dfs_structure)
 
-    def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_matrix):
+    def do_value_propagation(self, matrix_dimensions_order, join_matrix, util_list):
         log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
         values = dict()
 
-        if util_matrix is None:
-            util_matrix = numpy.zeros(Constants.DIMENSION_SIZE, int)
+        if util_list is None:
+            util_list = numpy.zeros(Constants.DIMENSION_SIZE, int)
 
         if not self.dfs_structure.is_root:
             self.mqtt_manager.publish_util_msg_to(
                 self.dfs_structure.parent_id,
-                json.dumps({Constants.VARS: matrix_dimensions_order, Constants.DATA: util_matrix.tolist()})
+                json.dumps({Constants.VARS: matrix_dimensions_order, Constants.DATA: util_list})
             )
 
             values = self.get_values_from_parents()
@@ -53,15 +53,15 @@ class ValueManager(DpopManager):
 
         return dict()
 
-    def get_index_of_best_value_with(self, data, matrix_dimensions_order, join_matrix):
+    def get_index_of_best_value_with(self, data, matrix_dimensions_order, join_list):
 
-        if join_matrix is None:
-            log.critical("Matrice NULL pour la méthode dpop.getIndexOfBestValueWith(...)",
+        if join_list is None:
+            log.critical("List NULL pour la méthode dpop.getIndexOfBestValueWith(...)",
                          self.dfs_structure.monitored_area.id)
             return Constants.INFINITY_IDX
 
-        if len(join_matrix.shape) == 1 or join_matrix.shape[1] == 1:
-            indices = [i for i, x in enumerate(join_matrix) if x == min(join_matrix)]
+        if len(join_list) == 1:
+            indices = [i for i, x in enumerate(join_list) if x == min(join_list)]
             return indices[len(indices) - 1]
 
         if data is None or not isinstance(data, dict):
@@ -69,13 +69,10 @@ class ValueManager(DpopManager):
                          self.dfs_structure.monitored_area.id)
             return Constants.INFINITY_IDX
 
-        tupl = self.extract_parent_values(data)
-        tupl = self.extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl)
+        tup = self.extract_parent_values(data)
+        tup = self.extract_dependant_non_neighbors_values(data, join_list, matrix_dimensions_order, tup)
 
-        print(join_matrix)
-        print(tupl)
-
-        return self.find_best_index(join_matrix, tupl)
+        return self.find_best_index(join_list, tup)
 
     def extract_parent_values(self, data):
         # Check for parents values
@@ -103,14 +100,14 @@ class ValueManager(DpopManager):
         return best_index
 
     @staticmethod
-    def extract_dependant_non_neighbors_values(data, join_matrix, matrix_dimensions_order, tupl):
+    def extract_dependant_non_neighbors_values(data, join_list, matrix_dimensions_order, tup):
         # Check for dependant non-neighbors values if needed
         for neighbor_id in matrix_dimensions_order:
 
-            if len(join_matrix.shape) - 1 == len(tupl):
+            if len(join_list) - 1 == len(tup):
                 break
 
             key = str(neighbor_id)
             if key in data:
-                tupl = tupl + (data[key],)
-        return tupl
+                tup = tup + (data[key],)
+        return tup

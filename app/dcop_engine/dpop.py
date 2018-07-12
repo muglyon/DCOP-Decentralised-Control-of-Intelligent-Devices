@@ -92,8 +92,8 @@ class Dpop(Thread):
                  Constants.RESULTS)
 
         log.info("const val : " +
-                 str(ConstraintManager(self.monitored_area)
-                     .get_cost_of_private_constraints_for_value(self.monitored_area.current_v)
+                 str(ConstraintManager()
+                     .get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)
                      ),
                  self.monitored_area.id,
                  Constants.RESULTS)
