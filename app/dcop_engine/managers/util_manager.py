@@ -196,7 +196,9 @@ class UtilManager(DpopManager):
         #         R[index] = Constants.INFINITY
         #
         # return R
-        return self.get_carthesian_product_list()
+        R, arrangement_list = self.get_carthesian_product_list()
+        print("Add my utility : ", arrangement_list)
+        return arrangement_list
 
     def project(self, list):
         """
@@ -220,9 +222,9 @@ class UtilManager(DpopManager):
             size = len(element[-nb_rooms:])
             new_list.append(element[-nb_rooms:])
 
-            print(new_list[len(new_list) - 1])
             print(new_list[len(new_list) - 1][0])
             print(new_list[len(new_list) - 1][0][2])
+            print(element[:-size])
             print(sum([e[2] for e in element[:-size]]))
 
             new_list[len(new_list) - 1][0][2] += sum([e[2] for e in element[:-size]])

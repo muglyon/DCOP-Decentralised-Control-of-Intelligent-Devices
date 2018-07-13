@@ -18,7 +18,7 @@ class ValueManager(DpopManager):
     def do_value_propagation(self, join_matrix, util_list):
         log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
 
-        values = dict()
+        values = []
 
         if util_list is None:
             util_list = []
@@ -33,14 +33,29 @@ class ValueManager(DpopManager):
 
         # Find best v
         index = self.get_index_of_best_value_with(values, join_matrix)
-        # self.dfs_structure.monitored_area.current_v = Constants.DIMENSION[index]
-        # values[str(self.dfs_structure.monitored_area.id)] = index
-        #
-        # for child in self.dfs_structure.children_id:
-        #     self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
-        #
-        # if self.dfs_structure.is_leaf():
-        #     self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
+
+        lowest_value = Constants.INFINITY
+
+        print("INDEX : ", index)
+        print("ROOMS : ", len(self.dfs_structure.monitored_area.rooms))
+
+        for i in range(0, len(index)):
+
+            value = index[i][1]
+            self.dfs_structure.monitored_area.rooms[i].current_v = value
+
+            if value < lowest_value:
+                lowest_value = value
+
+        self.dfs_structure.monitored_area.current_v = lowest_value
+
+        values.append(["Z" + str(self.dfs_structure.monitored_area.id), lowest_value])
+
+        for child in self.dfs_structure.children_id:
+            self.mqtt_manager.publish_value_msg_to(child, json.dumps(values))
+
+        if self.dfs_structure.is_leaf():
+            self.mqtt_manager.publish_value_msg_to_server(json.dumps(values))
 
     def get_values_from_parents(self):
 
@@ -64,10 +79,11 @@ class ValueManager(DpopManager):
             indices = [i for i, x in enumerate(join_list) if x == min(join_list)]
             return indices[len(indices) - 1]
 
-        if data is None or not isinstance(data, dict):
-            log.critical("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)",
-                         self.dfs_structure.monitored_area.id)
-            return Constants.INFINITY_IDX
+        # print("DATA : ", data)
+        # if not data:
+        #     log.critical("Données manquantes pour la méthode dpop.getIndexOfBestValueWith(...)",
+        #                  self.dfs_structure.monitored_area.id)
+        #     return Constants.INFINITY_IDX
 
         # tup = self.extract_parent_values(data)
         # tup = self.extract_dependant_non_neighbors_values(data, join_list, tup)
@@ -90,37 +106,29 @@ class ValueManager(DpopManager):
 
         best_index = []
         best_value = Constants.INFINITY + 1
-        nb_rooms = len(self.dfs_structure.monitored_area.rooms)
-
-        # for index, value in numpy.ndenumerate(join_matrix):
-        #     if tup == index[1:] and value <= best_value:
-        #         best_value = value
-        #         best_index = index[0]
 
         print(join_matrix)
         print("TUP ", tup)
 
+        nb_rooms = len(self.dfs_structure.monitored_area.rooms)
+
         for elements in join_matrix:
             cost = 0
-            bool = True
 
-            print("elem : ", elements)
+            print("elements[:nb_rooms] : ", elements[:nb_rooms])
 
-            for sub_element in elements[:-1]:
+            for neighbors_element in elements[nb_rooms:]:
+                if (neighbors_element[0] in t[0] and neighbors_element[1] in t[1] for t in tup):
 
-                print("sub : ", sub_element)
-
-                if tup in elements and sub_element[1][0:2] in tup:
-                    cost += sub_element[-1][2]
-                else:
-                    bool = False
-                    break
+                    print("tup find in element")
+                    for sub_element in elements[:nb_rooms]:
+                        print("sub : ", sub_element)
+                        cost += sub_element[2]
 
             if cost <= best_value:
-                best_index = elements
+                best_index = elements[nb_rooms:]
                 best_value = cost
 
-        print("Value chosen : ", best_index)
         return best_index
 
     @staticmethod
