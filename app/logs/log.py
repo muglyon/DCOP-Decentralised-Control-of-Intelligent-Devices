@@ -42,9 +42,9 @@ def info(msg, sender_id, msg_type):
 
     logger.info(payload, extra={'topic': prefix + str(sender_id), 'type': msg_type})
 
-    f_read = open(logger.handlers[0].baseFilename, "r")
-    last_line = f_read.readlines()[-1]
-    elasticsearch.save_data(last_line)
+    # f_read = open(logger.handlers[0].baseFilename, "r")
+    # last_line = f_read.readlines()[-1]
+    # elasticsearch.save_data(last_line)
 
     global execution_time
     execution_time += time.time() - start_time
