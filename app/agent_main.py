@@ -29,8 +29,6 @@ if __name__ == "__main__":
     #         monitored_area = r
     #         break
 
-    print(monitored_area.to_json_format())
-
     log_file = "logs/agents/log_agent_" + str(monitored_area.id) + "_" + datetime.now().strftime("%Y-%m-%d") + ".json"
     log.setup_custom_logger(log_file)
     log.info(monitored_area.to_json_format(), monitored_area.id, Constants.STATE)
