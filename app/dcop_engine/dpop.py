@@ -12,11 +12,10 @@ from threading import Thread
 from dcop_engine import execution_time
 from dcop_engine.execution_time import *
 from logs import log
-from constants import Constants
-from dcop_engine.constraint_manager import ConstraintManager
 from dcop_engine.managers.dfs_manager import DfsManager
 from dcop_engine.managers.value_manager import ValueManager
 from dcop_engine.managers.util_manager import UtilManager
+from dcop_engine.constraint_manager import *
 from mqtt.mqtt_manager import MQTTManager
 
 
@@ -90,9 +89,7 @@ class Dpop(Thread):
                  Constants.RESULTS)
 
         log.info("const val : " +
-                 str(ConstraintManager()
-                     .get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)
-                     ),
+                 str(get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)),
                  self.monitored_area.id,
                  Constants.RESULTS)
 
@@ -100,8 +97,3 @@ class Dpop(Thread):
                  + str([tuple([room.id, room.current_v]) for room in self.monitored_area.rooms]),
                  self.monitored_area.id,
                  Constants.RESULTS)
-        #
-        # log.info("rooms affected :"
-        #          + str(self.monitored_area.get_room_who_need_intervention()),
-        #          self.monitored_area.id,
-        #          Constants.RESULTS)
