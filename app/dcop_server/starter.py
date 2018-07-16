@@ -90,8 +90,6 @@ class Starter(Thread):
 
     def update_and_get_priorities(self, received_values):
 
-        print(received_values)
-
         for key in received_values:
 
             if received_values[key] < Constants.URGT_TIME:
