@@ -143,12 +143,9 @@ class UtilManager(DpopManager):
                     final_list.append(
                         element + [x for x in second_element if x != element_to_remove]
                     )
-                    continue
 
         log.info("Shape Combined list : "
-                 + str(len(final_list))
-                 + " And expected : "
-                 + str(pow(Constants.DIMENSION_SIZE, len(self.dfs_structure.monitored_area.rooms) + 2)),
+                 + str(len(final_list)),
                  self.dfs_structure.monitored_area.id,
                  Constants.UTIL)
 
