@@ -71,7 +71,6 @@ class UtilManager(DpopManager):
             return None
 
         arrangement_list = self.get_carthesian_product_list()
-
         # Todo : rajouter la contrainte de voisinage inter-chambre ?
 
         # Adding the parent zone values (neighborhood)
@@ -124,7 +123,9 @@ class UtilManager(DpopManager):
             return tuple_list_1
 
         print("shape of list 1 ", len(tuple_list_1))
+        print(tuple_list_1[:10])
         print("shape of list 2 ", len(tuple_list_2))
+        print(tuple_list_2[:10])
 
         for element in tuple_list_1:
             for second_element in tuple_list_2:
@@ -163,11 +164,40 @@ class UtilManager(DpopManager):
         if self.dfs_structure.is_root:
             return initial_list
 
-        new_list = []
         nb_rooms = len(self.dfs_structure.monitored_area.rooms)
 
-        for element in initial_list:
-            new_list.append(element[nb_rooms:])
-            new_list[len(new_list) - 1][0][2] += sum([e[2] for e in element[:nb_rooms]])
+        d = {}
+        print("init_list : ", initial_list)
 
-        return new_list
+        for element in initial_list:
+
+            # if len(element) == 1:
+            index = sum(element[nb_rooms:], [])[:-1]
+            cur_val = d.setdefault(tuple(index), sum(e[2] for e in element[:nb_rooms]))
+            d[tuple(index)] = cur_val + index[1]
+            # else:
+            #     index = element[nb_rooms:]
+            #     del index[-1][-1]
+            #     print(tuple(index))
+            #     print(sum(e[2] for e in element[:nb_rooms]))
+            #     cur_val = d.setdefault(tuple(index), sum(e[2] for e in element[:nb_rooms]))
+            #     d[tuple(index)] = cur_val + index[1]
+
+        print("d ", d)
+        print("project : ", [list(k) + [v] for k, v in d.items()][:10])
+
+        new_list = [list(k) + [v] for k, v in d.items()]
+        x = [element[i:i + 3] for element in new_list for i in range(0, len(element), 3)]
+        y = [x[i:i + 2] for i in range(0, len(x), 2)]
+
+        print(x[:10])
+        print(y[:10])
+        print(len(new_list))
+        print(len(x))
+        print(len(y))
+
+        # if len(new_list[0]) > 3:
+        #     it = iter(new_list)
+        #     print("islice : ", [new_list[i:i + 3] for i in range(0, len(element), 3)])
+
+        return y
