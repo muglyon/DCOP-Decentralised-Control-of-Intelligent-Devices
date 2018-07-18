@@ -122,6 +122,9 @@ class UtilManager(DpopManager):
         if not tuple_list_2:
             return tuple_list_1
 
+        print("size list 1 ", len(tuple_list_1))
+        print("size list 2 ", len(tuple_list_2))
+
         for element in tuple_list_1:
             for second_element in tuple_list_2:
 
