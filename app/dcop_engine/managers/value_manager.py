@@ -56,7 +56,9 @@ class ValueManager(DpopManager):
         # MQTT wait for incoming message of type VALUE from parent
         while (time.time() - start_time) < Constants.TIMEOUT:
             if self.mqtt_manager.has_value_msg():
-                return json.loads(self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1])
+                return json.loads(
+                    self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
+                )
 
         return []
 

@@ -44,8 +44,8 @@ class UtilManager(DpopManager):
         start_time = datetime.now()
 
         # MQTT wait for incoming message of type UTIL for each child of the agent
-        while count < len(self.dfs_structure.children_id) \
-                and (datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
+        while count < len(self.dfs_structure.children_id) and (
+                datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
 
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
@@ -122,28 +122,27 @@ class UtilManager(DpopManager):
         if not tuple_list_2:
             return tuple_list_1
 
-        print("shape of list 1 ", len(tuple_list_1))
-        print(tuple_list_1[:10])
-        print("shape of list 2 ", len(tuple_list_2))
-        print(tuple_list_2[:10])
-
         for element in tuple_list_1:
             for second_element in tuple_list_2:
 
                 if element[:nb_rooms] == second_element[:nb_rooms]:
                     final_list.append(
-                        element + [second_element[len(second_element) - 1]]
+                        element + [second_element[-1]]
                     )
-                    continue
+                else:
+                    elements_in_double = [
+                        x
+                        for x in second_element
+                        if 'Z' + str(self.dfs_structure.monitored_area.id) in x[0]
+                           or x[0] in element[nb_rooms:][0]
+                    ]
 
-                element_to_remove = [
-                    x for x in second_element if 'Z' + str(self.dfs_structure.monitored_area.id) in x[0]
-                ]
-
-                if element_to_remove:
-                    final_list.append(
-                        element + [x for x in second_element if x != element_to_remove]
-                    )
+                    if elements_in_double:
+                        final_list.append(
+                            element + [
+                                x for x in second_element if x not in elements_in_double
+                            ]
+                        )
 
         log.info("Shape Combined list : "
                  + str(len(final_list)),
@@ -165,39 +164,16 @@ class UtilManager(DpopManager):
             return initial_list
 
         nb_rooms = len(self.dfs_structure.monitored_area.rooms)
-
-        d = {}
-        print("init_list : ", initial_list)
+        temp_dict = {}
 
         for element in initial_list:
 
-            # if len(element) == 1:
             index = sum(element[nb_rooms:], [])[:-1]
-            cur_val = d.setdefault(tuple(index), sum(e[2] for e in element[:nb_rooms]))
-            d[tuple(index)] = cur_val + index[1]
-            # else:
-            #     index = element[nb_rooms:]
-            #     del index[-1][-1]
-            #     print(tuple(index))
-            #     print(sum(e[2] for e in element[:nb_rooms]))
-            #     cur_val = d.setdefault(tuple(index), sum(e[2] for e in element[:nb_rooms]))
-            #     d[tuple(index)] = cur_val + index[1]
+            coast = temp_dict.setdefault(tuple(index), sum(e[2] for e in element[:nb_rooms]))
+            temp_dict[tuple(index)] = coast + index[1]
 
-        print("d ", d)
-        print("project : ", [list(k) + [v] for k, v in d.items()][:10])
+        dict_as_list = [list(k) + [v] for k, v in temp_dict.items()]
+        dimension_number = int(len(dict_as_list[0]) / 3)
+        projected_list = [element[i:i + 3] for element in dict_as_list for i in range(0, len(element), 3)]
 
-        new_list = [list(k) + [v] for k, v in d.items()]
-        x = [element[i:i + 3] for element in new_list for i in range(0, len(element), 3)]
-        y = [x[i:i + 2] for i in range(0, len(x), 2)]
-
-        print(x[:10])
-        print(y[:10])
-        print(len(new_list))
-        print(len(x))
-        print(len(y))
-
-        # if len(new_list[0]) > 3:
-        #     it = iter(new_list)
-        #     print("islice : ", [new_list[i:i + 3] for i in range(0, len(element), 3)])
-
-        return y
+        return [projected_list[i:i + dimension_number] for i in range(0, len(projected_list), dimension_number)]
