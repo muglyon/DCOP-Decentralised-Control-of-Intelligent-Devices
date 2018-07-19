@@ -6,7 +6,7 @@ import time
 import operator
 
 from threading import Thread
-from constants import Constants
+from constants import *
 from logs.message_types import MessageTypes
 from logs import log
 from mqtt.mqtt_manager import MQTTManager
@@ -29,21 +29,21 @@ class Starter(Thread):
         for agent in self.agents:
 
             self.priorities[str(agent.id)] = 0
-            self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
+            self.old_results_index[str(agent.id)] = INFINITY_IDX
 
     def run(self):
 
         while 1:
 
             self.do_one_iteration()
-            time.sleep(Constants.TWO_MINUTS)
+            time.sleep(TWO_MINUTS)
 
             while self.pause:
-                time.sleep(Constants.TWO_MINUTS)
+                time.sleep(TWO_MINUTS)
 
     def do_one_iteration(self):
 
-        log.info("Start", Constants.SERVER, Constants.INFO)
+        log.info("Start", SERVER, INFO)
         self.is_running = True
 
         for agent in self.agents:
@@ -66,7 +66,7 @@ class Starter(Thread):
             self.old_results_index["Z" + str(agent_id)] = received_index["Z" + str(agent_id)]
 
         self.is_running = False
-        log.info(results, Constants.SERVER, Constants.RESULTS)
+        log.info(results, SERVER, RESULTS)
 
     def choose_root(self):
         root = 0
@@ -92,8 +92,8 @@ class Starter(Thread):
 
         for key in received_values:
 
-            if received_values[key] < Constants.URGT_TIME:
-                if self.old_results_index[key.split("Z")[1]] <= Constants.URGT_TIME:
+            if received_values[key] < URGT_TIME:
+                if self.old_results_index[key.split("Z")[1]] <= URGT_TIME:
                     self.priorities[key.split("Z")[1]] += 1
             else:
                 self.priorities[key.split("Z")[1]] = 0

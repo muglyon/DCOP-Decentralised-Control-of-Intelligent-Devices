@@ -16,8 +16,8 @@ class ServerMQTT(CustomMQTTClass):
     def on_connect(self, client, obj, flags, rc):
         super().on_connect(client, obj, flags, rc)
 
-        self.starter = Starter(self.hospital.zones, client)
-        # self.starter = Starter(self.hospital.monitored_area_list, client)
+        # self.starter = Starter(self.hospital.zones, client)
+        self.starter = Starter(self.hospital.monitored_area_list, client)
         self.starter.start()
 
     def on_message(self, client, obj, msg):

@@ -4,7 +4,7 @@
 from behave import *
 from hamcrest import *
 from unittest.mock import MagicMock
-from constants import Constants
+from constants import *
 
 
 @when('both AI call healthcare professionals in almost the same time t1 and t2 with t1 > t2')
@@ -32,7 +32,7 @@ def step_impl(context):
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(Constants.INFINITY))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(INFINITY))
 
 
 ###

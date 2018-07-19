@@ -5,7 +5,7 @@ import operator
 import abc
 
 from random import randint
-from constants import Constants
+from constants import *
 
 
 class MonitoringArea(object):
@@ -19,7 +19,7 @@ class MonitoringArea(object):
         self.left_neighbor = None
         self.current_v = 0
         self.previous_v = 0
-        self.tau = randint(Constants.MIN_TAU_VALUE, Constants.INFINITY)
+        self.tau = randint(MIN_TAU_VALUE, INFINITY)
 
     def get_neighbors_id_sorted(self):
         """

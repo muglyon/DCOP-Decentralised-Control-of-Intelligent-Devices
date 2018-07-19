@@ -11,7 +11,7 @@ import json
 import numpy
 
 from logs import log
-from constants import Constants
+from constants import *
 from model.monitoring_area import MonitoringArea
 from unittest.mock import MagicMock
 from dcop_engine.dpop import Dpop
@@ -19,7 +19,7 @@ from dcop_engine.dpop import Dpop
 
 def before_scenario(context, scenario):
 
-    Constants.TIMEOUT = 10
+    TIMEOUT = 10
 
     context.util_2 = 'UTIL ' + json.dumps({"vars": [4, 1, 2], "data": numpy.zeros((17, 17), float).tolist()})
     context.value_2 = 'VALUES ' + json.dumps({"1": 0})

@@ -2,7 +2,7 @@ import time
 
 from random import random
 from threading import Thread
-from constants import Constants
+from constants import *
 
 
 class Event(Thread):
@@ -19,7 +19,7 @@ class Event(Thread):
             if random() < 0.05:
                 self.generate_random_event()
 
-            time.sleep(Constants.THIRTY_SECONDS)
+            time.sleep(THIRTY_SECONDS)
 
     def generate_random_event(self):
 

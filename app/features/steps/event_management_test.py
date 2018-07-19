@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 from behave import *
 from hamcrest import *
 
-from constants import Constants
+from constants import *
 from events.event_observer import EventObserver
 from logs.message_types import MessageTypes
 from model.device import Device
@@ -16,7 +16,7 @@ from dcop_server.urgt_starter import UrgentStarter
 
 @given("the event manager")
 def step_impl(context):
-    context.room_2.device_list = [Device(21, Constants.INFINITY, False)]
+    context.room_2.device_list = [Device(21, INFINITY, False)]
 
     context.event_manager = EventObserver(context.room_2, context.mock_clientMqtt_2)
     context.event_manager.mqtt_manager.publish_urgent_msg_to_server = MagicMock()

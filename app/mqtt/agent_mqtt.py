@@ -1,9 +1,11 @@
 from datetime import datetime
+from constants import *
 from logs import log
-from constants import Constants
 from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
-from dcop_engine.dpop import dpop_launch
+from dcop_engine.zone_multi.dpop_zone_multi import DpopZone
+from model.room import Room
+from model.zone import Zone
 
 
 class AgentMQTT(CustomMQTTClass):
@@ -24,7 +26,7 @@ class AgentMQTT(CustomMQTTClass):
 
         if MessageTypes.is_on(str_msg):
 
-            log.info("Iteration " + str(self.nb_iterations), self.monitored_area.id, Constants.INFO)
+            log.info("Iteration " + str(self.nb_iterations), self.monitored_area.id, INFO)
 
             if self.nb_iterations > 0:
                 self.monitored_area.previous_v = self.monitored_area.current_v
@@ -33,12 +35,12 @@ class AgentMQTT(CustomMQTTClass):
 
                 log.info(self.monitored_area.to_json_format(),
                          self.monitored_area.id,
-                         Constants.STATE)
+                         STATE)
 
             self.initialize_metrics()
             self.nb_iterations += 1
 
-            dpop_launch(self.monitored_area, client)
+            self.dpop_launch(self.monitored_area)
 
         elif MessageTypes.CHILD.value in str_msg or MessageTypes.PSEUDO.value in str_msg:
             client.child_msgs.append(str_msg)
@@ -53,3 +55,14 @@ class AgentMQTT(CustomMQTTClass):
 
     def initialize_metrics(self):
         self.client.nb_msg_exchanged_current = 0
+
+    def dpop_launch(self, monitored_area):
+
+        if type(monitored_area) is Room:
+            # Todo
+            pass
+
+        if type(monitored_area) is Zone:
+            thread = DpopZone(monitored_area, self.client)
+            thread.start()
+            thread.join(timeout=10)

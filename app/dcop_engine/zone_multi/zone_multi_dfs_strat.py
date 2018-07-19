@@ -1,14 +1,14 @@
 #! python3
 import time
 
-from constants import Constants
-from dcop_engine.managers.dpop_manager import DpopManager
+from constants import *
+from dcop_engine.dpop_manager import DpopManager
 from logs.message_types import MessageTypes
 from logs import log
 from model.dfs_structure import DfsStructure
 
 
-class DfsManager(DpopManager):
+class ZoneMultiDfsStrat(DpopManager):
 
     def __init__(self, mqtt_manager, monitored_area):
         DpopManager.__init__(self, mqtt_manager, DfsStructure(monitored_area))
@@ -16,7 +16,7 @@ class DfsManager(DpopManager):
 
     def generate_dfs(self):
 
-        log.info("Dfs Start", self.dfs_structure.monitored_area.id, Constants.INFO)
+        log.info("Dfs Start", self.dfs_structure.monitored_area.id, INFO)
 
         self.choose_root()
 
@@ -72,7 +72,7 @@ class DfsManager(DpopManager):
 
                     log.info(self.pseudo_tree_to_json_format(),
                              self.dfs_structure.monitored_area.id,
-                             Constants.DFS)
+                             DFS)
 
                     continue_generation = False
 
