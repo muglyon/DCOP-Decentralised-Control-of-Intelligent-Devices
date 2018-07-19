@@ -6,7 +6,6 @@ from logs import log
 from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from dcop_engine.zone_multi.dpop_zone_multi import DpopZoneMulti
-from model.room import Room
 from model.zone import Zone
 
 
