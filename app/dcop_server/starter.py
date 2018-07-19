@@ -27,9 +27,9 @@ class Starter(Thread):
         self.is_running = False
 
         for agent in self.agents:
+
             self.priorities[str(agent.id)] = 0
             self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
-
 
     def run(self):
 
@@ -60,7 +60,7 @@ class Starter(Thread):
         results = ""
         for agent_id, priority in sorted_priorities:
 
-            results += "Room " + str(agent_id) + \
+            results += "Monitoring Area " + str(agent_id) + \
                        " need intervention in " + str(received_index["Z" + str(agent_id)]) + \
                        " minutes. PRIORITY : " + str(priority) + " "
             self.old_results_index["Z" + str(agent_id)] = received_index["Z" + str(agent_id)]
