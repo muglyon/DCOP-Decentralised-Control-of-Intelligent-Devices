@@ -8,14 +8,14 @@ from model.zone import Zone
 
 class Hospital(object):
 
-    def __init__(self, nb_rooms, nb_zones=None):
+    def __init__(self, nb_rooms, nb_zones=None, multivariable=False):
 
         self.monitored_area_list = []
 
         if nb_zones:
 
             for k in range(1, nb_zones + 1):
-                self.monitored_area_list.append(Zone(k))
+                self.monitored_area_list.append(Zone(k, multivariable))
 
             nb_rooms_by_zone = ceil(nb_rooms / nb_zones)
             count = 0
@@ -33,7 +33,7 @@ class Hospital(object):
 
         else:
 
-            for i in range(0, nb_rooms + 1):
+            for i in range(1, nb_rooms + 1):
                 self.monitored_area_list.append(Room(i))
 
             self.setup_neighbors()

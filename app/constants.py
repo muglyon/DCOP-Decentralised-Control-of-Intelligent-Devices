@@ -1,6 +1,6 @@
 # Constants
 
-NB_ROOMS = 6
+NB_ROOMS = 4
 NB_ZONES = 4
 
 DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241]

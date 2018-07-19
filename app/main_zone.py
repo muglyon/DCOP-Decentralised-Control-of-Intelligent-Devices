@@ -8,4 +8,4 @@ from main_room import main
 
 if __name__ == "__main__":
 
-    main(Hospital(NB_ROOMS, NB_ZONES, True))
+    main(Hospital(NB_ROOMS, NB_ZONES))

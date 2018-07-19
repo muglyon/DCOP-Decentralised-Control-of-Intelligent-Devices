@@ -5,9 +5,10 @@ from random import randint
 
 class Zone(MonitoringArea):
 
-    def __init__(self, id):
+    def __init__(self, id, multivariables):
         MonitoringArea.__init__(self, id)
         self.rooms = []
+        self.multivariable = multivariables
 
     def add_room(self, room):
         self.rooms.append(room)

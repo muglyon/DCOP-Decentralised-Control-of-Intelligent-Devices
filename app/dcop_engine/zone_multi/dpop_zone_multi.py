@@ -6,7 +6,7 @@ from dcop_engine.zone_multi.zone_multi_util_start import ZoneMultiUtilStrat
 from logs import log
 
 
-class DpopZone(Dpop):
+class DpopZoneMulti(Dpop):
 
     def __init__(self, monitored_area, mqtt_client):
         Dpop.__init__(self, monitored_area, mqtt_client)

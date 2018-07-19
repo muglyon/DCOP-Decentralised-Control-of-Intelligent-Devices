@@ -11,7 +11,7 @@ def step_impl(context):
 
 @then("server should increase priority of this room")
 def step_impl(context):
-    context.server_thread.update_and_get_priorities({"1": 2})
+    context.server_thread.get_result_by_priority({"1": 2})
     assert_that(context.server_thread.priorities["1"], greater_than(0))
 
 
@@ -23,7 +23,7 @@ def step_impl(context):
 
 @then("AI agent priority should be 0")
 def step_impl(context):
-    context.server_thread.update_and_get_priorities({"1": 10})
+    context.server_thread.get_result_by_priority({"1": 10})
     assert_that(context.server_thread.priorities["1"], equal_to(0))
 
 
@@ -41,7 +41,7 @@ def step_impl(context):
 
 @when("the server choose the root")
 def step_impl(context):
-    context.server_thread.update_and_get_priorities = MagicMock()
+    context.server_thread.get_result_by_priority = MagicMock()
     context.server_thread.get_values = MagicMock()
     context.server_thread.do_one_iteration()
 
