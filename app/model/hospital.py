@@ -14,8 +14,6 @@ class Hospital(object):
 
         if nb_zones:
 
-            # self.zones = []
-
             for k in range(1, nb_zones + 1):
                 self.monitored_area_list.append(Zone(k))
 
@@ -35,9 +33,9 @@ class Hospital(object):
 
         else:
 
-            self.monitored_area_list = []
-            for i in range(0, nb_rooms):
+            for i in range(0, nb_rooms + 1):
                 self.monitored_area_list.append(Room(i))
+
             self.setup_neighbors()
 
     def setup_neighbors(self):

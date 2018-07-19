@@ -4,17 +4,18 @@ import json
 import itertools
 
 from dcop_engine.constraint_manager import *
-from dcop_engine.dpop_manager import DpopManager
+from dcop_engine.dpop_strat.util_strat_abstract import UtilStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 from constants import *
 
 
-class ZoneMultiUtilStrat(DpopManager):
+class ZoneMultiUtilStrat(UtilStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        DpopManager.__init__(self, mqtt_manager, dfs_structure)
-
+        UtilStratAbstract.__init__(self)
+        self.mqtt_manager = mqtt_manager
+        self.dfs_structure = dfs_structure
         self.JOIN = []
         self.UTIL = []
 

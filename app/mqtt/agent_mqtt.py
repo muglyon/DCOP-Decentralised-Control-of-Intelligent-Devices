@@ -1,5 +1,6 @@
 from datetime import datetime
 from constants import *
+from dcop_engine.room.dpop_room import DpopRoom
 from logs import log
 from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
@@ -58,11 +59,10 @@ class AgentMQTT(CustomMQTTClass):
 
     def dpop_launch(self, monitored_area):
 
-        if type(monitored_area) is Room:
-            # Todo
-            pass
+        thread = DpopRoom(monitored_area, self.client)
 
         if type(monitored_area) is Zone:
             thread = DpopZone(monitored_area, self.client)
-            thread.start()
-            thread.join(timeout=10)
+
+        thread.start()
+        thread.join(timeout=10)

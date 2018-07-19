@@ -8,7 +8,7 @@ from logs import log
 from model.dfs_structure import DfsStructure
 
 
-class ZoneMultiDfsStrat(DfsStratAbstract):
+class RoomDfsStrat(DfsStratAbstract):
 
     def __init__(self, mqtt_manager, monitored_area):
         DfsStratAbstract.__init__(self)

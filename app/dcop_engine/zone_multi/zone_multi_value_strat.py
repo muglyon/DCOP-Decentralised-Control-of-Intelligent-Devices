@@ -2,17 +2,19 @@ import time
 import json
 
 from constants import *
-from dcop_engine.dpop_manager import DpopManager
+from dcop_engine.dpop_strat.value_strat_abstract import ValueStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 
 
-class ZoneMultiValueStrat(DpopManager):
+class ZoneMultiValueStrat(ValueStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        DpopManager.__init__(self, mqtt_manager, dfs_structure)
+        ValueStratAbstract.__init__(self)
+        self.mqtt_manager = mqtt_manager
+        self.dfs_structure = dfs_structure
 
-    def do_value_propagation(self, join_matrix, util_list):
+    def do_value_propagation(self, join_matrix, util_list, matrix_dimensions_order=None):
         log.info("Value Start", self.dfs_structure.monitored_area.id, INFO)
 
         values = []
