@@ -1,8 +1,9 @@
-from model.monitoring_area import MonitoringArea
+from model.monitoring_areas.monitoring_area import MonitoringArea
 from random import randint, random
 from logs import log
-from constants import *
 from model.device import Device
+
+import constants as c
 
 
 class Room(MonitoringArea):
@@ -12,14 +13,14 @@ class Room(MonitoringArea):
 
         self.device_list = []
 
-        for device_id in range(0, randint(0, MAX_NB_DEVICES)):
+        for device_id in range(0, randint(0, c.MAX_NB_DEVICES)):
             self.add_or_update_device()
 
     def add_or_update_device(self):
         id_device = str(self.id) + str(len(self.device_list) + 1)
         critic_state = random() < 0.05
         self.device_list.append(
-            Device(int(id_device), randint(MIN_TAU_VALUE, INFINITY), critic_state)
+            Device(int(id_device), randint(c.MIN_TAU_VALUE, c.INFINITY), critic_state)
         )
 
     def increment_time(self, minutes):
@@ -44,13 +45,13 @@ class Room(MonitoringArea):
             random_number = random()
 
             if device.is_in_critic_state and random_number < 0.2:
-                log.info("healthcare pro pop critical devices", self.id, EVENT)
+                log.info("healthcare pro pop critical devices", self.id, c.EVENT)
                 self.device_list.pop(self.device_list.index(device))
                 continue
 
-            log.info("healthcare pro reboot devices", self.id, EVENT)
+            log.info("healthcare pro reboot devices", self.id, c.EVENT)
             device.is_in_critic_state = False
-            device.end_of_prog = INFINITY
+            device.end_of_prog = c.INFINITY
 
     def has_no_devices(self):
         return len(self.device_list) == 0

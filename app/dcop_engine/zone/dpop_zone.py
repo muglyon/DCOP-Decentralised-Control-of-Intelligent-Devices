@@ -1,6 +1,8 @@
-from constants import RESULTS
+
 from dcop_engine.room.dpop_room import DpopRoom
 from logs import log
+
+import constants as c
 
 
 class DpopZone(DpopRoom):
@@ -14,4 +16,4 @@ class DpopZone(DpopRoom):
         log.info("rooms affected :"
                  + str(self.monitored_area.get_room_who_need_intervention()),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)

@@ -2,12 +2,12 @@ from datetime import datetime
 
 import json
 import numpy
+import constants as c
 
 from dcop_engine.constraint_manager import *
 from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
-from constants import *
 
 
 class RoomUtilStrat(UtilStratAbstract):
@@ -18,7 +18,7 @@ class RoomUtilStrat(UtilStratAbstract):
 
     def do_util_propagation(self):
 
-        log.info("Util Start", self.dfs_structure.monitored_area.id, INFO)
+        log.info("Util Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
@@ -43,7 +43,7 @@ class RoomUtilStrat(UtilStratAbstract):
 
         # MQTT wait for incoming message of type UTIL for each child of the agent
         while count < len(self.dfs_structure.children_id) \
-                and (datetime.now() - start_time).total_seconds() < TIMEOUT:
+                and (datetime.now() - start_time).total_seconds() < c.TIMEOUT:
 
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
@@ -51,8 +51,8 @@ class RoomUtilStrat(UtilStratAbstract):
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
-                matrix_data = numpy.asarray(data_received[DATA])
-                self.matrix_dimensions_order.extend(data_received[VARS])
+                matrix_data = numpy.asarray(data_received[c.DATA])
+                self.matrix_dimensions_order.extend(data_received[c.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
 
@@ -66,15 +66,15 @@ class RoomUtilStrat(UtilStratAbstract):
         :return: the utility matrix R
         :rtype: numpy.ndarray
         """
-        R = numpy.zeros((DIMENSION_SIZE, DIMENSION_SIZE), int)
+        R = numpy.zeros((c.DIMENSION_SIZE, c.DIMENSION_SIZE), int)
 
         if parent_id in self.matrix_dimensions_order:
             # Parent was already take in account by one of my children
             return None
 
-        for i in range(0, DIMENSION_SIZE):
-            for j in range(0, DIMENSION_SIZE):
-                R[i][j] += c3_neighbors_sync(DIMENSION[i], DIMENSION[j])
+        for i in range(0, c.DIMENSION_SIZE):
+            for j in range(0, c.DIMENSION_SIZE):
+                R[i][j] += c3_neighbors_sync(c.DIMENSION[i], c.DIMENSION[j])
 
         self.matrix_dimensions_order.append(parent_id)
         return R
@@ -91,7 +91,7 @@ class RoomUtilStrat(UtilStratAbstract):
         if matrix1 is None and matrix2 is None:
             log.critical("Matrices Null and should not be !",
                          self.dfs_structure.monitored_area.id)
-            return numpy.zeros(DIMENSION_SIZE, int)
+            return numpy.zeros(c.DIMENSION_SIZE, int)
 
         if matrix1 is None:
             return matrix2
@@ -112,7 +112,7 @@ class RoomUtilStrat(UtilStratAbstract):
 
         log.info("Shape Combined matrix : " + str(final_matrix.shape),
                  self.dfs_structure.monitored_area.id,
-                 UTIL)
+                 c.UTIL)
 
         return final_matrix
 
@@ -126,15 +126,15 @@ class RoomUtilStrat(UtilStratAbstract):
         :rtype: numpy.ndarray
         """
         if R is None:
-            R = numpy.zeros(DIMENSION_SIZE, int)
+            R = numpy.zeros(c.DIMENSION_SIZE, int)
 
         for index, value in numpy.ndenumerate(R):
             R[index] += get_cost_of_private_constraints_for_value(
-                self.dfs_structure.monitored_area, DIMENSION[index[0]]
+                self.dfs_structure.monitored_area, c.DIMENSION[index[0]]
             )
 
-            if R[index] > INFINITY:
-                R[index] = INFINITY
+            if R[index] > c.INFINITY:
+                R[index] = c.INFINITY
 
         return R
 

@@ -2,8 +2,8 @@
 # starter.py - Thread which gives "TOP" to the DPOP agents
 # It is a thread intended to be launched by the server
 import operator
+import constants as c
 
-from constants import *
 from dcop_server.starter import Starter
 
 
@@ -17,8 +17,8 @@ class StarterZoneMulti(Starter):
         results = ""
         for key in received_values:
 
-            if received_values[key] < URGT_TIME:
-                if self.old_results_index[key.split("Z")[1]] <= URGT_TIME:
+            if received_values[key] < c.URGT_TIME:
+                if self.old_results_index[key.split("Z")[1]] <= c.URGT_TIME:
                     self.priorities[key.split("Z")[1]] += 1
             else:
                 self.priorities[key.split("Z")[1]] = 0

@@ -1,8 +1,8 @@
 import gc
 import paho.mqtt.client as mqtt
+import constants as c
 
 from logs import log
-from constants import *
 
 
 class CustomMQTTClass:
@@ -29,7 +29,7 @@ class CustomMQTTClass:
 
     def on_connect(self, client, obj, flags, rc):
         self.client.subscribe(self.topic_to_subscribe)
-        log.info("Subscribe", self.subtopic, INFO)
+        log.info("Subscribe", self.subtopic, c.INFO)
 
     def on_message(self, client, obj, msg):
 
@@ -39,14 +39,14 @@ class CustomMQTTClass:
         self.client.nb_msg_exchanged_total += 1
         self.client.nb_msg_exchanged_current += 1
 
-        log.info(str(msg.payload.decode('utf-8')), msg.topic, INFO)
+        log.info(str(msg.payload.decode('utf-8')), msg.topic, c.INFO)
 
         gc.collect()
 
     def on_disconnect(self, client, userdata, rc=0):
-        log.info("Disconnected", self.subtopic, INFO)
+        log.info("Disconnected", self.subtopic, c.INFO)
         client.loop_stop()
 
     def run(self):
-        self.client.connect(MQTT_SERVER, MQTT_PORT, KEEP_ALIVE_PERIOD)
+        self.client.connect(c.MQTT_SERVER, c.MQTT_PORT, c.KEEP_ALIVE_PERIOD)
         self.client.loop_forever()

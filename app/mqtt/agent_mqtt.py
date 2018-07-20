@@ -1,12 +1,13 @@
 from datetime import datetime
-from constants import *
 from dcop_engine.room.dpop_room import DpopRoom
 from dcop_engine.zone.dpop_zone import DpopZone
 from logs import log
 from logs.message_types import MessageTypes
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from dcop_engine.zone_multi.dpop_zone_multi import DpopZoneMulti
-from model.zone import Zone
+from model.monitoring_areas.zone import Zone
+
+import constants as c
 
 
 class AgentMQTT(CustomMQTTClass):
@@ -27,7 +28,7 @@ class AgentMQTT(CustomMQTTClass):
 
         if MessageTypes.is_on(str_msg):
 
-            log.info("Iteration " + str(self.nb_iterations), self.monitored_area.id, INFO)
+            log.info("Iteration " + str(self.nb_iterations), self.monitored_area.id, c.INFO)
 
             if self.nb_iterations > 0:
                 self.monitored_area.previous_v = self.monitored_area.current_v
@@ -36,7 +37,7 @@ class AgentMQTT(CustomMQTTClass):
 
                 log.info(self.monitored_area.to_json_format(),
                          self.monitored_area.id,
-                         STATE)
+                         c.STATE)
 
             self.initialize_metrics()
             self.nb_iterations += 1

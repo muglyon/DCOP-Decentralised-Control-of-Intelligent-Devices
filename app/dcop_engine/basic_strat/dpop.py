@@ -1,16 +1,15 @@
 import time
+import constants as c
 
 from copy import copy
 from threading import Thread
-
 from dcop_engine import execution_time
 from dcop_engine.basic_strat.dfs_strat import DfsStrat
 from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
 from dcop_engine.basic_strat.value_strat_abstract import ValueStratAbstract
-from dcop_engine.execution_time import *
+from dcop_engine import execution_time as et
 from logs import log
-from dcop_engine.constraint_manager import *
-from constants import *
+from dcop_engine import constraint_manager as cm
 from mqtt.mqtt_manager import MQTTManager
 
 
@@ -53,29 +52,29 @@ class Dpop(Thread):
 
         log.info("Avg size of msg RECEIVED (bytes) : " + str(self.mqtt_manager.client.avg_msg_size),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)
         log.info("Nb msg RECEIVED for this it : " + str(self.mqtt_manager.client.nb_msg_exchanged_current),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)
         log.info("Total Nb msg RECEIVED : " + str(self.mqtt_manager.client.nb_msg_exchanged_total),
                  self.monitored_area.id,
-                 RESULTS)
-        log.info("Avg Execution time TOTAL (s) : " + str(average(execution_time.total)),
+                 c.RESULTS)
+        log.info("Avg Execution time TOTAL (s) : " + str(et.average(execution_time.total)),
                  self.monitored_area.id,
-                 RESULTS)
-        log.info("Avg Execution time dpop (s) : " + str(average(execution_time.for_dpop)),
+                 c.RESULTS)
+        log.info("Avg Execution time dpop (s) : " + str(et.average(execution_time.for_dpop)),
                  self.monitored_area.id,
-                 RESULTS)
-        log.info("Interval de conf total 95% (s) : " + str(confidence_interval(execution_time.total)),
+                 c.RESULTS)
+        log.info("Interval de conf total 95% (s) : " + str(et.confidence_interval(execution_time.total)),
                  self.monitored_area.id,
-                 RESULTS)
-        log.info("Interval de conf dpop 95% (s) : " + str(confidence_interval(execution_time.for_dpop)),
+                 c.RESULTS)
+        log.info("Interval de conf dpop 95% (s) : " + str(et.confidence_interval(execution_time.for_dpop)),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)
         log.info("v = " + str(self.monitored_area.current_v),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)
         log.info("const val : " +
-                 str(get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)),
+                 str(cm.get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)

@@ -1,9 +1,9 @@
 from dcop_server.starter_zone_multi import StarterZoneMulti
+from dcop_server.urgt_starter import UrgentStarter
 from logs.message_types import MessageTypes
-from model.room import Room
+from model.monitoring_areas.room import Room
 from mqtt.custom_mqtt_class import CustomMQTTClass
 from dcop_server.starter import Starter
-from dcop_server.urgt_starter import UrgentStarter
 
 
 class ServerMQTT(CustomMQTTClass):
@@ -33,18 +33,16 @@ class ServerMQTT(CustomMQTTClass):
 
         if self.client.SERVER_TOPIC in msg.topic:
 
-            if MessageTypes.URGT.value in str_msg:
+            if MessageTypes.URGT.value in str_msg and type(self.hospital.monitored_area_list[0]) is Room:
+                # Urgent Thread only implemented for DpopRoom approach
+                urgt_thread = UrgentStarter(
+                    self.starter,
+                    client,
+                    int(str_msg.split(MessageTypes.URGT.value + "_")[1]),
+                )
 
-                # Todo
-                # urgt_thread = UrgentStarter(
-                #     self.starter,
-                #     client,
-                #     int(str_msg.split(MessageTypes.URGT.value + "_")[1]),
-                # )
-                #
-                # urgt_thread.start()
-                # return urgt_thread
-                pass
+                urgt_thread.start()
+                return urgt_thread
 
             elif MessageTypes.VALUES.value in str_msg:
 

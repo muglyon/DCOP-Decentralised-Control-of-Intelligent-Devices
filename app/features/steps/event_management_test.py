@@ -1,29 +1,28 @@
 from unittest import mock
 from unittest.mock import MagicMock
-
 from behave import *
 from hamcrest import *
-
-from constants import *
+from dcop_engine.room.dpop_room import DpopRoom
 from events.event_observer import EventObserver
 from logs.message_types import MessageTypes
 from model.device import Device
 from model.hospital import Hospital
 from mqtt.server_mqtt import ServerMQTT
-from dcop_engine.basic_strat.dpop import Dpop
 from dcop_server.urgt_starter import UrgentStarter
+
+import constants as c
 
 
 @given("the event manager")
 def step_impl(context):
-    context.room_2.device_list = [Device(21, INFINITY, False)]
+    context.room_2.device_list = [Device(21, c.INFINITY, False)]
 
     context.event_manager = EventObserver(context.room_2, context.mock_clientMqtt_2)
     context.event_manager.mqtt_manager.publish_urgent_msg_to_server = MagicMock()
 
     context.room_2.attach_observer(context.event_manager)
 
-    context.dpop_to_test = Dpop(context.room_2, context.mock_clientMqtt_2)
+    context.dpop_to_test = DpopRoom(context.room_2, context.mock_clientMqtt_2)
 
 
 @when("a device of the room enter into a critical state")

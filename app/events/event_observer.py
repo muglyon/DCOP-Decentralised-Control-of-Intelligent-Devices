@@ -1,6 +1,7 @@
 from logs import log
-from constants import *
 from mqtt.mqtt_manager import MQTTManager
+
+import constants as c
 
 
 class EventObserver(object):
@@ -10,7 +11,7 @@ class EventObserver(object):
         self.mqtt_manager = MQTTManager(mqtt_client, monitored_area)
 
     def notify_emergency(self):
-        log.info("device enter in critical state", self.monitored_area.id, EVENT)
+        log.info("device enter in critical state", self.monitored_area.id, c.EVENT)
         self.mqtt_manager.publish_urgent_msg_to_server(self.monitored_area.id)
 
     def notify_intervention_detected(self):

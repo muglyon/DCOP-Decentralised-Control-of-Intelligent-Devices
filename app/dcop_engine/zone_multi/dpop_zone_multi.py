@@ -1,8 +1,10 @@
-from constants import RESULTS
+
 from dcop_engine.basic_strat.dpop import Dpop
 from dcop_engine.zone_multi.zone_multi_value_strat import ZoneMultiValueStrat
 from dcop_engine.zone_multi.zone_multi_util_start import ZoneMultiUtilStrat
 from logs import log
+
+import constants as c
 
 
 class DpopZoneMulti(Dpop):
@@ -19,4 +21,4 @@ class DpopZoneMulti(Dpop):
         log.info("v rooms :"
                  + str([tuple([room.id, room.current_v]) for room in self.monitored_area.rooms]),
                  self.monitored_area.id,
-                 RESULTS)
+                 c.RESULTS)

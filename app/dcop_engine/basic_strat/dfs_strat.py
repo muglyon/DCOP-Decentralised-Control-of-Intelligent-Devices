@@ -1,6 +1,6 @@
 import time
+import constants as c
 
-from constants import *
 from logs.message_types import MessageTypes
 from logs import log
 from model.dfs_structure import DfsStructure
@@ -15,7 +15,7 @@ class DfsStrat(object):
 
     def generate_dfs(self):
 
-        log.info("Dfs Start", self.dfs_structure.monitored_area.id, INFO)
+        log.info("Dfs Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         self.choose_root()
 
@@ -71,7 +71,7 @@ class DfsStrat(object):
 
                     log.info(self.pseudo_tree_to_json_format(),
                              self.dfs_structure.monitored_area.id,
-                             DFS)
+                             c.DFS)
 
                     continue_generation = False
 
