@@ -4,7 +4,7 @@ import json
 import numpy
 
 from dcop_engine.constraint_manager import *
-from dcop_engine.dpop_strat.util_strat_abstract import UtilStratAbstract
+from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 from constants import *
@@ -13,10 +13,7 @@ from constants import *
 class RoomUtilStrat(UtilStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        UtilStratAbstract.__init__(self)
-
-        self.mqtt_manager = mqtt_manager
-        self.dfs_structure = dfs_structure
+        UtilStratAbstract.__init__(self, mqtt_manager, dfs_structure)
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):

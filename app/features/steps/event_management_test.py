@@ -10,7 +10,7 @@ from logs.message_types import MessageTypes
 from model.device import Device
 from model.hospital import Hospital
 from mqtt.server_mqtt import ServerMQTT
-from dcop_engine.dpop import Dpop
+from dcop_engine.basic_strat.dpop import Dpop
 from dcop_server.urgt_starter import UrgentStarter
 
 

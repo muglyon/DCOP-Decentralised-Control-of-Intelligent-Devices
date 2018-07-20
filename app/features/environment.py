@@ -11,10 +11,9 @@ import json
 import numpy
 
 from logs import log
-from constants import *
 from model.monitoring_area import MonitoringArea
 from unittest.mock import MagicMock
-from dcop_engine.dpop import Dpop
+from dcop_engine.basic_strat.dpop import Dpop
 
 
 def before_scenario(context, scenario):

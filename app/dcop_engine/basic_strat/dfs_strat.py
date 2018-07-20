@@ -1,17 +1,15 @@
-#! python3
 import time
 
 from constants import *
-from dcop_engine.dpop_strat.dfs_strat_abstract import DfsStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 from model.dfs_structure import DfsStructure
 
 
-class ZoneMultiDfsStrat(DfsStratAbstract):
+class DfsStrat(object):
 
     def __init__(self, mqtt_manager, monitored_area):
-        DfsStratAbstract.__init__(self)
+        self.choose_root_execution_time = 0
         self.mqtt_manager = mqtt_manager
         self.dfs_structure = DfsStructure(monitored_area)
 

@@ -4,9 +4,9 @@ from copy import copy
 from threading import Thread
 
 from dcop_engine import execution_time
-from dcop_engine.dpop_strat.dfs_strat_abstract import DfsStratAbstract
-from dcop_engine.dpop_strat.util_strat_abstract import UtilStratAbstract
-from dcop_engine.dpop_strat.value_strat_abstract import ValueStratAbstract
+from dcop_engine.basic_strat.dfs_strat import DfsStrat
+from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
+from dcop_engine.basic_strat.value_strat_abstract import ValueStratAbstract
 from dcop_engine.execution_time import *
 from logs import log
 from dcop_engine.constraint_manager import *
@@ -24,9 +24,9 @@ class Dpop(Thread):
 
         self.mqtt_manager = MQTTManager(mqtt_client, self.monitored_area)
 
-        self.dfs_manager = DfsStratAbstract()
-        self.util_manager = UtilStratAbstract()
-        self.value_manager = ValueStratAbstract()
+        self.dfs_manager = DfsStrat(self.mqtt_manager, self.monitored_area)
+        self.util_manager = UtilStratAbstract(self.mqtt_manager, self.dfs_manager.dfs_structure)
+        self.value_manager = ValueStratAbstract(self.mqtt_manager, self.dfs_manager.dfs_structure)
 
     def run(self):
 
@@ -34,9 +34,7 @@ class Dpop(Thread):
         start_time = time.time()
 
         self.do_dpop()
-
         self.original_monitored_area.current_v = self.monitored_area.current_v
-
         self.log_results(start_time)
 
     def do_dpop(self):

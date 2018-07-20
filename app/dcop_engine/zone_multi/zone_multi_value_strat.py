@@ -2,7 +2,7 @@ import time
 import json
 
 from constants import *
-from dcop_engine.dpop_strat.value_strat_abstract import ValueStratAbstract
+from dcop_engine.basic_strat.value_strat_abstract import ValueStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 
@@ -10,9 +10,7 @@ from logs import log
 class ZoneMultiValueStrat(ValueStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        ValueStratAbstract.__init__(self)
-        self.mqtt_manager = mqtt_manager
-        self.dfs_structure = dfs_structure
+        ValueStratAbstract.__init__(self, mqtt_manager, dfs_structure)
 
     def do_value_propagation(self, join_matrix, util_list, matrix_dimensions_order=None):
         log.info("Value Start", self.dfs_structure.monitored_area.id, INFO)
