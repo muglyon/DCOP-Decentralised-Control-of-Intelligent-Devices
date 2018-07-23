@@ -12,7 +12,6 @@ class DfsManager(DpopManager):
 
     def __init__(self, mqtt_manager, monitored_area):
         DpopManager.__init__(self, mqtt_manager, DfsStructure(monitored_area))
-
         self.choose_root_execution_time = 0
 
     def generate_dfs(self):

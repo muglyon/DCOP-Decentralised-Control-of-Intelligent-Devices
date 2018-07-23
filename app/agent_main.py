@@ -15,12 +15,19 @@ from events.event import Event
 if __name__ == "__main__":
 
     monitored_area = None
-    hospital = Hospital(Constants.NB_ROOMS)
+    hospital = Hospital(Constants.NB_ZONES, Constants.NB_ROOMS)
 
-    for r in hospital.monitored_area_list:
+    # /!\ Zones /!\
+    for r in hospital.zones:
         if r.id == int(sys.argv[1]):
             monitored_area = r
             break
+
+    # /!\ Rooms /!\
+    # for r in hospital.monitored_area_list:
+    #     if r.id == int(sys.argv[1]):
+    #         monitored_area = r
+    #         break
 
     log_file = "logs/agents/log_agent_" + str(monitored_area.id) + "_" + datetime.now().strftime("%Y-%m-%d") + ".json"
     log.setup_custom_logger(log_file)

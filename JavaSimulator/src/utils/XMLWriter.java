@@ -270,24 +270,24 @@ public class XMLWriter {
                     ));
                 }
 
-                if(!hasEmergency && !room.hasNoDevices() && (endingTime < 30 || /*room.getTau() > 180*/room.isTauToBig())){
-                    for (Room r : hospital.getRooms()) {
-
-                        if (r.needIntervention()
-                                && r.getId() != room.getId()
-                                && room.getPriority() < r.getPriority()
-                                && !room.hasForNeighboor(r)) {
-
-                            constraints.appendChild(getXMLContraint(
-                                    "a" + room.getId() + "_less_priority_then_a" + r.getId(),
-                                    "v" + room.getId() + " v" + r.getId(),
-                                    "2",
-                                    "priority",
-                                    "v" + room.getId() + " v" + r.getId()
-                            ));
-                        }
-                    }
-                }
+//                if(!hasEmergency && !room.hasNoDevices() && (endingTime < 30 || /*room.getTau() > 180*/room.isTauToBig())){
+//                    for (Room r : hospital.getRooms()) {
+//
+//                        if (r.needIntervention()
+//                                && r.getId() != room.getId()
+//                                && room.getPriority() < r.getPriority()
+//                                && !room.hasForNeighboor(r)) {
+//
+//                            constraints.appendChild(getXMLContraint(
+//                                    "a" + room.getId() + "_less_priority_then_a" + r.getId(),
+//                                    "v" + room.getId() + " v" + r.getId(),
+//                                    "2",
+//                                    "priority",
+//                                    "v" + room.getId() + " v" + r.getId()
+//                            ));
+//                        }
+//                    }
+//                }
             }
             rootElement.appendChild(constraints);
 

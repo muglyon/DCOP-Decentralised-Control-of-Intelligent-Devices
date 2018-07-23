@@ -1,0 +1,15 @@
+graph {
+	node [shape = "circle"];
+	subgraph cluster_a1 {
+		label = a1;
+		v1 [style="filled"];
+	}
+	subgraph cluster_a2 {
+		label = a2;
+		v2 [style="filled"];
+	}
+
+
+	v2 -- v1;
+}
+

@@ -12,11 +12,10 @@ from threading import Thread
 from dcop_engine import execution_time
 from dcop_engine.execution_time import *
 from logs import log
-from constants import Constants
-from dcop_engine.constraint_manager import ConstraintManager
 from dcop_engine.managers.dfs_manager import DfsManager
 from dcop_engine.managers.value_manager import ValueManager
 from dcop_engine.managers.util_manager import UtilManager
+from dcop_engine.constraint_manager import *
 from mqtt.mqtt_manager import MQTTManager
 
 
@@ -40,17 +39,13 @@ class Dpop(Thread):
         self.value_manager = ValueManager(self.mqtt_manager, self.dfs_manager.dfs_structure)
 
     def run(self):
-        """
-        Do the DPOP Algorithm
-        """
+
         log.execution_time = 0
         start_time = time.time()
 
         self.dfs_manager.generate_dfs(),
         self.util_manager.do_util_propagation(),
-        self.value_manager.do_value_propagation(self.util_manager.matrix_dimensions_order,
-                                                self.util_manager.JOIN,
-                                                self.util_manager.UTIL)
+        self.value_manager.do_value_propagation(self.util_manager.JOIN, self.util_manager.UTIL)
 
         exec_time = time.time() - start_time
 
@@ -93,8 +88,12 @@ class Dpop(Thread):
                  self.monitored_area.id,
                  Constants.RESULTS)
 
-        log.info("const vals : " +
-                 str(ConstraintManager(self.monitored_area)
-                     .get_cost_of_private_constraints_for_value(self.monitored_area.current_v)),
+        log.info("const val : " +
+                 str(get_cost_of_private_constraints_for_value(self.monitored_area, self.monitored_area.current_v)),
+                 self.monitored_area.id,
+                 Constants.RESULTS)
+
+        log.info("v rooms :"
+                 + str([tuple([room.id, room.current_v]) for room in self.monitored_area.rooms]),
                  self.monitored_area.id,
                  Constants.RESULTS)

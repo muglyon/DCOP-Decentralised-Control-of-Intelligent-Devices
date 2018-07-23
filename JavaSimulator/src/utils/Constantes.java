@@ -5,7 +5,7 @@ public class Constantes {
     public static final int INFINITY = 241;
     public static final int MAX_NB_DEVICES = 6;
     public static final int NEXT_TIME_STEP = 10; //10 mins avant le prochain calcul
-    public static final int NB_AGENTS = 10; //=> nombre pair uniquement pris en charge pour le moment
+    public static final int NB_AGENTS = 2; //=> nombre pair uniquement pris en charge pour le moment
 
     public static final boolean CLEAN_AFTERWARDS = false;
 

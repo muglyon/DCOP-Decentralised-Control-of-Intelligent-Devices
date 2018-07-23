@@ -2,9 +2,12 @@ class Constants(object):
 
     DIMENSION = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 120, 180, 210, 241]
     DIMENSION_SIZE = len(DIMENSION)
+    INFINITY_IDX = DIMENSION.index(241)
 
-    NB_ROOMS = 4
-    INFINITY_IDX = 16
+    MIN_TAU_VALUE = 5
+    MAX_NB_DEVICES = 6
+    NB_ZONES = 6
+    NB_ROOMS = 10
     URGT_TIME = 30
     T_SYNCHRO = 30
     THIRTY_SECONDS = 30

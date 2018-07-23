@@ -1,5 +1,8 @@
 package core;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+import utils.Constantes;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +88,14 @@ public class Hospital {
     public void incrementTime(int minutes) {
         for(Room room : rooms) {
             room.incrementTime(minutes);
+        }
+    }
+
+    public void setEveryRoomToCritical() {
+        List deviceCritic = new ArrayList<Device>();
+        deviceCritic.add(new Device(1, Constantes.INFINITY, true));
+        for (Room room : rooms) {
+            room.setDevices(deviceCritic);
         }
     }
 }

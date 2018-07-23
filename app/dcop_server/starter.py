@@ -27,6 +27,7 @@ class Starter(Thread):
         self.is_running = False
 
         for agent in self.agents:
+
             self.priorities[str(agent.id)] = 0
             self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
 
@@ -59,10 +60,10 @@ class Starter(Thread):
         results = ""
         for agent_id, priority in sorted_priorities:
 
-            results += "Room " + str(agent_id) + \
-                       " need intervention in " + str(Constants.DIMENSION[received_index[agent_id]]) + \
+            results += "Monitoring Area " + str(agent_id) + \
+                       " need intervention in " + str(received_index["Z" + str(agent_id)]) + \
                        " minutes. PRIORITY : " + str(priority) + " "
-            self.old_results_index[agent_id] = received_index[agent_id]
+            self.old_results_index["Z" + str(agent_id)] = received_index["Z" + str(agent_id)]
 
         self.is_running = False
         log.info(results, Constants.SERVER, Constants.RESULTS)
@@ -87,15 +88,15 @@ class Starter(Thread):
         self.mqtt_manager.client.list_msgs_waiting = []
         return root
 
-    def update_and_get_priorities(self, received_index):
+    def update_and_get_priorities(self, received_values):
 
-        for key in received_index:
+        for key in received_values:
 
-            if Constants.DIMENSION[received_index[key]] < Constants.URGT_TIME:
-                if Constants.DIMENSION[self.old_results_index[key]] <= Constants.URGT_TIME:
-                    self.priorities[key] += 1
+            if received_values[key] < Constants.URGT_TIME:
+                if self.old_results_index[key.split("Z")[1]] <= Constants.URGT_TIME:
+                    self.priorities[key.split("Z")[1]] += 1
             else:
-                self.priorities[key] = 0
+                self.priorities[key.split("Z")[1]] = 0
 
         return sorted(self.priorities.items(), key=operator.itemgetter(1), reverse=True)
 
