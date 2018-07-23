@@ -3,7 +3,6 @@ import json
 import time
 
 from pythonjsonlogger import jsonlogger
-from logs import elasticsearch
 from logs.message_types import MessageTypes
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
@@ -49,7 +48,6 @@ def info(msg, sender_id, msg_type):
 
     # f_read = open(logger.handlers[0].baseFilename, "r")
     # last_line = f_read.readlines()[-1]
-    # elasticsearch.save_data(last_line)
 
     global execution_time
     execution_time += time.time() - start_time
@@ -67,7 +65,6 @@ def critical(msg, sender_id):
 
     f_read = open(logger.handlers[0].baseFilename, "r")
     last_line = f_read.readlines()[-1]
-    elasticsearch.save_data(last_line)
 
     global execution_time
     execution_time += time.time() - start_time

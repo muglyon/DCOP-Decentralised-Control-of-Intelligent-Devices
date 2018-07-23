@@ -5,8 +5,7 @@ from behave import *
 from hamcrest import *
 
 import numpy
-
-from constants import Constants
+import constants as c
 
 
 @given('two matrix')
@@ -61,7 +60,7 @@ def step_impl(context):
         context.matrix_1, context.null_matrix), same_instance(context.matrix_1)
     )
     results = context.dpop_1.util_manager.combine(context.null_matrix, context.null_matrix)
-    expected_results = numpy.zeros(Constants.DIMENSION_SIZE, int)
+    expected_results = numpy.zeros(c.DIMENSION_SIZE, int)
 
     for i in range(0, len(results)):
         assert_that(results[i], equal_to(expected_results[i]))

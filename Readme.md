@@ -1,10 +1,8 @@
-# Introduction 
+# Projet DCOP - IoT et IA en milieu médical
 
-*Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM*
+*Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM - Avec la collaboration de Samir AKNINE et de Huan VU (professeurs et doctorants au [LIRIS](https://liris.cnrs.fr/?set_language=fr))*
 
-Projet IoT et IA en milieu médical. 
-
-Ce répertoire Git contient l'ensemble du projet DCOP : 
+Ce répertoire Git contient l'ensemble du projet DCOP en milieu médical : 
 
 - Des programmes de simulation réalisés en Java avec le Framework Frodo
 - Des programmes permettant de simuler l'environnement en Java ou en Python (Hôpital, chambres, machines) 
@@ -12,7 +10,7 @@ Ce répertoire Git contient l'ensemble du projet DCOP :
 - Le code Python du serveur qui surveille les communications MQTT et qui donne le top départ aux agents. 
 - Des Tests Unitaires BDD Python
 - Quelques fichiers backups/logs de sauvegarde.
-- Le code Computer-Vision réalisé en IoT Edge avec Azure et en Python (cf. Labs MS Experiences 2018)
+- Le code Computer-Vision réalisé en IoT Edge avec Azure et en Python
 
 L'objectif est de déployer des algorithmes d'IA DCOP dans des devices médicaux pour faciliter le travail du personnel médical et utiliser les données de ces dispositifs pour améliorer leurs conditions de travail. 
 
@@ -56,7 +54,12 @@ Les programmes Python et Java utilisent la communication MQTT. Le serveur utilis
 
 # Build and Tests
 
-Pour faire tourner l'application DCOP Python (*app/*): 
+Pour faire tourner l'application DCOP Python, suivez les étapes ci-dessous (*app/*). 
+
+Notre code dispose de 3 modélisations différentes du DCOP qui ont chacune leur propre 'main' : 
+- `main_room.py <agentId>` : lance un agent pour une modélisation par chambre
+- `main_zone.py <agentId>` : lance un agent pour une modélisation par zone
+- `main_zone_multi.py <agentId>` : lance un agent pour une modélisation par zone multivariables
 
 1. Lancez le serveur mosquitto (`mosquitto`)
 2. Lancez le code de chaque agent avec en paramètre l'identifiant de l'agent `python3 agent_main.py <id_agent>`

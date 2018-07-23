@@ -1,13 +1,15 @@
-from model.monitoring_area import MonitoringArea
-from constants import Constants
+from model.monitoring_areas.monitoring_area import MonitoringArea
 from random import randint
+
+import constants as c
 
 
 class Zone(MonitoringArea):
 
-    def __init__(self, id):
+    def __init__(self, id, multivariables):
         MonitoringArea.__init__(self, id)
         self.rooms = []
+        self.multivariable = multivariables
 
     def add_room(self, room):
         self.rooms.append(room)
@@ -30,7 +32,7 @@ class Zone(MonitoringArea):
         for room in self.rooms:
             if room.is_tau_too_high() \
                     or room.is_in_critical_state() \
-                    or room.get_min_end_of_prog() < (self.current_v + Constants.T_SYNCHRO):
+                    or room.get_min_end_of_prog() < (self.current_v + c.T_SYNCHRO):
                 r.append(room.id)
         return r
 

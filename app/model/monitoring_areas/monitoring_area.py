@@ -3,9 +3,9 @@
 
 import operator
 import abc
+import constants as c
 
 from random import randint
-from constants import Constants
 
 
 class MonitoringArea(object):
@@ -19,7 +19,7 @@ class MonitoringArea(object):
         self.left_neighbor = None
         self.current_v = 0
         self.previous_v = 0
-        self.tau = randint(Constants.MIN_TAU_VALUE, Constants.INFINITY)
+        self.tau = randint(c.MIN_TAU_VALUE, c.INFINITY)
 
     def get_neighbors_id_sorted(self):
         """
@@ -87,8 +87,6 @@ class MonitoringArea(object):
             data["devices"].append(device.to_json_format())
 
         return data
-
-
 
     @abc.abstractmethod
     def attach_observer(self, observer):

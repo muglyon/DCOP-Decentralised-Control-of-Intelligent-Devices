@@ -4,9 +4,9 @@
 import json
 import time
 import operator
+import constants as c
 
 from threading import Thread
-from constants import Constants
 from logs.message_types import MessageTypes
 from logs import log
 from mqtt.mqtt_manager import MQTTManager
@@ -29,21 +29,23 @@ class Starter(Thread):
         for agent in self.agents:
 
             self.priorities[str(agent.id)] = 0
-            self.old_results_index[str(agent.id)] = Constants.INFINITY_IDX
+            self.old_results_index[str(agent.id)] = c.INFINITY_IDX
 
     def run(self):
 
         while 1:
 
             self.do_one_iteration()
-            time.sleep(Constants.TWO_MINUTS)
+            time.sleep(c.TWO_MINUTS)
 
             while self.pause:
-                time.sleep(Constants.TWO_MINUTS)
+                time.sleep(c.TWO_MINUTS)
 
     def do_one_iteration(self):
 
-        log.info("Start", Constants.SERVER, Constants.INFO)
+        log.info("Start", c.SERVER, c.INFO)
+
+        results = ""
         self.is_running = True
 
         for agent in self.agents:
@@ -55,18 +57,16 @@ class Starter(Thread):
             self.mqtt_manager.publish_elected_root_msg_to(agent.id, root)
 
         received_index = self.get_values()
-        sorted_priorities = self.update_and_get_priorities(received_index)
+        sorted_priorities = self.get_result_by_priority(received_index)
 
-        results = ""
         for agent_id, priority in sorted_priorities:
-
-            results += "Monitoring Area " + str(agent_id) + \
-                       " need intervention in " + str(received_index["Z" + str(agent_id)]) + \
+            results += "Room " + str(agent_id) + \
+                       " need intervention in " + str(c.DIMENSION[received_index[agent_id]]) + \
                        " minutes. PRIORITY : " + str(priority) + " "
-            self.old_results_index["Z" + str(agent_id)] = received_index["Z" + str(agent_id)]
+            self.old_results_index[agent_id] = received_index[agent_id]
 
+        log.info(results, c.SERVER, c.RESULTS)
         self.is_running = False
-        log.info(results, Constants.SERVER, Constants.RESULTS)
 
     def choose_root(self):
         root = 0
@@ -88,15 +88,15 @@ class Starter(Thread):
         self.mqtt_manager.client.list_msgs_waiting = []
         return root
 
-    def update_and_get_priorities(self, received_values):
+    def get_result_by_priority(self, received_values):
 
         for key in received_values:
 
-            if received_values[key] < Constants.URGT_TIME:
-                if self.old_results_index[key.split("Z")[1]] <= Constants.URGT_TIME:
-                    self.priorities[key.split("Z")[1]] += 1
+            if c.DIMENSION[received_values[key]] < c.URGT_TIME:
+                if c.DIMENSION[self.old_results_index[key]] <= c.URGT_TIME:
+                    self.priorities[key] += 1
             else:
-                self.priorities[key.split("Z")[1]] = 0
+                self.priorities[key] = 0
 
         return sorted(self.priorities.items(), key=operator.itemgetter(1), reverse=True)
 

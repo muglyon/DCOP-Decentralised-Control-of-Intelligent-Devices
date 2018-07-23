@@ -1,43 +1,47 @@
 #! python3
 # hospital.py - Implement the environment model for testing/configuring
 
-from math import *
-from model.room import Room
-from model.zone import Zone
+import math
+
+from model.monitoring_areas.room import Room
+from model.monitoring_areas.zone import Zone
 
 
 class Hospital(object):
 
-    def __init__(self, nb_zones, nb_rooms):
+    def __init__(self, nb_rooms, nb_zones=None, multivariable=False):
 
-        self.zones = []
-
-        # Version par chambre ?...
         self.monitored_area_list = []
-        for i in range(0, nb_rooms):
-            self.monitored_area_list.append(Room(i))
-        self.setup_neighbors()
 
-        for k in range(1, nb_zones + 1):
-            self.zones.append(Zone(k))
+        if nb_zones:
 
-        nb_rooms_by_zone = ceil(nb_rooms/nb_zones)
-        count = 0
-        zone_num = 0
-        for j in range(0, nb_rooms):
+            for k in range(1, nb_zones + 1):
+                self.monitored_area_list.append(Zone(k, multivariable))
 
-            if count == nb_rooms_by_zone:
-                count = 0
-                zone_num += 1
+            nb_rooms_by_zone = math.ceil(nb_rooms / nb_zones)
+            count = 0
+            zone_num = 0
+            for j in range(0, nb_rooms):
 
-            self.zones[zone_num].add_room(Room(j))
-            count += 1
+                if count == nb_rooms_by_zone:
+                    count = 0
+                    zone_num += 1
 
-        self.setup_zone_neighbors()
+                self.monitored_area_list[zone_num].add_room(Room(j))
+                count += 1
+
+            self.setup_zone_neighbors()
+
+        else:
+
+            for i in range(1, nb_rooms + 1):
+                self.monitored_area_list.append(Room(i))
+
+            self.setup_neighbors()
 
     def setup_neighbors(self):
         """
-        Setup Neighbors on two lines (cf. Java Code)
+        Setup Neighbors on two lines
         """
 
         moitie_agent = int(len(self.monitored_area_list) / 2)
@@ -71,9 +75,9 @@ class Hospital(object):
 
     def setup_zone_neighbors(self):
 
-        moitie_zone = int(len(self.zones) / 2)
-        left_side = self.zones[0:moitie_zone]
-        right_side = self.zones[moitie_zone:len(self.zones)]
+        moitie_zone = int(len(self.monitored_area_list) / 2)
+        left_side = self.monitored_area_list[0:moitie_zone]
+        right_side = self.monitored_area_list[moitie_zone:len(self.monitored_area_list)]
 
         for k in range(0, moitie_zone):
 
@@ -102,6 +106,6 @@ class Hospital(object):
 
     def to_string(self):
         string = ""
-        for zone in self.zones:
+        for zone in self.monitored_area_list:
             string += zone.to_json_format()
         return string

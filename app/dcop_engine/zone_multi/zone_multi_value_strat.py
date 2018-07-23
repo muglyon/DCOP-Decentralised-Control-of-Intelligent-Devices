@@ -1,19 +1,19 @@
 import time
 import json
+import constants as c
 
-from constants import Constants
-from dcop_engine.managers.dpop_manager import DpopManager
+from dcop_engine.basic_strat.value_strat_abstract import ValueStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 
 
-class ValueManager(DpopManager):
+class ZoneMultiValueStrat(ValueStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        DpopManager.__init__(self, mqtt_manager, dfs_structure)
+        ValueStratAbstract.__init__(self, mqtt_manager, dfs_structure)
 
-    def do_value_propagation(self, join_matrix, util_list):
-        log.info("Value Start", self.dfs_structure.monitored_area.id, Constants.INFO)
+    def do_value_propagation(self, join_matrix, util_list, matrix_dimensions_order=None):
+        log.info("Value Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         values = []
 
@@ -23,14 +23,14 @@ class ValueManager(DpopManager):
         if not self.dfs_structure.is_root:
             self.mqtt_manager.publish_util_msg_to(
                 self.dfs_structure.parent_id,
-                json.dumps({Constants.DATA: util_list})
+                json.dumps({c.DATA: util_list})
             )
 
             values = self.get_values_from_parents()
 
         # Find best v
         index = self.find_best_index(join_matrix, values)
-        lowest_value = Constants.INFINITY
+        lowest_value = c.INFINITY
 
         for i in range(0, len(index)):
 
@@ -54,7 +54,7 @@ class ValueManager(DpopManager):
         start_time = time.time()
 
         # MQTT wait for incoming message of type VALUE from parent
-        while (time.time() - start_time) < Constants.TIMEOUT:
+        while (time.time() - start_time) < c.TIMEOUT:
             if self.mqtt_manager.has_value_msg():
                 return json.loads(
                     self.mqtt_manager.client.value_msgs.pop(0).split(MessageTypes.VALUES.value + " ")[1]
@@ -65,7 +65,7 @@ class ValueManager(DpopManager):
     def find_best_index(self, join_matrix, tup):
 
         best_index = []
-        best_value = Constants.INFINITY + 1
+        best_value = c.INFINITY + 1
         nb_rooms = len(self.dfs_structure.monitored_area.rooms)
 
         for elements in join_matrix:

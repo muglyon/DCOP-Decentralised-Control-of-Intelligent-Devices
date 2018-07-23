@@ -2,24 +2,24 @@ from datetime import datetime
 
 import json
 import itertools
+import constants as c
 
 from dcop_engine.constraint_manager import *
-from dcop_engine.managers.dpop_manager import DpopManager
+from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 
 
-class UtilManager(DpopManager):
+class ZoneMultiUtilStrat(UtilStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        DpopManager.__init__(self, mqtt_manager, dfs_structure)
-
+        UtilStratAbstract.__init__(self, mqtt_manager, dfs_structure)
         self.JOIN = []
         self.UTIL = []
 
     def do_util_propagation(self):
 
-        log.info("Util Start", self.dfs_structure.monitored_area.id, Constants.INFO)
+        log.info("Util Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
@@ -45,7 +45,7 @@ class UtilManager(DpopManager):
 
         # MQTT wait for incoming message of type UTIL for each child of the agent
         while count < len(self.dfs_structure.children_id) and (
-                datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
+                datetime.now() - start_time).total_seconds() < c.TIMEOUT:
 
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
@@ -53,7 +53,7 @@ class UtilManager(DpopManager):
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
-                matrix_data = data_received[Constants.DATA]
+                matrix_data = data_received[c.DATA]
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
 
@@ -71,11 +71,10 @@ class UtilManager(DpopManager):
             return None
 
         arrangement_list = self.get_carthesian_product_list()
-        # Todo : rajouter la contrainte de voisinage inter-chambre ?
 
         # Adding the parent zone values (neighborhood)
         second_arrangement_list = []
-        temp_list = [list(t) for t in itertools.product(["Z" + str(parent_id)], Constants.DIMENSION)]
+        temp_list = [list(t) for t in itertools.product(["Z" + str(parent_id)], c.DIMENSION)]
 
         for t in temp_list:
             for element in arrangement_list:
@@ -94,7 +93,7 @@ class UtilManager(DpopManager):
         vrac_list = []
         for r in self.dfs_structure.monitored_area.rooms:
 
-            temp_list = [list(t) for t in itertools.product(str(r.id), Constants.DIMENSION)]
+            temp_list = [list(t) for t in itertools.product(str(r.id), c.DIMENSION)]
             first_arrangement_list = []
 
             for t in temp_list:
@@ -150,7 +149,7 @@ class UtilManager(DpopManager):
         log.info("Shape Combined list : "
                  + str(len(final_list)),
                  self.dfs_structure.monitored_area.id,
-                 Constants.UTIL)
+                 c.UTIL)
 
         return final_list
 

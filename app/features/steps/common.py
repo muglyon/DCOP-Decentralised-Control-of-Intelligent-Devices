@@ -4,8 +4,9 @@
 from behave import *
 from hamcrest import *
 from unittest.mock import *
-from constants import Constants
 from dcop_server.starter import Starter
+
+import constants as c
 
 
 @given("a server interacting with AI agents in syringe pump")
@@ -37,7 +38,7 @@ def step_impl(context):
 def step_impl(context):
     context.dpop_to_test.start()
     context.dpop_to_test.join(timeout=10)
-    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(Constants.INFINITY))
+    assert_that(context.dpop_to_test.monitored_area.current_v, equal_to(c.INFINITY))
 
 
 @then('AI in syringe pump should call healthcare professionals right now')
