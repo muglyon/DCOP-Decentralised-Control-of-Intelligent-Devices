@@ -1,4 +1,4 @@
-# Medical DCOP : Système IoT et IA en milieu médical
+# Projet DCOP - IoT et IA en milieu médical.
 
 *Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM - Avec la collaboration de Samir AKNINE et de Huan VU (professeurs et doctorants au [LIRIS](https://liris.cnrs.fr/?set_language=fr))*
 
