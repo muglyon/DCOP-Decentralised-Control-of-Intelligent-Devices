@@ -81,8 +81,8 @@ class DfsStrat(object):
         self.mqtt_manager.publish_root_value_msg()
 
         while self.mqtt_manager.has_no_msg():
-            # Wait for Root choice from server
-            pass
+            # Wait for Root choice from server todo
+            time.sleep(0.01)
 
         self.dfs_structure.is_root = self.am_i_the_elected_root()
         self.choose_root_execution_time = time.time() - start_time

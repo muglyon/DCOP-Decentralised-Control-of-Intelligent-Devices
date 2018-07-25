@@ -22,6 +22,7 @@ def setup_custom_logger(file_name):
                         level=logging.INFO,
                         datefmt=DATE_FORMAT)
 
+    # todo fileHandler en +
     handler_log = logging.StreamHandler()
     handler_log.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
 
@@ -63,8 +64,8 @@ def critical(msg, sender_id):
 
     logger.critical(payload, extra={'topic': prefix + str(sender_id), 'type': 'CRITICAL'})
 
-    f_read = open(logger.handlers[0].baseFilename, "r")
-    last_line = f_read.readlines()[-1]
+    # f_read = open(logger.handlers[0].baseFilename, "r")
+    # last_line = f_read.readlines()[-1]
 
     global execution_time
     execution_time += time.time() - start_time

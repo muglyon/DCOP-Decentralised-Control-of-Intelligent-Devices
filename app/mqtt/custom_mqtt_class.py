@@ -35,6 +35,7 @@ class CustomMQTTClass:
 
         data_to_avg = [self.client.avg_msg_size, len(msg.payload)]
 
+        #  todo enlever float
         self.client.avg_msg_size = (sum(data_to_avg)) / float(len(data_to_avg))
         self.client.nb_msg_exchanged_total += 1
         self.client.nb_msg_exchanged_current += 1

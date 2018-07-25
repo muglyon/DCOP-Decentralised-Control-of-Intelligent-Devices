@@ -2,7 +2,7 @@ from datetime import datetime
 
 import json
 import numpy
-import constants as c
+import time
 
 from dcop_engine.constraint_manager import *
 from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
@@ -26,6 +26,7 @@ class RoomUtilStrat(UtilStratAbstract):
         if not self.dfs_structure.is_root:
 
             # Also join all relations with parent/pseudo_parent
+            # todo pas de maj
             self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_structure.parent_id), self.JOIN)
 
             for pseudo_parent in self.dfs_structure.pseudo_parents_id:
@@ -44,7 +45,6 @@ class RoomUtilStrat(UtilStratAbstract):
         # MQTT wait for incoming message of type UTIL for each child of the agent
         while count < len(self.dfs_structure.children_id) \
                 and (datetime.now() - start_time).total_seconds() < c.TIMEOUT:
-
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
                 data_received = json.loads(
@@ -57,6 +57,9 @@ class RoomUtilStrat(UtilStratAbstract):
                 count += 1
 
                 self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
+            else:
+                # todo
+                time.sleep(0.01)
 
     def get_utility_matrix_for(self, parent_id):
         """

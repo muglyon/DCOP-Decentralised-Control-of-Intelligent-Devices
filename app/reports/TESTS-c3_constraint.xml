@@ -1,0 +1,23 @@
+<testsuite errors="0" failures="0" hostname="INV010825" name="c3_constraint.(c3) neighborhood constraint" skipped="0" tests="2" time="0.752018" timestamp="2018-07-25T17:06:44.318256"><testcase classname="c3_constraint.(c3) neighborhood constraint" name="Neighbors synchronized" status="passed" time="0.376033"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Neighbors synchronized
+    Given two AI in syringe pump in two separate rooms next to each other ... passed in 0.000s
+    When both AI call healthcare professionals in almost the same time t1 and t2 with t1 > t2 ... passed in 0.001s
+    Then AI in syringe pump should call healthcare professionals together synchronized in t2 ... passed in 0.375s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="c3_constraint.(c3) neighborhood constraint" name="Neighbors not synchronized" status="passed" time="0.375985"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Neighbors not synchronized
+    Given two AI in syringe pump in two separate rooms next to each other ... passed in 0.002s
+    When one is calling healthcare professionals but not the other one ... passed in 0.002s
+    Then only the AI who need intervention should call healthcare professionals ... passed in 0.372s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

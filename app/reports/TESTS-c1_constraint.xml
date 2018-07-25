@@ -1,0 +1,23 @@
+<testsuite errors="0" failures="0" hostname="INV010825" name="c1_constraint.(c1) number of device constraints" skipped="0" tests="2" time="0.017" timestamp="2018-07-25T17:06:43.489249"><testcase classname="c1_constraint.(c1) number of device constraints" name="No devices in the supervisor room" status="passed" time="0.007999"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: No devices in the supervisor room
+    Given an AI in syringe pump (supervisor) ... passed in 0.002s
+    When no IoT devices are connected to the AI in syringe pump ... passed in 0.001s
+    Then AI in syringe pump should not call healthcare professionals ... passed in 0.005s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="c1_constraint.(c1) number of device constraints" name="No devices in the room" status="passed" time="0.009001"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: No devices in the room
+    Given an AI in syringe pump ... passed in 0.001s
+    When no IoT devices are connected to the AI in syringe pump ... passed in 0.001s
+    Then AI in syringe pump should not call healthcare professionals ... passed in 0.007s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

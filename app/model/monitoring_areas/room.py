@@ -61,11 +61,13 @@ class Room(MonitoringArea):
         Check if the room is in critical state
         :return: True if the room has at least one device in critical state, False otherwise
         :rtype: boolean
-        """
-        for device in self.device_list:
-            if device.is_in_critic_state:
-                return True
-        return False
+        # """
+        # for device in self.device_list:
+        #     if device.is_in_critic_state:
+        #         return True
+        # return False
+        # TODO
+        return any((d.is_in_critic_state for d in self.device_list))
 
     def get_min_end_of_prog(self):
         """
@@ -78,6 +80,8 @@ class Room(MonitoringArea):
             if device.end_of_prog < minimum:
                 minimum = device.end_of_prog
         return minimum
+        # TODO
+        # min(self.device_list, key=lambda e: e.end_of_prog)
 
     def update_device(self, device):
         """

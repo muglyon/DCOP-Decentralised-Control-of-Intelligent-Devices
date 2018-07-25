@@ -11,4 +11,3 @@ class DfsStructure(object):
 
     def is_leaf(self):
         return len(self.children_id) == 0
-

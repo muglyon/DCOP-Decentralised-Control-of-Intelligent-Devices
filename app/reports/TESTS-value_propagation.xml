@@ -1,0 +1,45 @@
+<testsuite errors="0" failures="0" hostname="INV010825" name="value_propagation.VALUE propagation behavior" skipped="0" tests="4" time="0.012994" timestamp="2018-07-25T17:06:55.549668"><testcase classname="value_propagation.VALUE propagation behavior" name="Value selection" status="passed" time="0.003003"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Value selection
+    Given an AI in syringe pump ... passed in 0.001s
+    When get VALUE from parent after UTIL propagation ... passed in 0.001s
+    Then should select the optimal assignment ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="value_propagation.VALUE propagation behavior" name="Wrong format value" status="passed" time="0.003001"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Wrong format value
+    Given an AI in syringe pump ... passed in 0.001s
+    When parent send values to wrong format ... passed in 0.001s
+    Then should raise an exception ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="value_propagation.VALUE propagation behavior" name="Wrong matrix value" status="passed" time="0.001971"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Wrong matrix value
+    Given an AI in syringe pump ... passed in 0.000s
+    When matrix is Null ... passed in 0.001s
+    Then should raise an exception ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="value_propagation.VALUE propagation behavior" name="1D matrix" status="passed" time="0.005018"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: 1D matrix
+    Given an AI in syringe pump ... passed in 0.002s
+    When matrix has 1 dimension ... passed in 0.002s
+    Then should return the min value index ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

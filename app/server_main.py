@@ -16,6 +16,7 @@ import constants as c
 
 if __name__ == "__main__":
 
+    # todo else
     hospital = Hospital(c.NB_ROOMS, c.NB_ZONES, True)
     parameter = str(sys.argv[1])
 

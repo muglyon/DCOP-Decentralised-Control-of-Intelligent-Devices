@@ -1,0 +1,50 @@
+<testsuite errors="0" failures="0" hostname="INV010825" name="event_management.Events Management" skipped="0" tests="4" time="0.108992" timestamp="2018-07-25T17:06:44.611262"><testcase classname="event_management.Events Management" name="Event Manager monitoring a room and send urgent message to server if needed" status="passed" time="0.00601"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Event Manager monitoring a room and send urgent message to server if needed
+    Given an AI in syringe pump ... passed in 0.001s
+    And the event manager ... passed in 0.003s
+    When a device of the room enter into a critical state ... passed in 0.001s
+    Then AI in syringe pump should send urgent message to server ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="event_management.Events Management" name="Event Manager monitoring a room and send urgent message to server if needed (2)" status="passed" time="0.023953"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Event Manager monitoring a room and send urgent message to server if needed (2)
+    Given an AI in syringe pump ... passed in 0.001s
+    And the event manager ... passed in 0.002s
+    When a device enter into a critical state during calculation ... passed in 0.020s
+    Then AI in syringe pump should send urgent message to server ... passed in 0.001s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="event_management.Events Management" name="Server send &quot;ON&quot; messages with specific root on urgent demands" status="passed" time="0.049029"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Server send "ON" messages with specific root on urgent demands
+    Given a server interacting with AI agents in syringe pump ... passed in 0.002s
+    And an mqtt server interacting with AI agents in syringe pump ... passed in 0.004s
+    When receive an 'URGT' message from AI in syringe pump ... passed in 0.002s
+    Then server should send 'ON' messages to every AI in syringe pump ... passed in 0.022s
+    And should choose the sender of the 'URGT' message as root ... passed in 0.019s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="event_management.Events Management" name="Server take care of urgent messages" status="passed" time="0.03"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Server take care of urgent messages
+    Given a server interacting with AI agents in syringe pump ... passed in 0.002s
+    And an mqtt server interacting with AI agents in syringe pump ... passed in 0.002s
+    When receive an 'URGT' message from AI in syringe pump ... passed in 0.002s
+    Then server should give biggest priority to urgent agent and set next passage in 0 mins ... passed in 0.024s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

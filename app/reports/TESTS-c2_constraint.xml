@@ -1,0 +1,23 @@
+<testsuite errors="0" failures="0" hostname="INV010825" name="c2_constraint.(c2) intervention depends on devices states" skipped="0" tests="2" time="0.025995" timestamp="2018-07-25T17:06:43.545253"><testcase classname="c2_constraint.(c2) intervention depends on devices states" name="Device end its program soon" status="passed" time="0.015998"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Device end its program soon
+    Given an AI in syringe pump ... passed in 0.002s
+    When an IoT device is ending its program in less then 30 minutes ... passed in 0.002s
+    Then AI in syringe pump should call healthcare professionals before the end of its program ... passed in 0.012s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase><testcase classname="c2_constraint.(c2) intervention depends on devices states" name="Device is in critical state" status="passed" time="0.009996"><system-out>
+<![CDATA[
+@scenario.begin
+  Scenario: Device is in critical state
+    Given an AI in syringe pump ... passed in 0.001s
+    When an IoT device is in critical state and ends its program in less then 30 minutes ... passed in 0.001s
+    Then AI in syringe pump should call healthcare professionals right now ... passed in 0.008s
+
+@scenario.end
+--------------------------------------------------------------------------------
+]]>
+</system-out></testcase></testsuite>

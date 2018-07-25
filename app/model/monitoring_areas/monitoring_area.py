@@ -37,6 +37,20 @@ class MonitoringArea(object):
         :return: neighbors id list sorted by degree
         :rtype: list
         """
+        # TODO : str ??
+        # neighbors = {}
+        #
+        # if self.left_neighbor is not None and self.left_neighbor.id != int(agent_id):
+        #     neighbors[str(self.left_neighbor.id)] = self.left_neighbor.get_degree()
+        #
+        # if self.right_neighbor is not None and self.right_neighbor.id != int(agent_id):
+        #     neighbors[str(self.right_neighbor.id)] = self.right_neighbor.get_degree()
+        #
+        # if self.front_neighbor is not None and self.front_neighbor.id != int(agent_id):
+        #     neighbors[str(self.front_neighbor.id)] = self.front_neighbor.get_degree()
+        #
+        # neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
+        # return [int(x) for x, _ in neighbors]
         neighbors = {}
 
         if self.left_neighbor is not None and self.left_neighbor.id != int(agent_id):
@@ -48,7 +62,7 @@ class MonitoringArea(object):
         if self.front_neighbor is not None and self.front_neighbor.id != int(agent_id):
             neighbors[str(self.front_neighbor.id)] = self.front_neighbor.get_degree()
 
-        neighbors = sorted(neighbors.items(), key=operator.itemgetter(1), reverse=True)
+        neighbors = sorted(neighbors.items(), key=lambda x: x[1], reverse=True)
         return [int(x) for x, _ in neighbors]
 
     def get_degree(self):

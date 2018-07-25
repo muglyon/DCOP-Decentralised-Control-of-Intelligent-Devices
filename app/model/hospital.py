@@ -45,8 +45,8 @@ class Hospital(object):
         """
 
         moitie_agent = int(len(self.monitored_area_list) / 2)
-        left_side = self.monitored_area_list[0:moitie_agent]
-        right_side = self.monitored_area_list[moitie_agent:len(self.monitored_area_list)]
+        left_side = self.monitored_area_list[:moitie_agent]
+        right_side = self.monitored_area_list[moitie_agent:]
 
         for k in range(0, moitie_agent):
             
@@ -74,7 +74,7 @@ class Hospital(object):
                 right_current.front_neighbor = left_current
 
     def setup_zone_neighbors(self):
-
+        # Todo
         moitie_zone = int(len(self.monitored_area_list) / 2)
         left_side = self.monitored_area_list[0:moitie_zone]
         right_side = self.monitored_area_list[moitie_zone:len(self.monitored_area_list)]
