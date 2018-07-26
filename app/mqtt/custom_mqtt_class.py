@@ -1,15 +1,11 @@
 import gc
 import paho.mqtt.client as mqtt
+import constants as c
 
 from logs import log
-from constants import Constants
 
 
 class CustomMQTTClass:
-
-    MQTT_SERVER = "10.33.120.194"
-    MQTT_PORT = 1883
-    KEEP_ALIVE_PERIOD = 60
 
     def __init__(self, subtopic):
 
@@ -33,24 +29,25 @@ class CustomMQTTClass:
 
     def on_connect(self, client, obj, flags, rc):
         self.client.subscribe(self.topic_to_subscribe)
-        log.info("Subscribe", self.subtopic, Constants.INFO)
+        log.info("Subscribe", self.subtopic, c.INFO)
 
     def on_message(self, client, obj, msg):
 
         data_to_avg = [self.client.avg_msg_size, len(msg.payload)]
 
+        #  todo enlever float
         self.client.avg_msg_size = (sum(data_to_avg)) / float(len(data_to_avg))
         self.client.nb_msg_exchanged_total += 1
         self.client.nb_msg_exchanged_current += 1
 
-        log.info(str(msg.payload.decode('utf-8')), msg.topic, Constants.INFO)
+        log.info(str(msg.payload.decode('utf-8')), msg.topic, c.INFO)
 
         gc.collect()
 
     def on_disconnect(self, client, userdata, rc=0):
-        log.info("Disconnected", self.subtopic, Constants.INFO)
+        log.info("Disconnected", self.subtopic, c.INFO)
         client.loop_stop()
 
     def run(self):
-        self.client.connect(self.MQTT_SERVER, self.MQTT_PORT, self.KEEP_ALIVE_PERIOD)
+        self.client.connect(c.MQTT_SERVER, c.MQTT_PORT, c.KEEP_ALIVE_PERIOD)
         self.client.loop_forever()

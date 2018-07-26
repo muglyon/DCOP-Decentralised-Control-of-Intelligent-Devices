@@ -1,8 +1,8 @@
 import time
+import constants as c
 
 from random import random
 from threading import Thread
-from constants import Constants
 
 
 class Event(Thread):
@@ -19,17 +19,17 @@ class Event(Thread):
             if random() < 0.05:
                 self.generate_random_event()
 
-            time.sleep(Constants.THIRTY_SECONDS)
+            time.sleep(c.THIRTY_SECONDS)
 
     def generate_random_event(self):
 
         random_prob = random()
 
         if random_prob < 0.2 and not self.monitored_area.has_no_devices():
-            self.monitored_area.device_list[0].is_in_critic_state = True
+            self.monitored_area.set_device_in_critic()
 
         elif random_prob < 0.4:
-            self.monitored_area.add_or_update_device(len(self.monitored_area.device_list))
+            self.monitored_area.add_or_update_device()
 
         else:
             self.monitored_area.pop_or_reprogram_devices()

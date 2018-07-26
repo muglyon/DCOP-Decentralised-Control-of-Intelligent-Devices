@@ -2,26 +2,23 @@ from datetime import datetime
 
 import json
 import numpy
+import time
 
-from constants import Constants
-from dcop_engine.constraint_manager import ConstraintManager
-from dcop_engine.managers.dpop_manager import DpopManager
+from dcop_engine.constraint_manager import *
+from dcop_engine.basic_strat.util_strat_abstract import UtilStratAbstract
 from logs.message_types import MessageTypes
 from logs import log
 
 
-class UtilManager(DpopManager):
+class RoomUtilStrat(UtilStratAbstract):
 
     def __init__(self, mqtt_manager, dfs_structure):
-        DpopManager.__init__(self, mqtt_manager, dfs_structure)
-
-        self.JOIN = None
-        self.UTIL = None
-        self.constraint_manager = ConstraintManager(dfs_structure.monitored_area)
+        UtilStratAbstract.__init__(self, mqtt_manager, dfs_structure)
         self.matrix_dimensions_order = []  # order or the variables that create the JOIN Matrix
 
     def do_util_propagation(self):
-        log.info("Util Start", self.dfs_structure.monitored_area.id, Constants.INFO)
+
+        log.info("Util Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         if len(self.dfs_structure.children_id) > 0:
             self.get_util_matrix_from_childen()
@@ -29,6 +26,7 @@ class UtilManager(DpopManager):
         if not self.dfs_structure.is_root:
 
             # Also join all relations with parent/pseudo_parent
+            # todo pas de maj
             self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_structure.parent_id), self.JOIN)
 
             for pseudo_parent in self.dfs_structure.pseudo_parents_id:
@@ -46,20 +44,22 @@ class UtilManager(DpopManager):
 
         # MQTT wait for incoming message of type UTIL for each child of the agent
         while count < len(self.dfs_structure.children_id) \
-                and (datetime.now() - start_time).total_seconds() < Constants.TIMEOUT:
-
+                and (datetime.now() - start_time).total_seconds() < c.TIMEOUT:
             if self.mqtt_manager.has_util_msg():
                 # We add to the join UTIL message from children as they arrive
                 data_received = json.loads(
                     self.mqtt_manager.client.util_msgs.pop(0).split(MessageTypes.UTIL.value + " ")[1]
                 )
 
-                matrix_data = numpy.asarray(data_received[Constants.DATA])
-                self.matrix_dimensions_order.extend(data_received[Constants.VARS])
+                matrix_data = numpy.asarray(data_received[c.DATA])
+                self.matrix_dimensions_order.extend(data_received[c.VARS])
                 self.JOIN = matrix_data if self.JOIN is None else self.JOIN + matrix_data
                 count += 1
 
                 self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
+            else:
+                # todo
+                time.sleep(0.01)
 
     def get_utility_matrix_for(self, parent_id):
         """
@@ -69,15 +69,15 @@ class UtilManager(DpopManager):
         :return: the utility matrix R
         :rtype: numpy.ndarray
         """
-        R = numpy.zeros((Constants.DIMENSION_SIZE, Constants.DIMENSION_SIZE), int)
+        R = numpy.zeros((c.DIMENSION_SIZE, c.DIMENSION_SIZE), int)
 
         if parent_id in self.matrix_dimensions_order:
             # Parent was already take in account by one of my children
             return None
 
-        for i in range(0, Constants.DIMENSION_SIZE):
-            for j in range(0, Constants.DIMENSION_SIZE):
-                R[i][j] += self.constraint_manager.c3_neighbors_sync(Constants.DIMENSION[i], Constants.DIMENSION[j])
+        for i in range(0, c.DIMENSION_SIZE):
+            for j in range(0, c.DIMENSION_SIZE):
+                R[i][j] += c3_neighbors_sync(c.DIMENSION[i], c.DIMENSION[j])
 
         self.matrix_dimensions_order.append(parent_id)
         return R
@@ -94,7 +94,7 @@ class UtilManager(DpopManager):
         if matrix1 is None and matrix2 is None:
             log.critical("Matrices Null and should not be !",
                          self.dfs_structure.monitored_area.id)
-            return numpy.zeros(Constants.DIMENSION_SIZE, int)
+            return numpy.zeros(c.DIMENSION_SIZE, int)
 
         if matrix1 is None:
             return matrix2
@@ -115,7 +115,7 @@ class UtilManager(DpopManager):
 
         log.info("Shape Combined matrix : " + str(final_matrix.shape),
                  self.dfs_structure.monitored_area.id,
-                 Constants.UTIL)
+                 c.UTIL)
 
         return final_matrix
 
@@ -129,13 +129,15 @@ class UtilManager(DpopManager):
         :rtype: numpy.ndarray
         """
         if R is None:
-            R = numpy.zeros(Constants.DIMENSION_SIZE, int)
+            R = numpy.zeros(c.DIMENSION_SIZE, int)
 
         for index, value in numpy.ndenumerate(R):
-            R[index] += self.constraint_manager.get_cost_of_private_constraints_for_value(Constants.DIMENSION[index[0]])
+            R[index] += get_cost_of_private_constraints_for_value(
+                self.dfs_structure.monitored_area, c.DIMENSION[index[0]]
+            )
 
-            if R[index] > Constants.INFINITY:
-                R[index] = Constants.INFINITY
+            if R[index] > c.INFINITY:
+                R[index] = c.INFINITY
 
         return R
 

@@ -3,7 +3,7 @@ import json
 import time
 
 from pythonjsonlogger import jsonlogger
-from logs import elasticsearch
+from logs.message_types import MessageTypes
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 FORMAT_STR = '{"asctime": "%(asctime)s", ' \
@@ -22,6 +22,7 @@ def setup_custom_logger(file_name):
                         level=logging.INFO,
                         datefmt=DATE_FORMAT)
 
+    # todo fileHandler en +
     handler_log = logging.StreamHandler()
     handler_log.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
 
@@ -40,11 +41,14 @@ def info(msg, sender_id, msg_type):
     prefix = "" if "DCOP/" in str(sender_id) else "DCOP/"
     payload = json.dumps(msg)
 
-    logger.info(payload, extra={'topic': prefix + str(sender_id), 'type': msg_type})
+    if MessageTypes.UTIL.value in payload:
+        # do not display the matrix in the logs !
+        pass
+    else:
+        logger.info(payload, extra={'topic': prefix + str(sender_id), 'type': msg_type})
 
-    f_read = open(logger.handlers[0].baseFilename, "r")
-    last_line = f_read.readlines()[-1]
-    elasticsearch.save_data(last_line)
+    # f_read = open(logger.handlers[0].baseFilename, "r")
+    # last_line = f_read.readlines()[-1]
 
     global execution_time
     execution_time += time.time() - start_time
@@ -60,9 +64,8 @@ def critical(msg, sender_id):
 
     logger.critical(payload, extra={'topic': prefix + str(sender_id), 'type': 'CRITICAL'})
 
-    f_read = open(logger.handlers[0].baseFilename, "r")
-    last_line = f_read.readlines()[-1]
-    elasticsearch.save_data(last_line)
+    # f_read = open(logger.handlers[0].baseFilename, "r")
+    # last_line = f_read.readlines()[-1]
 
     global execution_time
     execution_time += time.time() - start_time

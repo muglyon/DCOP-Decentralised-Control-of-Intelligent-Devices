@@ -1,0 +1,9 @@
+digraph {
+	node [shape = "circle"];
+
+	v1 [style="filled"];
+	v2 -> v1;
+
+	v2 [style="filled"];
+
+}

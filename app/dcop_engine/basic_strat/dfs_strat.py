@@ -1,23 +1,21 @@
-#! python3
 import time
+import constants as c
 
-from constants import Constants
-from dcop_engine.managers.dpop_manager import DpopManager
 from logs.message_types import MessageTypes
 from logs import log
 from model.dfs_structure import DfsStructure
 
 
-class DfsManager(DpopManager):
+class DfsStrat(object):
 
     def __init__(self, mqtt_manager, monitored_area):
-        DpopManager.__init__(self, mqtt_manager, DfsStructure(monitored_area))
-
         self.choose_root_execution_time = 0
+        self.mqtt_manager = mqtt_manager
+        self.dfs_structure = DfsStructure(monitored_area)
 
     def generate_dfs(self):
 
-        log.info("Dfs Start", self.dfs_structure.monitored_area.id, Constants.INFO)
+        log.info("Dfs Start", self.dfs_structure.monitored_area.id, c.INFO)
 
         self.choose_root()
 
@@ -73,7 +71,7 @@ class DfsManager(DpopManager):
 
                     log.info(self.pseudo_tree_to_json_format(),
                              self.dfs_structure.monitored_area.id,
-                             Constants.DFS)
+                             c.DFS)
 
                     continue_generation = False
 
@@ -83,8 +81,8 @@ class DfsManager(DpopManager):
         self.mqtt_manager.publish_root_value_msg()
 
         while self.mqtt_manager.has_no_msg():
-            # Wait for Root choice from server
-            pass
+            # Wait for Root choice from server todo
+            time.sleep(0.01)
 
         self.dfs_structure.is_root = self.am_i_the_elected_root()
         self.choose_root_execution_time = time.time() - start_time
