@@ -59,7 +59,6 @@ class AgentMQTT(CustomMQTTClass):
         self.client.nb_msg_exchanged_current = 0
 
     def dpop_launch(self, monitored_area):
-        # todo : mettre un else
         thread = DpopRoom(monitored_area, self.client)
 
         if type(monitored_area) is Zone:

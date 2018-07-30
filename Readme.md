@@ -2,15 +2,24 @@
 
 *Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM - Avec la collaboration de Samir AKNINE et de Huan VU (professeurs et doctorants au [LIRIS](https://liris.cnrs.fr/?set_language=fr))*
 
-**Medical DCOP** est un système DCOP appliqué au domaine médical et plus précisément aux machines liées aux patients. Ce projet à pour objectif de surveiller les appareils connectés d'un service pour conseiller le personnel médical sur différentes interventions liées à ces machines. Le projet actuel comprends 3 modélisations différentes pour répondre au problème, certains plus difficile à comprendre que d'autres. Par ailleurs, il est possible d'améliorer ce système et/ou d'ajouter votre propose modélisation DCOP si vous le souhaitez.
+<!-- TOC depthFrom:2 -->
 
-Pour plus d'informations sur le développement, référez-vous à [la documentation](./documentation/technical_doc.md)
+- [1. Getting Started](#1-getting-started)
+    - [1.1. Installation Medical DCOP (dev)](#11-installation-medical-dcop-dev)
+    - [1.2. Build](#12-build)
+- [2. Tests](#2-tests)
+- [3. Deployment](#3-deployment)
+- [4. Documentation Annexe](#4-documentation-annexe)
+
+<!-- /TOC -->
+
+**Medical DCOP** est un système DCOP appliqué au domaine médical et plus précisément aux machines liées aux patients. Ce projet à pour objectif de surveiller les appareils connectés d'un service pour conseiller le personnel médical sur différentes interventions liées à ces machines. Le projet actuel comprends 3 modélisations différentes pour répondre au problème, certains plus difficile à comprendre que d'autres. Par ailleurs, il est possible d'améliorer ce système et/ou d'ajouter votre propose modélisation DCOP si vous le souhaitez.
 
 Les informations sur le contexte et le principe de l'algorithme sont données dans les rapports de stage de Sacha LHOPITAL. 
 
-# Getting Started
+## 1. Getting Started
 
-## Installation Medical DCOP (dev)
+### 1.1. Installation Medical DCOP (dev)
 
 Le principe de l'algorithme est de lancer un certains nombre d'agents (Threads) qui vont communiquer les uns avec les autres pour prendre une décision ensemble. Vous pouvez lancer des threads Médical DCOP au choix tous en local ou sur différentes machines. Le code est principalement basé sur [Python 3.6](https://www.python.org/downloads/release/python-360/). 
 
@@ -33,11 +42,11 @@ MQTT_PORT = 1883
 KEEP_ALIVE_PERIOD = 60
 ```
 
-## Build
+### 1.2. Build
 
-Dans le fichier `app/constants.py` est configuré le nombre de chambres simulé : `NB_ROOMS = X`.
+Dans le fichier `app/constants.py` est configuré le nombre de chambres simulés : `NB_ROOMS = X`.
 
-Pour faire tourner l'application DCOP Python, lancer un processus pour chaque chambre :`python3 main_room.py <numero_chambre>`. Lorsque tous les agents on subscribe leur topic MQTT, on peut lancer le serveur DCOP `python3 server_main.py room`. Celui-ci va envoyer un message aux agents pour leur demander de calculer le résultat de l'algorithme DPOP.
+Pour faire tourner l'application DCOP Python, lancer un processus pour chaque chambre : `python3 main_room.py <numero_chambre>`. Lorsque tous les agents on subscribe leur topic MQTT, on peut lancer le serveur DCOP `python3 server_main.py room`. Celui-ci va envoyer un message aux agents pour leur demander de calculer le résultat de l'algorithme DPOP.
 
 **Exemple :** pour `NB_ROOMS = 4` : 
 ```python
@@ -71,7 +80,7 @@ L'algorithme est terminé lorsque le serveur affiche les résultats sous cette f
 {"asctime": "2018-07-20T14:03:10", "topic": "DCOP/SERVER/", "type": "Results", "content": "Room 1 need intervention in 241 minutes. PRIORITY : 0 Room 2 need intervention in 241 minutes. PRIORITY : 0 Room 3 need intervention in 241 minutes. PRIORITY : 0 Room 4 need intervention in 241 minutes. PRIORITY : 0 ", "level": "INFO"}
 ```
 
-# Tests
+## 2. Tests
 
 Des tests ont été réalisé en utilisant Behave et Hamcrest. Un coverage est disponible avec Coverage.py.
 
@@ -91,7 +100,7 @@ Il faut prendre cette information en compte lors de l'analyse des résultats.*
 Pour en savoir plus, consultez la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html), de [pyHamcrest](https://pypi.python.org/pypi/PyHamcrest) ou de [Coverage](https://coverage.readthedocs.io/en/coverage-4.5.1/).
 
 
-# Deployment
+## 3. Deployment
 
 Un déploiement automatique a été programmé avec VSTS sur un agent privé (VM ubuntu).
 
@@ -107,3 +116,10 @@ Pour que le déploiement fonctionne sur des raspberries par exemple, il faut les
 4. Le script *update_script.py* sert à subscribe à un topic MQTT pour recevoir les notifications de mises à jour du serveur. Il effectue ainsi un *git pull* lorsque nécéssaire. 
 
 Pour qu'il fonctionne correctement, il doit être placé dans au même niveau que repertoire git pour se déplacer dedens (*DCOP/*). Enfin le script doit être lancé (au démarrage par exemple), pour subscribe au topic MQTT d'update. 
+
+## 4. Documentation Annexe
+
+- [Documentation Repertoire Git](./documentation/technical_doc.md)
+- [Documentation Technique du Code Python](./documentation/app_doc.md)
+- [Mini FAQ et exemples d'implémentations Code Python](./documentation/faq_app.md)
+- [Labs IoT Edge - Computer Vision](./documentation/iot-edge-computer-vision-lab.md)

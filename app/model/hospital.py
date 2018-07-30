@@ -74,7 +74,7 @@ class Hospital(object):
                 right_current.front_neighbor = left_current
 
     def setup_zone_neighbors(self):
-        # Todo
+        # Todo à supprimer ? Doublon avec la méthode précédente.
         moitie_zone = int(len(self.monitored_area_list) / 2)
         left_side = self.monitored_area_list[0:moitie_zone]
         right_side = self.monitored_area_list[moitie_zone:len(self.monitored_area_list)]
