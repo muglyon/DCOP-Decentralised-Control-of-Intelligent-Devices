@@ -4,8 +4,8 @@
 
 <!-- TOC depthFrom:3 -->
 
-- [Executer l'algorithme](#executer-lalgorithme)
-- [Executer un agent](#executer-un-agent)
+- [Exécuter l'algorithme](#executer-lalgorithme)
+- [Exécuter un agent](#executer-un-agent)
 - [Générer un environnement d'hôpital aléatoire](#générer-un-environnement-dhôpital-aléatoire)
 - [Implémenter un nouvel algorithme DCOP](#implémenter-un-nouvel-algorithme-dcop)
 - [Implémenter une nouvelle modélisation/approche](#implémenter-une-nouvelle-modélisationapproche)
@@ -25,7 +25,7 @@ Pour lancer le programme suivre les étapes suivantes :
 
 2. Pour faire tourner l'application DCOP Python, lancer un processus pour chaque chambre : `python3 main_<approche>.py <id_agent>`
 
-3. Lorsque tous les agents on subscribe leur topic MQTT, on peut lancer le serveur DCOP `python3 server_main.py <approche>`. Celui-ci va envoyer un message aux agents pour leur demander de calculer le résultat de l'algorithme DPOP.
+3. Lorsque tous les agents ont subscribe leur topic MQTT, on peut lancer le serveur DCOP `python3 server_main.py <approche>`. Celui-ci va envoyer un message aux agents pour leur demander de calculer le résultat de l'algorithme DPOP.
 
 #### Executer un agent 
 
@@ -123,7 +123,7 @@ class MyDcop(Dpop):
         self.value_manager = MyValueStrat(self.mqtt_manager, self.dfs_manager.dfs_structure)
 ```
 
-Par là suite, il est possible de surcharger les différentes méthodes des classes de */basic_strat/* pour y faire nos propres traitements. 
+Par la suite, il est possible de surcharger les différentes méthodes des classes de */basic_strat/* pour y faire nos propres traitements. 
 
 #### Implémenter une nouvelle modélisation/approche
 
@@ -140,7 +140,7 @@ class MyMonitoringArea(MonitoringArea):
     # insert custom methods and logic here 
 ```
 
-Si l'objet crée hérite directement de `Room` ou de `Zone`, on peut le lancer directement avec l'algorithme DPOP de son parent : 
+Si l'objet créé hérite directement de `Room` ou de `Zone`, on peut le lancer directement avec l'algorithme DPOP de son parent : 
 
 ```python
 monitored_area = MyMonitoring_area(1)
@@ -148,13 +148,13 @@ agent_mqtt = AgentMQTT(monitored_area)
 agent_mqtt.run()
 ```
 
-**/!\ Attention : si la nouvelle modélisation est plus complexe, il est nécéssaire de redéfinir un minimum l'algorithme. Pour cela, voir la section "Implémenter un nouvel algorithme DCOP"**
+**/!\ Attention : si la nouvelle modélisation est plus complexe, il est nécessaire de redéfinir un minimum l'algorithme. Pour cela, voir la section "Implémenter un nouvel algorithme DCOP"**
 
 
 
 #### Implémenter un nouveau Starter
 
-*Pour rappel : le Starter est un Thread à part qui envoi un Top départ aux agents et récupères les résultats pour les analyser.*
+*Pour rappel : le Starter est un Thread à part qui envoie un Top départ aux agents et récupère les résultats pour les analyser.*
 
 Il est possible de créer son propre Thread de server pour analyser les résultats retournés par l'algorithme ou modifier le fonctionnement de l'algorithme. Pour cela, il suffit d'étendre la classe `Starter` comme illustré ci-dessous (cf. `starter.py`) : 
 

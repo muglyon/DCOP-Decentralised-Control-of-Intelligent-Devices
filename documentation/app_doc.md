@@ -2,7 +2,7 @@
 
 [Retour au readme](../Readme.md)
 
-La documentation ci-dessous décrit les principes et techniques utilisées pour le développement du DCOP en Python. Le code est ordonné en différents packages qui gèrent des choses différents les uns des autres. Avant de plonger dans le code, il est fortement conseillé d'avoir lu les rapports de stage pour comprendre le contexte. 
+La documentation ci-dessous décrit les principes et techniques utilisées pour le développement du DCOP en Python. Le code est ordonné en différents packages qui gèrent des choses différentes les uns des autres. Avant de plonger dans le code, il est fortement conseillé d'avoir lu les rapports de stage pour comprendre le contexte. 
 
 Une FAQ donnant des exemples d'utilisations des différentes classes est disponible [ici](./faq_app.md).
 
@@ -47,7 +47,7 @@ Le dossier */zone_multi/* contient l'ensemble des fichiers de spécifiques pour 
 
 + constraint_manager.py 
 
-Défini l'ensemble des constraintes du système (cf. Modélisation DCOP décrite dans le rapport de stage). On peut ainsi récupérer le coût associé à une contrainte pour un temps de passage et une zone à surveillé spécifique. 
+Défini l'ensemble des constraintes du système (cf. Modélisation DCOP décrite dans le rapport de stage). On peut ainsi récupérer le coût associé à une contrainte pour un temps de passage et une zone à surveiller spécifique. 
 
 *Exemple :*
 ```python
@@ -80,7 +80,7 @@ Pour fonctionner, le serveur DCOP utilise lui aussi le principe des Threads qui 
 
 + starter.py : **Thread**
 
-Donne le top départ aux agents pour calculer. Le Thread attends les résultats après avoir donné le top départ puis attends `TWO_MINUTS` (paramétrable dans `constants.py`) avant de lancer un nouveau top. Ce starter tourne ainsi à l'infini et à pour but d'être utilisé pour lancer l'algorithme plusieurs fois de suite automatiquement et dans le même environnement. 
+Donne le top départ aux agents pour calculer. Le Thread attend les résultats après avoir donné le top départ puis attends `TWO_MINUTS` (paramétrable dans `constants.py`) avant de lancer un nouveau top. Ce starter tourne ainsi à l'infini et a pour but d'être utilisé pour lancer l'algorithme plusieurs fois de suite automatiquement et dans le même environnement. 
 
 *Exemple d'utilisation :*
 ```python
@@ -88,11 +88,11 @@ starter = Starter(monitored_area_list, client_mqtt)
 starter.start()
 ```
 
-Une fois les résultats obtenu, ce thread est capable de trier  les résultats en fonction d'une priorité qu'il défini lui-même.  
+Une fois les résultats obtenus, ce thread est capable de trier  les résultats en fonction d'une priorité qu'il définit lui-même.  
 
 + starter_zone_multi.py 
 
-Implémentation spécifique de `starter.py` pour une approche par zone multivariables. Redéfini principalement le calcul de la priorité. 
+Implémentation spécifique de `starter.py` pour une approche par zone multivariables. Redéfinit principalement le calcul de la priorité. 
 
 + urgt_starter.py 
 
@@ -110,7 +110,7 @@ urgt_starter = UrgentStarter(
 
 ### 3. Events
 
- Pour proposer des simulations plus proches des conditions réelles, un système d'évènements est en place pour permettre au model d'évoluer dynamiquement entre deux itérations. 
+ Pour proposer des simulations plus proches des conditions réelles, un système d'évènements est en place pour permettre au modèle d'évoluer dynamiquement entre deux itérations. 
 
  + event.py : **Thread**
 
@@ -130,13 +130,13 @@ Les évènements générés sont aléatoires et peuvent modifier la monitored_ar
 
 + event_observer.py
 
-Lié à une monitored_area, permet de déclencher des actions spécifiques lorsqu'un changement intervien sur la monitored_area. De base, deux notifications différentes sont disponibles : 
+Lié à une monitored_area, permet de déclencher des actions spécifiques lorsqu'un changement intervient sur la monitored_area. De base, deux notifications différentes sont disponibles : 
 
-    - notify_emergency() qui envoi un message MQTT d'urgence à destination du serveur. C'est ce message qui va potentiellement trigger un UrgtStarter côté server. 
+    - notify_emergency() qui envoie un message MQTT d'urgence à destination du serveur. C'est ce message qui va potentiellement trigger un UrgtStarter côté serveur. 
 
     - notify_intervention_detected() qui réinitialise le temps depuis le dernier passage d'une infirmière à 0 (cf. tau dans l'algorithme). 
 
-Fonctionnant comme un mini pattern Observer-Observé, `EventObserver` a pour vocation à être attaché à l'objet qu'il doit observé.
+Fonctionnant comme un mini pattern Observer-Observé, `EventObserver` a pour vocation d'être attaché à l'objet qu'il doit observer.
 
 *Exemple d'utilisation :*
 ```python
@@ -156,23 +156,23 @@ pip3 install coverage
 
 + environment.py
 
-Défini un environnement "réel" pour réaliser les tests. Certaines méthodes sont Mock, mais le but est tout même de proposer un environnement réaliste. Dans ce fichier est défini un setup basic avec 4 agents qui peut être surchargé par la suite directement dans les méthodes de tests. 
+Définit un environnement "réel" pour réaliser les tests. Certaines méthodes sont Mock, mais le but est tout de même de proposer un environnement réaliste. Dans ce fichier est défini un setup basique avec 4 agents qui peut être surchargé par la suite directement dans les méthodes de tests. 
 
 + *.feature
 
-Les fichiers *.feature* décrivent les tests sous forme BDD avec les mots clefs **Given**, **When**, **Then**. Pour plus d'informations, se référé à la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html).
+Les fichiers *.feature* décrivent les tests sous forme BDD avec les mots clefs **Given**, **When**, **Then**. Pour plus d'informations, se référer à la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html).
 
 + /steps/*.py
 
-Défini l'ensemble des *steps* selon les .features décrites. Pour plus d'informations, se référer à la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html). Le fichier *common.py* regroupe certains steps communs à plusieurs fichiers.  
+Définit l'ensemble des *steps* selon les .features décrites. Pour plus d'informations, se référer à la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html). Le fichier *common.py* regroupe certains steps communs à plusieurs fichiers.  
 
 ### 5. Logs
 
-Pour garder une trace dans les raspberry de leurs processus de résolution, un système de logs à été mis en place. 
+Pour garder une trace dans les raspberry de leurs processus de résolution, un système de logs a été mis en place. 
 
 + log.py 
 
-Défini un `logger` particulier en utilisant les librairies `logging` de python et `pythonjsonlogger`. Trois méthodes sont définies : 
+Définit un `logger` particulier en utilisant les librairies `logging` de python et `pythonjsonlogger`. Trois méthodes sont définies : 
 
 ```python
 # Setup du logger
@@ -193,7 +193,7 @@ log.setup_custom_logger("logs/agents/log_agent_1_2018-07-30.json")
 log.info("Test Log Message Info", monitored_area.id, "INIT")
 ```
 
-Par défaut, tous les fichiers de logs sont enregistrés dans *logs/agents/* pour les agents et dans *logs/server/* pour les logs du server.
+Par défaut, tous les fichiers de logs sont enregistrés dans *logs/agents/* pour les agents et dans *logs/server/* pour les logs du serveur.
 
 + message_types.py : **Enum**
 
@@ -234,7 +234,7 @@ hospital = Hospital(nb_rooms, nb_zones, multivariable)
 
 + /monitoring_areas/monitoring_area.py : **Abstract**
 
-Permet de définir une *monitored area*. Dans la résolution du DCOP, chaque *monitored area* participe dans la prise de décision et résouds le DCOP localement en discutant avec les autres agents. Par ailleurs, cette classe permet de forcer la définition de certaines méthodes indispensable à la résolution du DCOP lorsqu'elle est étendue. 
+Permet de définir une *monitored area*. Dans la résolution du DCOP, chaque *monitored area* participe dans la prise de décision et résoud le DCOP localement en discutant avec les autres agents. Par ailleurs, cette classe permet de forcer la définition de certaines méthodes indispensables à la résolution du DCOP lorsqu'elle est étendue. 
 
 Chaque *monitored area* possède les attributs suivants : 
 
