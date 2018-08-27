@@ -26,7 +26,6 @@ class RoomUtilStrat(UtilStratAbstract):
         if not self.dfs_structure.is_root:
 
             # Also join all relations with parent/pseudo_parent
-            # todo pas de maj
             self.JOIN = self.combine(self.get_utility_matrix_for(self.dfs_structure.parent_id), self.JOIN)
 
             for pseudo_parent in self.dfs_structure.pseudo_parents_id:
@@ -58,7 +57,6 @@ class RoomUtilStrat(UtilStratAbstract):
 
                 self.matrix_dimensions_order = list(set(self.matrix_dimensions_order))  # Clean up duplicate entry
             else:
-                # todo
                 time.sleep(0.01)
 
     def get_utility_matrix_for(self, parent_id):
