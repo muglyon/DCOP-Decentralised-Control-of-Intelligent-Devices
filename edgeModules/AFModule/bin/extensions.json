@@ -1,0 +1,5 @@
+{
+  "extensions":[
+    { "name": "EventHubConfiguration", "typeName":"Microsoft.Azure.WebJobs.ServiceBus.EventHubConfiguration, Microsoft.Azure.WebJobs.EventHubs, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null"}
+  ]
+}

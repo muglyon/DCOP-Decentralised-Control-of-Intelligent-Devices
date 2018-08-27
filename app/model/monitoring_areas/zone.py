@@ -1,5 +1,5 @@
 from model.monitoring_areas.monitoring_area import MonitoringArea
-from random import randint
+from random import randint, choice
 
 import constants as c
 
@@ -23,7 +23,6 @@ class Zone(MonitoringArea):
 
     def has_no_devices(self):
         for room in self.rooms:
-            # Todo any ?
             if room.has_no_devices():
                 return True
         return False
@@ -31,7 +30,6 @@ class Zone(MonitoringArea):
     def get_room_who_need_intervention(self):
         r = []
         for room in self.rooms:
-            # TODO : logique dans la chambre
             if room.is_tau_too_high() \
                     or room.is_in_critical_state() \
                     or room.get_min_end_of_prog() < (self.current_v + c.T_SYNCHRO):
@@ -61,12 +59,6 @@ class Zone(MonitoringArea):
         return data
 
     def set_device_in_critic(self):
-        room = random.choice(self.rooms)
+        room = choice(self.rooms)
         room.set_device_in_critic()
-        # todo
-        # random_room = randint(0, len(self.rooms))
-        # for room in self.rooms:
-        #     if room.id == random_room:
-        #         room.set_device_in_critic()
-        #         return
 

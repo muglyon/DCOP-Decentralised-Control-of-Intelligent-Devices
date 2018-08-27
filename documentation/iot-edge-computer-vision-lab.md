@@ -4,6 +4,8 @@
 
 Le présent LAB est un exercice pour mettre en place un système de Computer Vision avec de l'IoT Edge. Ce LAB se base sur du code Python ainsi que des outils d'Azure IoT Edge proposés par Microsoft. 
 
+Le code python pour déployer un système de computer vision et le DCOP avec Azure IoT Edge se base sur les précédents Labs de Artem Sheiko : [Iot Edge Computer Vision Lab](./computer_vision/iot-edge-computer-vision-lab.md).
+
 ## Lab 1 - Création du IoT Hub
 
 // Voir Lab 1 Artem

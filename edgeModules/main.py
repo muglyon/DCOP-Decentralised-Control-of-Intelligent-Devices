@@ -24,4 +24,4 @@ r = requests.post(url, data=open(IMG_NAME, 'rb').read(), headers=headers)
 predictions = json.loads(r.content.decode("utf-8"))['predictions']
 
 for prediction in predictions:
-print(prediction['tagName'], ' : ', prediction['probability'])
+    print(prediction['tagName'], ' : ', prediction['probability'])

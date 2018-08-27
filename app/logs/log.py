@@ -22,7 +22,6 @@ def setup_custom_logger(file_name):
                         level=logging.INFO,
                         datefmt=DATE_FORMAT)
 
-    # todo fileHandler en +
     handler_log = logging.StreamHandler()
     handler_log.setFormatter(jsonlogger.JsonFormatter(FORMAT_STR))
 
