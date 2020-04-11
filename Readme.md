@@ -1,6 +1,16 @@
-# Projet DCOP - IoT et IA en milieu médical.
+# Projet DCOP - IoT et IA en milieu médical
 
 *Auteure : Sacha LHOPITAL - Sous la direction de : Vincent THAVONEKHAM - Avec la collaboration de Samir AKNINE et de Huan VU (professeurs et doctorants au [LIRIS](https://liris.cnrs.fr/?set_language=fr))*
+
+Code du projet Open Sourcé le 10 avril 2020; des explications détaillés en anglais suivront une fois que le "papier scientifique" sera publié.
+
+- Decentralised Control of Intelligent Devices: A Healthcare Facility Study
+Sacha Lhopital, Samir Aknine 1, Vincent Thavonekham, Huan Vu 1, Sarvapali Ramchurn 2
+--1 SMA - Systèmes Multi-Agents
+LIRIS - Laboratoire d'InfoRmatique en Image et Systèmes d'information
+--2 University of Southampton
+Domaine : Informatique [cs] / Système multi-agents [cs.MA]
+
 
 <!-- TOC depthFrom:2 -->
 
