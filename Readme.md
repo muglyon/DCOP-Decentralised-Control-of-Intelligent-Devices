@@ -18,7 +18,7 @@ Domaine : Informatique [cs] / Système multi-agents [cs.MA]
     - [1.1. Installation Medical DCOP (dev)](#11-installation-medical-dcop-dev)
     - [1.2. Build](#12-build)
 - [2. Tests](#2-tests)
-- [3. Deployment](#3-deployment)
+- [3. Deployment and SonarCloud tests](#3-deployment)
 - [4. Documentation Annexe](#4-documentation-annexe)
 
 <!-- /TOC -->
@@ -110,7 +110,7 @@ Il faut prendre cette information en compte lors de l'analyse des résultats.*
 Pour en savoir plus, consultez la documentation de [Behave](https://behave.readthedocs.io/en/latest/index.html), de [pyHamcrest](https://pypi.python.org/pypi/PyHamcrest) ou de [Coverage](https://coverage.readthedocs.io/en/coverage-4.5.1/).
 
 
-## 3. Deployment
+## 3. Deployment and SonarCloud tests
 
 Un déploiement automatique a été programmé avec VSTS sur un agent privé (VM ubuntu).
 
@@ -126,6 +126,8 @@ Pour que le déploiement fonctionne sur des raspberries par exemple, il faut les
 4. Le script *update_script.py* sert à subscribe à un topic MQTT pour recevoir les notifications de mises à jour du serveur. Il effectue ainsi un *git pull* lorsque nécéssaire. 
 
 Pour qu'il fonctionne correctement, il doit être placé dans au même niveau que repertoire git pour se déplacer dedens (*DCOP/*). Enfin le script doit être lancé (au démarrage par exemple), pour subscribe au topic MQTT d'update. 
+
+For the Quality control, we are using SonarCloud for OpenSource projects. Results are available here https://sonarcloud.io/dashboard?id=muglyon_DCOP-Decentralised-Control-of-Intelligent-Devices
 
 ## 4. Documentation Annexe
 
