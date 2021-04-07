@@ -1,0 +1,45 @@
+{
+  "name": "",
+  "isOrdered": true,
+  "folders": {
+    "app": {
+      "name": "app",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "Backups": {
+      "name": "Backups",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "documentation": {
+      "name": "documentation",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "edgeModules": {
+      "name": "edgeModules",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "JavaSimulator": {
+      "name": "JavaSimulator",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    },
+    "Resources": {
+      "name": "Resources",
+      "isOrdered": true,
+      "folders": {},
+      "files": {}
+    }
+  },
+  "files": {
+    "Readme": 0
+  }
+}
